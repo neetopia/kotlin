@@ -98,6 +98,7 @@ expect fun Char.isLowSurrogate(): Boolean
  * Converts the characters in the specified array to a string.
  */
 @SinceKotlin("1.2")
+@Deprecated("Use stringFrom instead", ReplaceWith("stringFrom(chars)"))
 public expect fun String(chars: CharArray): String
 
 /**
@@ -107,8 +108,31 @@ public expect fun String(chars: CharArray): String
  * or `offset + length` is out of [chars] array bounds.
  */
 @SinceKotlin("1.2")
+@Deprecated("Use stringFrom instead", ReplaceWith("stringFrom(chars, offset, offset + length)"))
 public expect fun String(chars: CharArray, offset: Int, length: Int): String
 
+/**
+ * Converts the characters in the specified array to a string.
+ *
+ * @param chars the array of characters to be converted.
+ * @param startIndex the start offset (inclusive) of the array to be converted.
+ * @param endIndex the end offset (exclusive) of the array to be converted.
+ *
+ * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of the [chars].
+ * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
+ */
+public expect fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String
+
+/**
+ * Converts this string to an array of characters.
+ *
+ * @param startIndex the start offset (inclusive) of this string to convert from.
+ * @param endIndex the end offset (exclusive) of this string to convert upto.
+ *
+ * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than length of this string.
+ * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
+ */
+public expect fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray
 
 internal expect fun String.nativeIndexOf(str: String, fromIndex: Int): Int
 internal expect fun String.nativeLastIndexOf(str: String, fromIndex: Int): Int
@@ -334,3 +358,12 @@ expect fun Long.toString(radix: Int): String
 internal expect fun checkRadix(radix: Int): Int
 
 internal expect fun digitOf(char: Char, radix: Int): Int
+
+internal fun checkStringBounds(startIndex: Int, endIndex: Int, length: Int) {
+    if (startIndex < 0 || endIndex > length) {
+        throw IndexOutOfBoundsException("startIndex: $startIndex, endIndex: $endIndex, length: $length")
+    }
+    if (startIndex > endIndex) {
+        throw IllegalArgumentException("startIndex: $startIndex > endIndex: $endIndex")
+    }
+}

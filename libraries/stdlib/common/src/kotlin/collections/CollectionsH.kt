@@ -38,3 +38,13 @@ internal expect fun <T> arrayOfNulls(reference: Array<T>, size: Int): Array<T>
 internal expect fun <K, V> Map<K, V>.toSingletonMapOrSelf(): Map<K, V>
 internal expect fun <K, V> Map<out K, V>.toSingletonMap(): Map<K, V>
 internal expect fun <T> Array<out T>.copyToArrayOfAny(isVarargs: Boolean): Array<out Any?>
+
+
+internal fun checkArrayBounds(startIndex: Int, endIndex: Int, size: Int) {
+    if (startIndex < 0 || endIndex > size) {
+        throw IndexOutOfBoundsException("startIndex: $startIndex, endIndex: $endIndex, size: $size")
+    }
+    if (startIndex > endIndex) {
+        throw IllegalArgumentException("startIndex: $startIndex > endIndex: $endIndex")
+    }
+}

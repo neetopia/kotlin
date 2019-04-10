@@ -36,6 +36,21 @@ public actual fun String(chars: CharArray, offset: Int, length: Int): String {
     return result
 }
 
+public actual fun stringFrom(chars: CharArray, startIndex: Int, endIndex: Int): String {
+    checkArrayBounds(startIndex, endIndex, chars.size)
+    var result = ""
+    for (index in startIndex until endIndex) {
+        result += chars[index]
+    }
+    return result
+}
+
+@Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
+public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray {
+    checkStringBounds(startIndex, endIndex, length)
+    return CharArray(endIndex - startIndex) { get(startIndex + it) }
+}
+
 /**
  * Returns a copy of this string converted to upper case using the rules of the default locale.
  *
