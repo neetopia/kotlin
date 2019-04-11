@@ -9,7 +9,10 @@
 
 package kotlin.text
 
+import java.nio.ByteBuffer
+import java.nio.CharBuffer
 import java.nio.charset.Charset
+import java.nio.charset.CodingErrorAction
 import java.util.*
 import java.util.regex.Pattern
 
@@ -116,6 +119,44 @@ public actual fun stringFrom(chars: CharArray, startIndex: Int, endIndex: Int): 
 public actual fun String.toCharArray(startIndex: Int, endIndex: Int): CharArray {
     checkStringBounds(startIndex, endIndex, length)
     return this.toCharArray(CharArray(endIndex - startIndex), 0, startIndex, endIndex)
+}
+
+public actual fun stringFrom(bytes: ByteArray, startIndex: Int, endIndex: Int, throwOnInvalidSequence: Boolean): String {
+    checkArrayBounds(startIndex, endIndex, bytes.size)
+
+    if (!throwOnInvalidSequence) {
+        return java.lang.String(bytes, startIndex, endIndex - startIndex, Charsets.UTF_8) as String
+    }
+
+    val decoder = Charsets.UTF_8.newDecoder()
+        .onMalformedInput(CodingErrorAction.REPORT)
+        .onUnmappableCharacter(CodingErrorAction.REPORT)
+
+    return decoder.decode(ByteBuffer.wrap(bytes, startIndex, endIndex - startIndex)).toString()
+}
+
+public actual fun String.toByteArray(startIndex: Int, endIndex: Int, throwOnInvalidSequence: Boolean): ByteArray {
+    checkStringBounds(startIndex, endIndex, length)
+
+    if (!throwOnInvalidSequence) {
+        // Use optimized String.getBytes method
+        return if (startIndex == 0 && endIndex == this.length) {
+            (this as java.lang.String).getBytes(Charsets.UTF_8)
+        } else {
+            (this.substring(startIndex, endIndex) as java.lang.String).getBytes(Charsets.UTF_8)
+        }
+    }
+
+    val encoder = Charsets.UTF_8.newEncoder()
+        .onMalformedInput(CodingErrorAction.REPORT)
+        .onUnmappableCharacter(CodingErrorAction.REPORT)
+
+    val byteBuffer = encoder.encode(CharBuffer.wrap(this, startIndex, endIndex))
+    return if (byteBuffer.hasArray() && byteBuffer.arrayOffset() == 0 && byteBuffer.remaining() == byteBuffer.array()!!.size) {
+        byteBuffer.array()
+    } else {
+        ByteArray(byteBuffer.remaining()).also { byteBuffer.get(it) }
+    }
 }
 
 /**

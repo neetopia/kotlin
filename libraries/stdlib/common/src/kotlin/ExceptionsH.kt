@@ -93,6 +93,8 @@ public expect open class ArithmeticException : RuntimeException {
     constructor(message: String?)
 }
 
+public expect open class CharacterCodingException() : Exception
+
 @Deprecated("This exception type is not supposed to be thrown or caught in common code and will be removed from kotlin-stdlib-common soon.")
 public expect open class NoWhenBranchMatchedException : RuntimeException {
     constructor()

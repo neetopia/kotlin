@@ -8,3 +8,7 @@ package test
 public expect fun assertTypeEquals(expected: Any?, actual: Any?)
 
 internal expect fun String.removeLeadingPlusOnJava6(): String
+
+internal expect inline fun onJvm8AndAbove(f: () -> Unit)
+
+internal expect val surrogateCodePointDecoding: String

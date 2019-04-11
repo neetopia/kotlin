@@ -24,6 +24,8 @@ package kotlin
 
 @SinceKotlin("1.1") public actual typealias NoSuchElementException = java.util.NoSuchElementException
 
+public actual typealias CharacterCodingException = java.nio.charset.CharacterCodingException
+
 @Suppress("NO_ACTUAL_CLASS_MEMBER_FOR_EXPECTED_CLASS")
 @SinceKotlin("1.3") public actual typealias ConcurrentModificationException = java.util.ConcurrentModificationException
 

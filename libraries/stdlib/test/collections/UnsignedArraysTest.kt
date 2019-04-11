@@ -11,10 +11,10 @@ import test.collections.behaviors.listBehavior
 import test.collections.behaviors.iteratorBehavior
 import kotlin.test.*
 
-fun assertArrayContentEquals(expected: UIntArray, actual: UIntArray, message: String = "")      { assertTrue(expected contentEquals actual, message) }
-fun assertArrayContentEquals(expected: ULongArray, actual: ULongArray, message: String = "")    { assertTrue(expected contentEquals actual, message) }
-fun assertArrayContentEquals(expected: UShortArray, actual: UShortArray, message: String = "")  { assertTrue(expected contentEquals actual, message) }
-fun assertArrayContentEquals(expected: UByteArray, actual: UByteArray, message: String = "")    { assertTrue(expected contentEquals actual, message) }
+fun assertArrayContentEquals(expected: UIntArray, actual: UIntArray, message: String? = null)      { assertTrue(expected contentEquals actual, message) }
+fun assertArrayContentEquals(expected: ULongArray, actual: ULongArray, message: String? = null)    { assertTrue(expected contentEquals actual, message) }
+fun assertArrayContentEquals(expected: UShortArray, actual: UShortArray, message: String? = null)  { assertTrue(expected contentEquals actual, message) }
+fun assertArrayContentEquals(expected: UByteArray, actual: UByteArray, message: String? = null)    { assertTrue(expected contentEquals actual, message) }
 
 
 class UnsignedArraysTest {

@@ -7,9 +7,9 @@ package test.text
 
 import kotlin.test.*
 import test.*
-import test.collections.assertArrayNotSameButEquals
 import test.collections.behaviors.iteratorBehavior
 import test.collections.compare
+import text.assertArrayContentEquals
 import kotlin.math.sign
 import kotlin.random.Random
 
@@ -1495,8 +1495,8 @@ ${"    "}
     @Test
     fun toCharArray() {
         val s = "hello"
-        assertArrayNotSameButEquals(charArrayOf('h', 'e', 'l', 'l', 'o'), s.toCharArray())
-        assertArrayNotSameButEquals(charArrayOf('e', 'l'), s.toCharArray(1, 3))
+        assertArrayContentEquals(charArrayOf('h', 'e', 'l', 'l', 'o'), s.toCharArray())
+        assertArrayContentEquals(charArrayOf('e', 'l'), s.toCharArray(1, 3))
 
         assertFailsWith<IndexOutOfBoundsException> { s.toCharArray(-1) }
         assertFailsWith<IndexOutOfBoundsException> { s.toCharArray(0, 6) }

@@ -134,6 +134,43 @@ public expect fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: In
  */
 public expect fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray
 
+/**
+ * Converts the UTF-8 bytes in the specified array to a string.
+ *
+ * @param bytes the array of bytes to be converted.
+ * @param startIndex the start offset (inclusive) of the array to be converted.
+ * @param endIndex the end offset (exclusive) of the array to be converted.
+ * @param throwOnInvalidSequence determines weather to throw on malformed byte sequence or to replace by the replacement char `\uFFFD`.
+ *
+ * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of the [bytes].
+ * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
+ * @throws CharacterCodingException if the byte array contains malformed UTF-8 byte sequence and [throwOnInvalidSequence] is true.
+ */
+public expect fun stringFrom(
+    bytes: ByteArray,
+    startIndex: Int = 0,
+    endIndex: Int = bytes.size,
+    throwOnInvalidSequence: Boolean = false
+): String
+
+/**
+ * Converts this string to an array of UTF-8 bytes.
+ *
+ * @param startIndex the start offset (inclusive) of this string to convert from.
+ * @param endIndex the end offset (exclusive) of this string to convert upto.
+ * @param throwOnInvalidSequence determines weather to throw on malformed char sequence or to replace by the replacement byte `0x3F`.
+ *
+ * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than length of this string.
+ * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
+ * @throws CharacterCodingException if this string contains malformed char sequence and [throwOnInvalidSequence] is true.
+ */
+public expect fun String.toByteArray(
+    startIndex: Int = 0,
+    endIndex: Int = this.length,
+    throwOnInvalidSequence: Boolean = false
+): ByteArray
+
+
 internal expect fun String.nativeIndexOf(str: String, fromIndex: Int): Int
 internal expect fun String.nativeLastIndexOf(str: String, fromIndex: Int): Int
 

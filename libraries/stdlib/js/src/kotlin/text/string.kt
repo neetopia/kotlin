@@ -51,6 +51,17 @@ public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.l
     return CharArray(endIndex - startIndex) { get(startIndex + it) }
 }
 
+public actual fun stringFrom(bytes: ByteArray, startIndex: Int, endIndex: Int, throwOnInvalidSequence: Boolean): String {
+    checkArrayBounds(startIndex, endIndex, bytes.size)
+    return decodeUTF8(bytes, startIndex, endIndex, throwOnInvalidSequence)
+}
+
+@Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
+public actual fun String.toByteArray(startIndex: Int = 0, endIndex: Int = this.length, throwOnInvalidSequence: Boolean = false): ByteArray {
+    checkStringBounds(startIndex, endIndex, length)
+    return encodeUTF8(this, startIndex, endIndex, throwOnInvalidSequence)
+}
+
 /**
  * Returns a copy of this string converted to upper case using the rules of the default locale.
  *
