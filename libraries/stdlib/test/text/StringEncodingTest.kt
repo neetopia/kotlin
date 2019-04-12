@@ -146,8 +146,7 @@ class StringEncodingTest {
     private fun testDecoding(isMalformed: Boolean, expected: String, bytes: ByteArray) {
         assertEquals(expected, stringFrom(bytes))
         if (isMalformed) {
-            val message = bytes.fold("") { acc, byte -> "$acc${(byte.toInt() and 0xFF).toString(16)} " }
-            assertFailsWith<CharacterCodingException>(message) { stringFrom(bytes, throwOnInvalidSequence = true) }
+            assertFailsWith<CharacterCodingException> { stringFrom(bytes, throwOnInvalidSequence = true) }
         } else {
             assertEquals(expected, stringFrom(bytes, throwOnInvalidSequence = true))
         }
@@ -156,8 +155,7 @@ class StringEncodingTest {
     private fun testDecoding(isMalformed: Boolean, expected: String, bytes: ByteArray, startIndex: Int, endIndex: Int) {
         assertEquals(expected, stringFrom(bytes, startIndex, endIndex))
         if (isMalformed) {
-            val message = bytes.fold("") { acc, byte -> "$acc${(byte.toInt() and 0xFF).toString(16)} " }
-            assertFailsWith<CharacterCodingException>(message) { stringFrom(bytes, startIndex, endIndex, true) }
+            assertFailsWith<CharacterCodingException> { stringFrom(bytes, startIndex, endIndex, true) }
         } else {
             assertEquals(expected, stringFrom(bytes, startIndex, endIndex, true))
         }
