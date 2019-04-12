@@ -125,7 +125,7 @@ public actual fun stringFrom(bytes: ByteArray, startIndex: Int, endIndex: Int, t
     checkArrayBounds(startIndex, endIndex, bytes.size)
 
     if (!throwOnInvalidSequence) {
-        return java.lang.String(bytes, startIndex, endIndex - startIndex, Charsets.UTF_8) as String
+        return String(bytes, startIndex, endIndex - startIndex)
     }
 
     val decoder = Charsets.UTF_8.newDecoder()
@@ -139,12 +139,8 @@ public actual fun String.toByteArray(startIndex: Int, endIndex: Int, throwOnInva
     checkStringBounds(startIndex, endIndex, length)
 
     if (!throwOnInvalidSequence) {
-        // Use optimized String.getBytes method
-        return if (startIndex == 0 && endIndex == this.length) {
-            (this as java.lang.String).getBytes(Charsets.UTF_8)
-        } else {
-            (this.substring(startIndex, endIndex) as java.lang.String).getBytes(Charsets.UTF_8)
-        }
+        val string = if (startIndex == 0 && endIndex == this.length) this else this.substring(startIndex, endIndex)
+        return string.toByteArray(Charsets.UTF_8)
     }
 
     val encoder = Charsets.UTF_8.newEncoder()
