@@ -73,7 +73,7 @@ public actual fun stringFrom(
     throwOnInvalidSequence: Boolean = false
 ): String {
     AbstractList.checkBoundsIndexes(startIndex, endIndex, bytes.size)
-    return decodeUTF8(bytes, startIndex, endIndex, throwOnInvalidSequence)
+    return decodeUtf8(bytes, startIndex, endIndex, throwOnInvalidSequence)
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
@@ -83,7 +83,7 @@ public actual fun String.toByteArray(
     throwOnInvalidSequence: Boolean = false
 ): ByteArray {
     checkStringBounds(startIndex, endIndex, length)
-    return encodeUTF8(this, startIndex, endIndex, throwOnInvalidSequence)
+    return encodeUtf8(this, startIndex, endIndex, throwOnInvalidSequence)
 }
 
 /**

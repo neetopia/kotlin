@@ -160,7 +160,7 @@ private const val REPLACEMENT_BYTE: Byte = 0x3F
  *
  * @throws CharacterCodingException if the char sequence is malformed and [throwOnMalformed] is true.
  */
-internal fun encodeUTF8(string: String, startIndex: Int, endIndex: Int, throwOnMalformed: Boolean): ByteArray {
+internal fun encodeUtf8(string: String, startIndex: Int, endIndex: Int, throwOnMalformed: Boolean): ByteArray {
     require(startIndex >= 0 && endIndex <= string.length && startIndex <= endIndex)
 
     val bytes = ByteArray((endIndex - startIndex) * MAX_BYTES_PER_CHAR)
@@ -214,7 +214,7 @@ private const val REPLACEMENT_CHAR = '\uFFFD'
  *
  * @throws CharacterCodingException if the array is malformed UTF-8 byte sequence and [throwOnMalformed] is true.
  */
-internal fun decodeUTF8(bytes: ByteArray, startIndex: Int, endIndex: Int, throwOnMalformed: Boolean): String {
+internal fun decodeUtf8(bytes: ByteArray, startIndex: Int, endIndex: Int, throwOnMalformed: Boolean): String {
     require(startIndex >= 0 && endIndex <= bytes.size && startIndex <= endIndex)
 
     var byteIndex = startIndex
