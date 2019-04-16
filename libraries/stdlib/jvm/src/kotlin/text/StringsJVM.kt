@@ -111,17 +111,25 @@ public actual inline fun String.toUpperCase(): String = (this as java.lang.Strin
 @kotlin.internal.InlineOnly
 public actual inline fun String.toLowerCase(): String = (this as java.lang.String).toLowerCase()
 
-public actual fun stringFrom(chars: CharArray, startIndex: Int, endIndex: Int): String {
+@Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
+public actual fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String {
     checkArrayBounds(startIndex, endIndex, chars.size)
     return java.lang.String(chars, startIndex, endIndex - startIndex) as String
 }
 
-public actual fun String.toCharArray(startIndex: Int, endIndex: Int): CharArray {
+@Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
+public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray {
     checkStringBounds(startIndex, endIndex, length)
     return this.toCharArray(CharArray(endIndex - startIndex), 0, startIndex, endIndex)
 }
 
-public actual fun stringFrom(bytes: ByteArray, startIndex: Int, endIndex: Int, throwOnInvalidSequence: Boolean): String {
+@Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
+public actual fun stringFrom(
+    bytes: ByteArray,
+    startIndex: Int = 0,
+    endIndex: Int = bytes.size,
+    throwOnInvalidSequence: Boolean = false
+): String {
     checkArrayBounds(startIndex, endIndex, bytes.size)
 
     if (!throwOnInvalidSequence) {
@@ -135,7 +143,12 @@ public actual fun stringFrom(bytes: ByteArray, startIndex: Int, endIndex: Int, t
     return decoder.decode(ByteBuffer.wrap(bytes, startIndex, endIndex - startIndex)).toString()
 }
 
-public actual fun String.toByteArray(startIndex: Int, endIndex: Int, throwOnInvalidSequence: Boolean): ByteArray {
+@Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
+public actual fun String.toByteArray(
+    startIndex: Int = 0,
+    endIndex: Int = this.length,
+    throwOnInvalidSequence: Boolean = false
+): ByteArray {
     checkStringBounds(startIndex, endIndex, length)
 
     if (!throwOnInvalidSequence) {
