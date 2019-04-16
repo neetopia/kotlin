@@ -19,6 +19,7 @@ class StringEncodingTest {
             assertFailsWith<CharacterCodingException> { string.toByteArray(throwOnInvalidSequence = true) }
         } else {
             assertArrayContentEquals(expected, string.toByteArray(throwOnInvalidSequence = true))
+            assertEquals(string, stringFrom(string.toByteArray(throwOnInvalidSequence = true)))
         }
     }
 
@@ -28,6 +29,10 @@ class StringEncodingTest {
             assertFailsWith<CharacterCodingException> { string.toByteArray(startIndex, endIndex, true) }
         } else {
             assertArrayContentEquals(expected, string.toByteArray(startIndex, endIndex, true))
+            assertEquals(
+                string.substring(startIndex, endIndex),
+                stringFrom(string.toByteArray(startIndex, endIndex, true))
+            )
         }
     }
 
@@ -147,6 +152,7 @@ class StringEncodingTest {
             assertFailsWith<CharacterCodingException> { stringFrom(bytes, throwOnInvalidSequence = true) }
         } else {
             assertEquals(expected, stringFrom(bytes, throwOnInvalidSequence = true))
+            assertArrayContentEquals(bytes, stringFrom(bytes, throwOnInvalidSequence = true).toByteArray())
         }
     }
 
@@ -156,6 +162,10 @@ class StringEncodingTest {
             assertFailsWith<CharacterCodingException> { stringFrom(bytes, startIndex, endIndex, true) }
         } else {
             assertEquals(expected, stringFrom(bytes, startIndex, endIndex, true))
+            assertArrayContentEquals(
+                bytes.sliceArray(startIndex until endIndex),
+                stringFrom(bytes, startIndex, endIndex, true).toByteArray()
+            )
         }
     }
 
