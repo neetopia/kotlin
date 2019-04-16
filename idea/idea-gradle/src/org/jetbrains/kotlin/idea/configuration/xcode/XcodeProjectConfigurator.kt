@@ -761,6 +761,7 @@ class ViewController: UIViewController {
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
+                INFOPLIST_FILE = "iosApp/Info.plist";
 				INSTALL_PATH = "${'$'}(LOCAL_LIBRARY_DIR)/Frameworks";
 				KOTLIN_BUILD_TYPE = DEBUG;
 				KOTLIN_TARGET = "";
@@ -792,6 +793,7 @@ class ViewController: UIViewController {
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
+                INFOPLIST_FILE = "iosApp/Info.plist";
 				INSTALL_PATH = "${'$'}(LOCAL_LIBRARY_DIR)/Frameworks";
 				KOTLIN_BUILD_TYPE = RELEASE;
 				KOTLIN_TARGET = "";
