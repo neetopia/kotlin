@@ -20,7 +20,7 @@ private val isJava7 = System.getProperty("java.version").startsWith("1.7.")
 
 private val isJava8AndAbove = !isJava6 && !isJava7
 
-internal actual inline fun onJvm8AndAbove(f: () -> Unit) {
+internal actual inline fun executeIfNotOnJvm6And7(f: () -> Unit) {
     if (isJava8AndAbove) {
         f()
     }

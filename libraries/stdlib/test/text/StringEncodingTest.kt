@@ -5,7 +5,7 @@
 
 package text
 
-import test.onJvm8AndAbove
+import test.executeIfNotOnJvm6And7
 import test.surrogateCodePointDecoding
 import kotlin.test.*
 
@@ -180,7 +180,7 @@ class StringEncodingTest {
         testDecoding(true, "�z", bytes(0xE0, 0xAF, 0x7A)) // 3-byte char, third byte starts with 0 bit
         testDecoding(false, "\u1FFF", bytes(0xE1, 0xBF, 0xBF)) // 3-byte char
 
-        onJvm8AndAbove {
+        executeIfNotOnJvm6And7 {
             testDecoding(true, surrogateCodePointDecoding, bytes(0xED, 0xAF, 0xBF)) // 3-byte high-surrogate char
             testDecoding(true, surrogateCodePointDecoding, bytes(0xED, 0xB3, 0x9A)) // 3-byte low-surrogate char
             testDecoding(
@@ -250,7 +250,7 @@ class StringEncodingTest {
         testDecoding(true, "�z", bytes(0xEF, 0xAF, 0x7A), startIndex = 1, endIndex = 3)
         testDecoding(false, "z", bytes(0xEF, 0xAF, 0x7A), startIndex = 2, endIndex = 3)
 
-        onJvm8AndAbove {
+        executeIfNotOnJvm6And7 {
             testDecoding(true, surrogateCodePointDecoding, bytes(0xED, 0xAF, 0xBF), startIndex = 0, endIndex = 3)
             testDecoding(
                 true,
