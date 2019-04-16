@@ -114,13 +114,13 @@ public actual inline fun String.toLowerCase(): String = (this as java.lang.Strin
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String {
     checkArrayBounds(startIndex, endIndex, chars.size)
-    return java.lang.String(chars, startIndex, endIndex - startIndex) as String
+    return String(chars, startIndex, endIndex - startIndex)
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray {
     checkStringBounds(startIndex, endIndex, length)
-    return this.toCharArray(CharArray(endIndex - startIndex), 0, startIndex, endIndex)
+    return toCharArray(CharArray(endIndex - startIndex), 0, startIndex, endIndex)
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
@@ -152,8 +152,7 @@ public actual fun String.toByteArray(
     checkStringBounds(startIndex, endIndex, length)
 
     if (!throwOnInvalidSequence) {
-        val string = if (startIndex == 0 && endIndex == this.length) this else this.substring(startIndex, endIndex)
-        return string.toByteArray(Charsets.UTF_8)
+        return this.substring(startIndex, endIndex).toByteArray(Charsets.UTF_8)
     }
 
     val encoder = Charsets.UTF_8.newEncoder()
