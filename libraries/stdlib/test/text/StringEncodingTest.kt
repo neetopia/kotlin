@@ -5,12 +5,10 @@
 
 package text
 
+import test.assertArrayContentEquals
 import test.executeIfNotOnJvm6And7
 import test.surrogateCodePointDecoding
 import kotlin.test.*
-
-fun assertArrayContentEquals(expected: ByteArray, actual: ByteArray, message: String? = null) = assertTrue(expected contentEquals actual, message)
-fun assertArrayContentEquals(expected: CharArray, actual: CharArray, message: String? = null) = assertTrue(expected contentEquals actual, message)
 
 class StringEncodingTest {
     private fun bytes(vararg elements: Int) = ByteArray(elements.size) { elements[it].toByte() }

@@ -9,7 +9,6 @@ import kotlin.test.*
 import test.*
 import test.collections.behaviors.iteratorBehavior
 import test.collections.compare
-import text.assertArrayContentEquals
 import kotlin.math.sign
 import kotlin.random.Random
 
