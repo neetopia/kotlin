@@ -82,6 +82,8 @@ expect enum class RegexOption {
     MULTILINE
 }
 
+public expect open class CharacterCodingException() : Exception
+
 
 // From char.kt
 

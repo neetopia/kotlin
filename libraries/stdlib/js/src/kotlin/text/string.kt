@@ -7,6 +7,19 @@ package kotlin.text
 
 import kotlin.js.RegExp
 
+
+public actual open class CharacterCodingException actual constructor() : Exception() {
+    private var msg: String? = null
+
+    constructor(message: String?) : this() {
+        this.msg = message
+    }
+
+    override val message: String?
+        get() = msg
+}
+
+
 /**
  * Converts the characters in the specified array to a string.
  */

@@ -17,6 +17,9 @@ import java.util.*
 import java.util.regex.Pattern
 
 
+public actual typealias CharacterCodingException = java.nio.charset.CharacterCodingException
+
+
 /**
  * Returns the index within this string of the first occurrence of the specified character, starting from the specified offset.
  */
