@@ -116,7 +116,7 @@ public actual inline fun String.toLowerCase(): String = (this as java.lang.Strin
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String {
-    checkArrayBounds(startIndex, endIndex, chars.size)
+    kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, chars.size)
     return String(chars, startIndex, endIndex - startIndex)
 }
 
@@ -133,7 +133,7 @@ public actual fun stringFrom(
     endIndex: Int = bytes.size,
     throwOnInvalidSequence: Boolean = false
 ): String {
-    checkArrayBounds(startIndex, endIndex, bytes.size)
+    kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, bytes.size)
 
     if (!throwOnInvalidSequence) {
         return String(bytes, startIndex, endIndex - startIndex)

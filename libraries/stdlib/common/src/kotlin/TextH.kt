@@ -397,12 +397,3 @@ expect fun Long.toString(radix: Int): String
 internal expect fun checkRadix(radix: Int): Int
 
 internal expect fun digitOf(char: Char, radix: Int): Int
-
-internal fun checkStringBounds(startIndex: Int, endIndex: Int, length: Int) {
-    if (startIndex < 0 || endIndex > length) {
-        throw IndexOutOfBoundsException("startIndex: $startIndex, endIndex: $endIndex, length: $length")
-    }
-    if (startIndex > endIndex) {
-        throw IllegalArgumentException("startIndex: $startIndex > endIndex: $endIndex")
-    }
-}

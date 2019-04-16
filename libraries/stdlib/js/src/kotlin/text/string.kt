@@ -51,7 +51,7 @@ public actual fun String(chars: CharArray, offset: Int, length: Int): String {
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String {
-    checkArrayBounds(startIndex, endIndex, chars.size)
+    AbstractList.checkBoundsIndexes(startIndex, endIndex, chars.size)
     var result = ""
     for (index in startIndex until endIndex) {
         result += chars[index]
@@ -72,7 +72,7 @@ public actual fun stringFrom(
     endIndex: Int = bytes.size,
     throwOnInvalidSequence: Boolean = false
 ): String {
-    checkArrayBounds(startIndex, endIndex, bytes.size)
+    AbstractList.checkBoundsIndexes(startIndex, endIndex, bytes.size)
     return decodeUTF8(bytes, startIndex, endIndex, throwOnInvalidSequence)
 }
 

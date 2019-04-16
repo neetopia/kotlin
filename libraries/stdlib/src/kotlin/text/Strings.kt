@@ -1285,3 +1285,13 @@ public fun CharSequence.lineSequence(): Sequence<String> = splitToSequence("\r\n
  * The lines returned do not include terminating line separators.
  */
 public fun CharSequence.lines(): List<String> = lineSequence().toList()
+
+
+internal fun checkStringBounds(startIndex: Int, endIndex: Int, length: Int) {
+    if (startIndex < 0 || endIndex > length) {
+        throw IndexOutOfBoundsException("startIndex: $startIndex, endIndex: $endIndex, length: $length")
+    }
+    if (startIndex > endIndex) {
+        throw IllegalArgumentException("startIndex: $startIndex > endIndex: $endIndex")
+    }
+}
