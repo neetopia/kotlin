@@ -112,6 +112,17 @@ public actual open class ArithmeticException actual constructor(message: String?
     actual constructor() : this(null)
 }
 
+public actual open class CharacterCodingException actual constructor() : Exception() {
+    private var msg: String? = null
+
+    constructor(message: String?) : this() {
+        this.msg = message
+    }
+
+    override val message: String?
+        get() = msg
+}
+
 public actual open class NoWhenBranchMatchedException actual constructor(message: String?, cause: Throwable?) : RuntimeException(message, cause) {
     actual constructor() : this(null, null)
     actual constructor(message: String?) : this(message, null)
