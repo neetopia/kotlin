@@ -47,12 +47,12 @@ class StringTest {
 
     private fun testStringFromChars(expected: String, chars: CharArray, offset: Int, length: Int) {
         assertEquals(expected, String(chars, offset, length))
-        assertEquals(expected, stringFrom(chars, startIndex = offset, endIndex = offset + length))
+        assertEquals(expected, chars.concatToString(startIndex = offset, endIndex = offset + length))
     }
 
     private fun testStringFromChars(expected: String, chars: CharArray) {
         assertEquals(expected, String(chars))
-        assertEquals(expected, stringFrom(chars))
+        assertEquals(expected, chars.concatToString())
     }
 
     @Test fun stringFromCharArrayFullSlice() {
@@ -66,11 +66,11 @@ class StringTest {
 
         val longChars = CharArray(200_000) { 'k' }
         val longString = String(longChars, offset = 1000, length = 190_000)
-        val longStringFrom = stringFrom(longChars, startIndex = 1000, endIndex = 191_000)
+        val longConcatString = longChars.concatToString(startIndex = 1000, endIndex = 191_000)
         assertEquals(190_000, longString.length)
-        assertEquals(190_000, longStringFrom.length)
+        assertEquals(190_000, longConcatString.length)
         assertTrue(longString.all { it == 'k' })
-        assertTrue(longStringFrom.all { it == 'k' })
+        assertTrue(longConcatString.all { it == 'k' })
     }
 
     @Test fun stringFromCharArray() {
@@ -79,11 +79,11 @@ class StringTest {
 
         val longChars = CharArray(200_000) { 'k' }
         val longString = String(longChars)
-        val longStringFrom = stringFrom(longChars)
+        val longConcatString = longChars.concatToString()
         assertEquals(200_000, longString.length)
-        assertEquals(200_000, longStringFrom.length)
+        assertEquals(200_000, longConcatString.length)
         assertTrue(longString.all { it == 'k' })
-        assertTrue(longStringFrom.all { it == 'k' })
+        assertTrue(longConcatString.all { it == 'k' })
     }
 
     @Test fun stringFromCharArrayUnicodeSurrogatePairs() {
@@ -99,9 +99,9 @@ class StringTest {
             assertFailsWith<IndexOutOfBoundsException> { String(chars, 1, -1) }
             assertFailsWith<IndexOutOfBoundsException> { String(chars, chars.size - 1, 2) }
 
-            assertFailsWith<IndexOutOfBoundsException> { stringFrom(chars, -1, 1) }
-            assertFailsWith<IllegalArgumentException> { stringFrom(chars, 1, -1) }
-            assertFailsWith<IllegalArgumentException> { stringFrom(chars, chars.size - 1, 2) }
+            assertFailsWith<IndexOutOfBoundsException> { chars.concatToString(-1, 1) }
+            assertFailsWith<IllegalArgumentException> { chars.concatToString(1, -1) }
+            assertFailsWith<IllegalArgumentException> { chars.concatToString(chars.size - 1, 2) }
         }
         test(CharArray(16) { 'k' })
         test(CharArray(160_000) { 'k' })

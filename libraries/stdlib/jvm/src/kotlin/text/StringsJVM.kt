@@ -112,9 +112,9 @@ public actual inline fun String.toUpperCase(): String = (this as java.lang.Strin
 public actual inline fun String.toLowerCase(): String = (this as java.lang.String).toLowerCase()
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
-public actual fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String {
-    kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, chars.size)
-    return String(chars, startIndex, endIndex - startIndex)
+public actual fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = this.size): String {
+    kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, this.size)
+    return String(this, startIndex, endIndex - startIndex)
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")

@@ -95,7 +95,7 @@ class StringEncodingTest {
         )
 
         val longChars = CharArray(200_000) { 'k' }
-        val longBytes = stringFrom(longChars).toByteArray()
+        val longBytes = longChars.concatToString().toByteArray()
         assertEquals(200_000, longBytes.size)
         assertTrue { longBytes.all { it == 0x6B.toByte() } }
     }
@@ -146,7 +146,7 @@ class StringEncodingTest {
         )
 
         val longChars = CharArray(200_000) { 'k' }
-        val longBytes = stringFrom(longChars).toByteArray(startIndex = 5000, endIndex = 195_000)
+        val longBytes = longChars.concatToString().toByteArray(startIndex = 5000, endIndex = 195_000)
         assertEquals(190_000, longBytes.size)
         assertTrue { longBytes.all { it == 0x6B.toByte() } }
     }

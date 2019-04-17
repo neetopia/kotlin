@@ -112,16 +112,15 @@ public expect fun String(chars: CharArray): String
 public expect fun String(chars: CharArray, offset: Int, length: Int): String
 
 /**
- * Converts the characters in the specified array to a string.
+ * Concatenates the characters in this array to form string.
  *
- * @param chars the array of characters to be converted.
- * @param startIndex the start offset (inclusive) of the array to be converted.
- * @param endIndex the end offset (exclusive) of the array to be converted.
+ * @param startIndex the start offset (inclusive) of this array to be concatenated.
+ * @param endIndex the end offset (exclusive) of this array to be concatenated.
  *
- * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of the [chars].
+ * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of this array.
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  */
-public expect fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String
+public expect fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = this.size): String
 
 /**
  * Converts this string to an array of characters.

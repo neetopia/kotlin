@@ -37,11 +37,11 @@ public actual fun String(chars: CharArray, offset: Int, length: Int): String {
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
-public actual fun stringFrom(chars: CharArray, startIndex: Int = 0, endIndex: Int = chars.size): String {
-    AbstractList.checkBoundsIndexes(startIndex, endIndex, chars.size)
+public actual fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = this.size): String {
+    AbstractList.checkBoundsIndexes(startIndex, endIndex, this.size)
     var result = ""
     for (index in startIndex until endIndex) {
-        result += chars[index]
+        result += this[index]
     }
     return result
 }
