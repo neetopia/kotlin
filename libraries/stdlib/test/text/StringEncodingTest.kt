@@ -71,6 +71,11 @@ class StringEncodingTest {
         testEncoding(false, bytes(0xF2, 0xA2, 0x97, 0xBC), "\uDA49\uDDFC")
         testEncoding(false, bytes(0xF4, 0x8F, 0xBF, 0xBF), "\uDBFF\uDFFF")
 
+        // reversed surrogate pairs
+        testEncoding(true, bytes(0x3F, 0x3F), "\uDC00\uD800")
+        testEncoding(true, bytes(0x3F, 0x3F), "\uDDFC\uDA49")
+        testEncoding(true, bytes(0x3F, 0x3F), "\uDFFF\uDBFF")
+
         testEncoding(
             true,
             bytes(
