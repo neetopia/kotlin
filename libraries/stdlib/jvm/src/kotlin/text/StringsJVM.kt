@@ -124,23 +124,22 @@ public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.l
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
-public actual fun stringFrom(
-    bytes: ByteArray,
+public actual fun ByteArray.decodeToString(
     startIndex: Int = 0,
-    endIndex: Int = bytes.size,
+    endIndex: Int = this.size,
     throwOnInvalidSequence: Boolean = false
 ): String {
-    kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, bytes.size)
+    kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, this.size)
 
     if (!throwOnInvalidSequence) {
-        return String(bytes, startIndex, endIndex - startIndex)
+        return String(this, startIndex, endIndex - startIndex)
     }
 
     val decoder = Charsets.UTF_8.newDecoder()
         .onMalformedInput(CodingErrorAction.REPORT)
         .onUnmappableCharacter(CodingErrorAction.REPORT)
 
-    return decoder.decode(ByteBuffer.wrap(bytes, startIndex, endIndex - startIndex)).toString()
+    return decoder.decode(ByteBuffer.wrap(this, startIndex, endIndex - startIndex)).toString()
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")

@@ -53,14 +53,13 @@ public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.l
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
-public actual fun stringFrom(
-    bytes: ByteArray,
+public actual fun ByteArray.decodeToString(
     startIndex: Int = 0,
-    endIndex: Int = bytes.size,
+    endIndex: Int = this.size,
     throwOnInvalidSequence: Boolean = false
 ): String {
-    AbstractList.checkBoundsIndexes(startIndex, endIndex, bytes.size)
-    return decodeUtf8(bytes, startIndex, endIndex, throwOnInvalidSequence)
+    AbstractList.checkBoundsIndexes(startIndex, endIndex, this.size)
+    return decodeUtf8(this, startIndex, endIndex, throwOnInvalidSequence)
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")

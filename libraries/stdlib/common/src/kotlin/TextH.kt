@@ -134,21 +134,19 @@ public expect fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = 
 public expect fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray
 
 /**
- * Converts the UTF-8 bytes in the specified array to a string.
+ * Decodes the UTF-8 bytes in this array to a string.
  *
- * @param bytes the array of bytes to be converted.
- * @param startIndex the start offset (inclusive) of the array to be converted.
- * @param endIndex the end offset (exclusive) of the array to be converted.
+ * @param startIndex the start offset (inclusive) of this array to decode.
+ * @param endIndex the end offset (exclusive) of this array to decode.
  * @param throwOnInvalidSequence determines weather to throw on malformed byte sequence or to replace by the replacement char `\uFFFD`.
  *
- * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of the [bytes].
+ * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of this array.
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  * @throws CharacterCodingException if the byte array contains malformed UTF-8 byte sequence and [throwOnInvalidSequence] is true.
  */
-public expect fun stringFrom(
-    bytes: ByteArray,
+public expect fun ByteArray.decodeToString(
     startIndex: Int = 0,
-    endIndex: Int = bytes.size,
+    endIndex: Int = this.size,
     throwOnInvalidSequence: Boolean = false
 ): String
 
