@@ -225,6 +225,7 @@ class ScriptCodegen private constructor(
     private fun genMembers() {
         var hasMain = false
         for (declaration in scriptDeclaration.declarations) {
+            @Suppress("DUPLICATE_LABEL_IN_WHEN")
             when (declaration) {
                 is KtNamedFunction -> {
                     genSimpleMember(declaration)

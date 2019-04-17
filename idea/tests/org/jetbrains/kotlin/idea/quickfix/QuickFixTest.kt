@@ -30,7 +30,7 @@ interface QuickFixTest {
         val inspectionFile = findInspectionFile(File(beforeFileName).parentFile)
         if (inspectionFile != null) {
             val className = FileUtil.loadFile(inspectionFile).trim { it <= ' ' }
-            val inspectionClass = Class.forName(className) as Class<InspectionProfileEntry>
+            @Suppress("UNCHECKED_CAST") val inspectionClass = Class.forName(className) as Class<InspectionProfileEntry>
             return InspectionTestUtil.instantiateTools(listOf<Class<out InspectionProfileEntry>>(inspectionClass))
         }
 

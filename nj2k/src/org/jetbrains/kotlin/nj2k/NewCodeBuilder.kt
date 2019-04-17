@@ -910,6 +910,7 @@ class NewCodeBuilder {
             } else {
                 renderType(classLiteralExpression.classType.type, classLiteralExpression)
                 printer.printWithNoIndent("::")
+                @Suppress("NON_EXHAUSTIVE_WHEN")
                 when (classLiteralExpression.literalType) {
                     JKClassLiteralExpression.LiteralType.KOTLIN_CLASS -> printer.printWithNoIndent("class")
                     JKClassLiteralExpression.LiteralType.JAVA_CLASS -> printer.printWithNoIndent("class.java")
