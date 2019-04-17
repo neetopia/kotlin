@@ -79,8 +79,8 @@ class StringEncodingTest {
         testEncoding(
             true,
             bytes(
-                0, 0x2D, 0x7F, 0xC2, 0x80, 0xC2, 0xBF, 0xDF, 0xBF, 0xE0, 0xA0, 0x80,
-                0xE6, 0x96, 0xA4, 0xED, 0x9F, 0xBF, 0x7A, 0x3F, 0x3F, 0x7A, 0x3F, 0x7A, 0x3F
+                0, /**/ 0x2D, /**/ 0x7F, /**/ 0xC2, 0x80, /**/ 0xC2, 0xBF, /**/ 0xDF, 0xBF, /**/ 0xE0, 0xA0, 0x80, /**/
+                0xE6, 0x96, 0xA4, /**/ 0xED, 0x9F, 0xBF, /**/ 0x7A, /**/ 0x3F, /**/ 0x3F, /**/ 0x7A, /**/ 0x3F, /**/ 0x7A, /**/ 0x3F
             ),
             "\u0000-\u007F\u0080¿\u07FF\u0800斤\uD7FFz\uDFFF\uD800z\uDB6Az\uDB6A"
         )
@@ -88,8 +88,8 @@ class StringEncodingTest {
         testEncoding(
             false,
             bytes(
-                0xEE, 0x80, 0x80, 0xEF, 0x98, 0xBC, 0xC2, 0xBF, 0xEF, 0xBF, 0xBF, 0xF0, 0x90, 0x80, 0x80,
-                0xF2, 0xA2, 0x97, 0xBC, 0xF4, 0x8F, 0xBF, 0xBF
+                0xEE, 0x80, 0x80, /**/ 0xEF, 0x98, 0xBC, /**/ 0xC2, 0xBF, /**/ 0xEF, 0xBF, 0xBF, /**/
+                0xF0, 0x90, 0x80, 0x80, /**/ 0xF2, 0xA2, 0x97, 0xBC, /**/ 0xF4, 0x8F, 0xBF, 0xBF
             ),
             "\uE000\uF63C¿\uFFFF\uD800\uDC00\uDA49\uDDFC\uDBFF\uDFFF"
         )
@@ -131,7 +131,7 @@ class StringEncodingTest {
 
         testEncoding(
             true,
-            bytes(0xE6, 0x96, 0xA4, 0xED, 0x9F, 0xBF, 0x7A, 0x3F, 0x3F),
+            bytes(0xE6, 0x96, 0xA4, /**/ 0xED, 0x9F, 0xBF, /**/ 0x7A, /**/ 0x3F, /**/ 0x3F),
             "\u0000-\u007F\u0080¿\u07FF\u0800斤\uD7FFz\uDFFF\uD800z\uDB6Az\uDB6A",
             startIndex = 7,
             endIndex = 12
@@ -139,7 +139,7 @@ class StringEncodingTest {
 
         testEncoding(
             true,
-            bytes(0xC2, 0xBF, 0xEF, 0xBF, 0xBF, 0xF0, 0x90, 0x80, 0x80, 0xF2, 0xA2, 0x97, 0xBC, 0x3F),
+            bytes(0xC2, 0xBF, /**/ 0xEF, 0xBF, 0xBF, /**/ 0xF0, 0x90, 0x80, 0x80, /**/ 0xF2, 0xA2, 0x97, 0xBC, /**/ 0x3F),
             "\uE000\uF63C¿\uFFFF\uD800\uDC00\uDA49\uDDFC\uDBFF\uDFFF",
             startIndex = 2,
             endIndex = 9
@@ -199,7 +199,7 @@ class StringEncodingTest {
             testDecoding(
                 true,
                 surrogateCodePointDecoding + surrogateCodePointDecoding,
-                bytes(0xED, 0xAF, 0xBF, 0xED, 0xB3, 0x9A)
+                bytes(0xED, 0xAF, 0xBF, /**/ 0xED, 0xB3, 0x9A)
             ) // surrogate pair chars
             testDecoding(true, "�z", bytes(0xEF, 0x7A)) // 3-byte char, second byte starts with 0 bit, third byte out of bounds
 
@@ -209,13 +209,11 @@ class StringEncodingTest {
             // Ill-Formed Sequences for Surrogates
             testDecoding(
                 true,
-                surrogateCodePointDecoding + surrogateCodePointDecoding
-                        + truncatedSurrogateDecoding()
-                        + "A",
-                bytes(0xED, 0xA0, 0x80, 0xED, 0xBF, 0xBF, 0xED, 0xAF, 0x41)
+                surrogateCodePointDecoding + surrogateCodePointDecoding + truncatedSurrogateDecoding() + "A",
+                bytes(0xED, 0xA0, 0x80, /**/ 0xED, 0xBF, 0xBF, /**/ 0xED, 0xAF, /**/ 0x41)
             )
             // Truncated Sequences
-            testDecoding(true, "����A", bytes(0xE1, 0x80, 0xE2, 0xF0, 0x91, 0x92, 0xF1, 0xBF, 0x41))
+            testDecoding(true, "����A", bytes(0xE1, 0x80, /**/ 0xE2, /**/ 0xF0, 0x91, 0x92, /**/ 0xF1, 0xBF, /**/ 0x41))
         }
 
         testDecoding(true, "�", bytes(0xE0, 0xAF)) // 3-byte char, third byte out of bounds
@@ -226,9 +224,9 @@ class StringEncodingTest {
         testDecoding(true, "����", bytes(0xF5, 0x80, 0x80, 0x80)) // 4-byte code point larger than 0x10FFFF
 
         // Non-Shortest Form Sequences
-        testDecoding(true, "��������A", bytes(0xC0, 0xAF, 0xE0, 0x80, 0xBF, 0xF0, 0x81, 0x82, 0x41))
+        testDecoding(true, "��������A", bytes(0xC0, 0xAF, /**/ 0xE0, 0x80, 0xBF, /**/ 0xF0, 0x81, 0x82, /**/ 0x41))
         // Other Ill-Formed Sequences
-        testDecoding(true, "�����A��B", bytes(0xF4, 0x91, 0x92, 0x93, 0xFF, 0x41, 0x80, 0xBF, 0x42))
+        testDecoding(true, "�����A��B", bytes(0xF4, 0x91, 0x92, 0x93, /**/ 0xFF, /**/ 0x41, /**/ 0x80, 0xBF, /**/ 0x42))
 
         val longBytes = ByteArray(200_000) { 0x6B.toByte() }
         val longString = stringFrom(longBytes)
@@ -265,11 +263,7 @@ class StringEncodingTest {
 
         executeIfNotOnJvm6And7 {
             testDecoding(true, surrogateCodePointDecoding, bytes(0xED, 0xAF, 0xBF), startIndex = 0, endIndex = 3)
-            testDecoding(
-                true,
-                truncatedSurrogateDecoding(),
-                bytes(0xED, 0xB3, 0x9A), startIndex = 0, endIndex = 2
-            )
+            testDecoding(true, truncatedSurrogateDecoding(), bytes(0xED, 0xB3, 0x9A), startIndex = 0, endIndex = 2)
             testDecoding(true, "���", bytes(0xED, 0xAF, 0xBF, 0xED, 0xB3, 0x9A), startIndex = 1, endIndex = 4)
             testDecoding(true, "�", bytes(0xEF, 0x7A), startIndex = 0, endIndex = 1)
             testDecoding(false, "z", bytes(0xEF, 0x7A), startIndex = 1, endIndex = 2)
