@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.idea.editor
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.lang.SmartEnterProcessorWithFixers
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -103,14 +104,14 @@ class KotlinSmartEnterHandler : SmartEnterProcessorWithFixers() {
             CharArrayUtil.regionMatches(chars, caretOffset - "{\n}".length, "{\n}")
         ) {
             commit(editor)
-            val settings = CodeStyleSettingsManager.getSettings(file.project)
-            val old = settings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE
-            settings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = false
+            val settings = CodeStyle.getLanguageSettings(editor)
+            val old = settings?.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE
+            settings?.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = false
             val elt = file.findElementAt(caretOffset - 1)!!.getStrictParentOfType<KtBlockExpression>()
             if (elt != null) {
                 reformat(elt)
             }
-            settings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = old
+            settings?.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = old
             editor.caretModel.moveToOffset(caretOffset - 1)
         }
     }

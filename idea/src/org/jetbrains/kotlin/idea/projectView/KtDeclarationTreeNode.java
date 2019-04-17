@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.idea.projectView;
 
+import com.intellij.application.options.CodeStyle;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.projectView.impl.nodes.AbstractPsiBasedNode;
@@ -54,7 +55,7 @@ public class KtDeclarationTreeNode extends AbstractPsiBasedNode<KtDeclaration> {
             String text = declaration instanceof KtAnonymousInitializer ? CLASS_INITIALIZER : declaration.getName();
             if (text == null) return;
 
-            KotlinCodeStyleSettings settings = CodeStyleSettingsManager.getInstance(getProject()).getCurrentSettings()
+            KotlinCodeStyleSettings settings = CodeStyle.getSettings(getProject())
                     .getCustomSettings(KotlinCodeStyleSettings.class);
 
             if (declaration instanceof KtProperty) {

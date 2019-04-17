@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.idea.editor
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
@@ -248,8 +249,7 @@ class KotlinMultilineStringEnterHandler : EnterHandlerDelegateAdapter() {
         const val MULTILINE_QUOTE = "\"\"\""
 
         class MultilineSettings(project: Project) {
-            private val kotlinIndentOptions =
-                CodeStyleSettingsManager.getInstance(project).currentSettings.getIndentOptions(KotlinFileType.INSTANCE)
+            private val kotlinIndentOptions = CodeStyle.getSettings(project).getIndentOptions(KotlinFileType.INSTANCE)
 
             private val useTabs = kotlinIndentOptions.USE_TAB_CHARACTER
             private val tabSize = kotlinIndentOptions.TAB_SIZE

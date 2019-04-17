@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.idea.parameterInfo
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.codeInsight.hints.InlayInfo
 import com.intellij.psi.PsiElement
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
@@ -101,7 +102,7 @@ fun provideTypeHint(element: KtCallableDeclaration, offset: Int): List<InlayInfo
     }
 
     return if (isUnclearType(type, element)) {
-        val settings = CodeStyleSettingsManager.getInstance(element.project).currentSettings
+        val settings = CodeStyle.getSettings(element.project)
             .getCustomSettings(KotlinCodeStyleSettings::class.java)
 
         val declString = buildString {

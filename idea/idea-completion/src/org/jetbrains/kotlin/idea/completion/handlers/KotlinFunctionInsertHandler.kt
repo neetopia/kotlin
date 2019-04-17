@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.idea.completion.handlers
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.codeInsight.AutoPopupController
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.Lookup
@@ -200,7 +201,7 @@ sealed class KotlinFunctionInsertHandler(callType: CallType<*>) : KotlinCallable
         }
 
         private fun isInsertSpacesInOneLineFunctionEnabled(project: Project) =
-            CodeStyleSettingsManager.getSettings(project).getCustomSettings(KotlinCodeStyleSettings::class.java)!!.INSERT_WHITESPACES_IN_SIMPLE_ONE_LINE_METHOD
+            CodeStyle.getSettings(project).getCustomSettings(KotlinCodeStyleSettings::class.java).INSERT_WHITESPACES_IN_SIMPLE_ONE_LINE_METHOD
     }
 
     object Infix : KotlinFunctionInsertHandler(CallType.INFIX) {
