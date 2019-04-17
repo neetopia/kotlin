@@ -37,7 +37,8 @@ class AndroidExtensionsReferenceSearchExecutor : QueryExecutorBase<PsiReference,
     override fun processQuery(queryParameters: ReferencesSearch.SearchParameters, consumer: ExecutorProcessor<PsiReference>) {
         val elementToSearch = queryParameters.elementToSearch as? XmlAttributeValue ?: return
         val scopeElements = (queryParameters.effectiveSearchScope as? LocalSearchScope)?.scope ?: return
-        val referenceName = elementToSearch.value.substringAfterLast("/")
+        @Suppress("UNNECESSARY_SAFE_CALL", "USELESS_ELVIS") // TODO: case for 182
+        val referenceName = elementToSearch.value?.substringAfterLast("/") ?: return
 
         scopeElements.filterIsInstance<KtElement>().forEach {
             it.accept(object : KtTreeVisitorVoid() {

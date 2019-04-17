@@ -52,7 +52,7 @@ fun DataNode<*>.getResolvedVersionByModuleData(groupId: String, libraryIds: List
 }
 
 fun getDependencyModules(moduleData: DataNode<ModuleData>, gradleIdeaProject: IdeaProject): Collection<DataNode<ModuleData>> {
-    for (modelFacade in KotlinGradleModelFacade.EP_NAME.extensionList) {
+    for (modelFacade in Extensions.getExtensions(KotlinGradleModelFacade.EP_NAME)) {
         val dependencies = modelFacade.getDependencyModules(moduleData, gradleIdeaProject)
         if (dependencies.isNotEmpty()) {
             return dependencies

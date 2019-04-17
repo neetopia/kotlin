@@ -26,7 +26,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.ui.popup.IPopupChooserBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
@@ -215,7 +214,7 @@ abstract class ImplementAbstractMemberIntentionBase :
             cellRenderer = renderer
         }
         val builder = PopupChooserBuilderWrapper<PsiElement>(list)
-        renderer.installSpeedSearch(builder as IPopupChooserBuilder<*>)
+        renderer.installSpeedSearch(builder)
         builder
             .setTitle(CodeInsightBundle.message("intention.implement.abstract.method.class.chooser.title"))
             .setItemChoosenCallback {

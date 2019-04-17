@@ -51,7 +51,8 @@ class AndroidSimpleNameReferenceExtension : SimpleNameReferenceExtension {
         return null
     }
 
-    private fun isIdDeclaration(declaration: XmlAttributeValue) = declaration.value.startsWith("@+id/")
+    @Suppress("UNNECESSARY_SAFE_CALL", "USELESS_ELVIS") // TODO: case for 182
+    private fun isIdDeclaration(declaration: XmlAttributeValue) = declaration.value?.startsWith("@+id/") ?: false
 
     private fun KtSimpleNameReference.isReferenceToXmlFile(xmlFile: XmlFile): Boolean {
         if (!isLayoutPackageIdentifier(this)) {
