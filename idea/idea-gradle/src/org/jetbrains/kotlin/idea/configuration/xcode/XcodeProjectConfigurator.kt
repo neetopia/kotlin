@@ -110,10 +110,16 @@ class ViewController: UIViewController {
                 """.trimIndent()
             )
 
-            testInfo.write(templatePlist("""<key>CFBundlePackageType</key>
-<string>BNDL</string>"""))
+            testInfo.write(
+                templatePlist(
+                    """<key>CFBundlePackageType</key>
+<string>BNDL</string>"""
+                )
+            )
 
-            sourceInfo.write(templatePlist("""<key>CFBundlePackageType</key>
+            sourceInfo.write(
+                templatePlist(
+                    """<key>CFBundlePackageType</key>
 <string>APPL</string>
 <key>LSRequiresIPhoneOS</key>
 <true/>
@@ -137,7 +143,9 @@ class ViewController: UIViewController {
 	<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	<string>UIInterfaceOrientationLandscapeLeft</string>
 	<string>UIInterfaceOrientationLandscapeRight</string>
-</array>"""))
+</array>"""
+                )
+            )
 
             launchScreen.write(
                 """
