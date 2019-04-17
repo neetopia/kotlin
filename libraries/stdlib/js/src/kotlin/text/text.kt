@@ -78,3 +78,15 @@ public actual class StringBuilder(content: String = "") : Appendable, CharSequen
 @SinceKotlin("1.3")
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER", "NOTHING_TO_INLINE")
 public actual inline fun StringBuilder.clear(): StringBuilder = this.clear()
+
+
+public actual open class CharacterCodingException actual constructor() : Exception() {
+    private var msg: String? = null
+
+    constructor(message: String?) : this() {
+        this.msg = message
+    }
+
+    override val message: String?
+        get() = msg
+}
