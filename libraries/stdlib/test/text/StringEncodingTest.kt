@@ -14,24 +14,24 @@ class StringEncodingTest {
     private fun bytes(vararg elements: Int) = ByteArray(elements.size) { elements[it].toByte() }
 
     private fun testEncoding(isWellFormed: Boolean, expected: ByteArray, string: String) {
-        assertArrayContentEquals(expected, string.toByteArray())
+        assertArrayContentEquals(expected, string.encodeToByteArray())
         if (!isWellFormed) {
-            assertFailsWith<CharacterCodingException> { string.toByteArray(throwOnInvalidSequence = true) }
+            assertFailsWith<CharacterCodingException> { string.encodeToByteArray(throwOnInvalidSequence = true) }
         } else {
-            assertArrayContentEquals(expected, string.toByteArray(throwOnInvalidSequence = true))
-            assertEquals(string, string.toByteArray(throwOnInvalidSequence = true).decodeToString())
+            assertArrayContentEquals(expected, string.encodeToByteArray(throwOnInvalidSequence = true))
+            assertEquals(string, string.encodeToByteArray(throwOnInvalidSequence = true).decodeToString())
         }
     }
 
     private fun testEncoding(isWellFormed: Boolean, expected: ByteArray, string: String, startIndex: Int, endIndex: Int) {
-        assertArrayContentEquals(expected, string.toByteArray(startIndex, endIndex))
+        assertArrayContentEquals(expected, string.encodeToByteArray(startIndex, endIndex))
         if (!isWellFormed) {
-            assertFailsWith<CharacterCodingException> { string.toByteArray(startIndex, endIndex, true) }
+            assertFailsWith<CharacterCodingException> { string.encodeToByteArray(startIndex, endIndex, true) }
         } else {
-            assertArrayContentEquals(expected, string.toByteArray(startIndex, endIndex, true))
+            assertArrayContentEquals(expected, string.encodeToByteArray(startIndex, endIndex, true))
             assertEquals(
                 string.substring(startIndex, endIndex),
-                string.toByteArray(startIndex, endIndex, true).decodeToString()
+                string.encodeToByteArray(startIndex, endIndex, true).decodeToString()
             )
         }
     }
@@ -95,21 +95,21 @@ class StringEncodingTest {
         )
 
         val longChars = CharArray(200_000) { 'k' }
-        val longBytes = longChars.concatToString().toByteArray()
+        val longBytes = longChars.concatToString().encodeToByteArray()
         assertEquals(200_000, longBytes.size)
         assertTrue { longBytes.all { it == 0x6B.toByte() } }
     }
 
     @Test
     fun toByteArraySlice() {
-        assertFailsWith<IllegalArgumentException> { "".toByteArray(startIndex = 1) }
-        assertFailsWith<IllegalArgumentException> { "123".toByteArray(startIndex = 10) }
-        assertFailsWith<IndexOutOfBoundsException> { "123".toByteArray(startIndex = -1) }
-        assertFailsWith<IndexOutOfBoundsException> { "123".toByteArray(endIndex = 10) }
-        assertFailsWith<IllegalArgumentException> { "123".toByteArray(endIndex = -1) }
-        assertFailsWith<IndexOutOfBoundsException> { "123".toByteArray(startIndex = 5, endIndex = 10) }
-        assertFailsWith<IllegalArgumentException> { "123".toByteArray(startIndex = 5, endIndex = 2) }
-        assertFailsWith<IndexOutOfBoundsException> { "123".toByteArray(startIndex = 1, endIndex = 4) }
+        assertFailsWith<IllegalArgumentException> { "".encodeToByteArray(startIndex = 1) }
+        assertFailsWith<IllegalArgumentException> { "123".encodeToByteArray(startIndex = 10) }
+        assertFailsWith<IndexOutOfBoundsException> { "123".encodeToByteArray(startIndex = -1) }
+        assertFailsWith<IndexOutOfBoundsException> { "123".encodeToByteArray(endIndex = 10) }
+        assertFailsWith<IllegalArgumentException> { "123".encodeToByteArray(endIndex = -1) }
+        assertFailsWith<IndexOutOfBoundsException> { "123".encodeToByteArray(startIndex = 5, endIndex = 10) }
+        assertFailsWith<IllegalArgumentException> { "123".encodeToByteArray(startIndex = 5, endIndex = 2) }
+        assertFailsWith<IndexOutOfBoundsException> { "123".encodeToByteArray(startIndex = 1, endIndex = 4) }
 
         testEncoding(true, bytes(), "abc", 0, 0)
         testEncoding(true, bytes(), "abc", 3, 3)
@@ -146,7 +146,7 @@ class StringEncodingTest {
         )
 
         val longChars = CharArray(200_000) { 'k' }
-        val longBytes = longChars.concatToString().toByteArray(startIndex = 5000, endIndex = 195_000)
+        val longBytes = longChars.concatToString().encodeToByteArray(startIndex = 5000, endIndex = 195_000)
         assertEquals(190_000, longBytes.size)
         assertTrue { longBytes.all { it == 0x6B.toByte() } }
     }
@@ -157,7 +157,7 @@ class StringEncodingTest {
             assertFailsWith<CharacterCodingException> { bytes.decodeToString(throwOnInvalidSequence = true) }
         } else {
             assertEquals(expected, bytes.decodeToString(throwOnInvalidSequence = true))
-            assertArrayContentEquals(bytes, bytes.decodeToString(throwOnInvalidSequence = true).toByteArray())
+            assertArrayContentEquals(bytes, bytes.decodeToString(throwOnInvalidSequence = true).encodeToByteArray())
         }
     }
 
@@ -169,7 +169,7 @@ class StringEncodingTest {
             assertEquals(expected, bytes.decodeToString(startIndex, endIndex, true))
             assertArrayContentEquals(
                 bytes.sliceArray(startIndex until endIndex),
-                bytes.decodeToString(startIndex, endIndex, true).toByteArray()
+                bytes.decodeToString(startIndex, endIndex, true).encodeToByteArray()
             )
         }
     }
@@ -303,8 +303,8 @@ class StringEncodingTest {
                 " 84 b8 ec 9a 94 20 3a 20 e4 bd a0 e5 a5 bd 20 3a 20 c3 b1 c3 a7").readHex()
 
 
-        assertArrayContentEquals(smokeTestDataAsBytes, smokeTestData.toByteArray())
-        assertArrayContentEquals(testDataAsBytes, testData.toByteArray())
+        assertArrayContentEquals(smokeTestDataAsBytes, smokeTestData.encodeToByteArray())
+        assertArrayContentEquals(testDataAsBytes, testData.encodeToByteArray())
 
         assertEquals(smokeTestData, smokeTestDataAsBytes.decodeToString())
         assertEquals(testData, testDataAsBytes.decodeToString())
@@ -315,8 +315,8 @@ class StringEncodingTest {
         assertArrayContentEquals(smokeTestDataCharArray, smokeTestData.toCharArray())
         assertArrayContentEquals(testDataCharArray, testData.toCharArray())
 
-        assertArrayContentEquals(smokeTestDataAsBytes, smokeTestDataCharArray.concatToString().toByteArray())
-        assertArrayContentEquals(testDataAsBytes, testDataCharArray.concatToString().toByteArray())
+        assertArrayContentEquals(smokeTestDataAsBytes, smokeTestDataCharArray.concatToString().encodeToByteArray())
+        assertArrayContentEquals(testDataAsBytes, testDataCharArray.concatToString().encodeToByteArray())
 
         assertArrayContentEquals(smokeTestDataCharArray, smokeTestDataAsBytes.decodeToString().toCharArray())
         assertArrayContentEquals(testDataCharArray, testDataAsBytes.decodeToString().toCharArray())

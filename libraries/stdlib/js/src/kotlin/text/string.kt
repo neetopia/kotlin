@@ -63,7 +63,7 @@ public actual fun ByteArray.decodeToString(
 }
 
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
-public actual fun String.toByteArray(
+public actual fun String.encodeToByteArray(
     startIndex: Int = 0,
     endIndex: Int = this.length,
     throwOnInvalidSequence: Boolean = false

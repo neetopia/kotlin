@@ -151,17 +151,17 @@ public expect fun ByteArray.decodeToString(
 ): String
 
 /**
- * Converts this string to an array of UTF-8 bytes.
+ * Encodes this string to an array of UTF-8 bytes.
  *
- * @param startIndex the start offset (inclusive) of this string to convert from.
- * @param endIndex the end offset (exclusive) of this string to convert upto.
+ * @param startIndex the start offset (inclusive) of this string to encode.
+ * @param endIndex the end offset (exclusive) of this string to encode.
  * @param throwOnInvalidSequence determines weather to throw on malformed char sequence or to replace by the replacement byte `0x3F`.
  *
  * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than length of this string.
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  * @throws CharacterCodingException if this string contains malformed char sequence and [throwOnInvalidSequence] is true.
  */
-public expect fun String.toByteArray(
+public expect fun String.encodeToByteArray(
     startIndex: Int = 0,
     endIndex: Int = this.length,
     throwOnInvalidSequence: Boolean = false
