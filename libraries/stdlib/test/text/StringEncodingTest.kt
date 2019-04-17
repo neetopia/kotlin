@@ -175,7 +175,7 @@ class StringEncodingTest {
     }
 
     private fun truncatedSurrogateDecoding() =
-        surrogateCodePointDecoding.let { if (it.length > 1) it.substring(0, it.length - 1) else it }
+        surrogateCodePointDecoding.let { if (it.length > 1) it.dropLast(1) else it }
 
     @Test
     fun stringFromByteArray() {
