@@ -148,6 +148,7 @@ class ScopeTowerLevel(
         extensionReceiver: ReceiverValueWithPossibleTypes?,
         processor: TowerScopeLevel.TowerScopeLevelProcessor<T>
     ): ProcessorAction {
+        @Suppress("UNCHECKED_CAST")
         return when (token) {
 
             TowerScopeLevel.Token.Properties -> scope.processPropertiesByName(name) { processor.consumeCandidate(it as T, null) }

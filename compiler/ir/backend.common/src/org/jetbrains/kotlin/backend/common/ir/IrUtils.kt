@@ -160,7 +160,6 @@ fun IrTypeParameter.copyToWithoutSuperTypes(
     shift: Int = 0,
     origin: IrDeclarationOrigin = this.origin
 ): IrTypeParameter {
-    val source = parent as IrTypeParametersContainer
     val descriptor = WrappedTypeParameterDescriptor(symbol.descriptor.annotations, symbol.descriptor.source)
     val symbol = IrTypeParameterSymbolImpl(descriptor)
     return IrTypeParameterImpl(startOffset, endOffset, origin, symbol, name, shift + index, isReified, variance).also { copied ->
@@ -240,7 +239,7 @@ fun IrFunction.copyValueParametersToStatic(
             )
         )
     }
-    source.valueParameters.forEachIndexed { i, oldValueParameter ->
+    source.valueParameters.forEach { oldValueParameter ->
         target.valueParameters.add(
             oldValueParameter.copyTo(
                 target,
@@ -345,6 +344,7 @@ fun IrClass.createImplicitParameterDeclarationWithWrappedDescriptor() {
     assert(descriptor.declaredTypeParameters.isEmpty())
 }
 
+@Suppress("UNCHECKED_CAST")
 fun isElseBranch(branch: IrBranch) = branch is IrElseBranch || ((branch.condition as? IrConst<Boolean>)?.value == true)
 
 fun IrSimpleFunction.isMethodOfAny() =

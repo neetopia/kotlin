@@ -30,7 +30,7 @@ internal class Solver(
         }
 
     fun solveConstraints(constraints: List<Constraint>) {
-        val constraints = constraints.toMutableList()
+        @Suppress("NAME_SHADOWING") val constraints = constraints.toMutableList()
         var currentStep = ConstraintCameFrom.values().first()
 
         var i = 0

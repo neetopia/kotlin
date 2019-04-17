@@ -153,6 +153,7 @@ class ReflectionReferencesGenerator(statementGenerator: StatementGenerator) : St
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun getFieldForPropertyReference(originalProperty: PropertyDescriptor) =
         // NB this is a hack, we really don't know if an arbitrary property has a backing field or not
         when {

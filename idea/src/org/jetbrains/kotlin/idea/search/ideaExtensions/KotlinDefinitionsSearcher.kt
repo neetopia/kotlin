@@ -44,7 +44,7 @@ import java.util.*
 
 class KotlinDefinitionsSearcher : QueryExecutor<PsiElement, DefinitionsScopedSearch.SearchParameters> {
     override fun execute(queryParameters: DefinitionsScopedSearch.SearchParameters, consumer: ExecutorProcessor<PsiElement>): Boolean {
-        val consumer = skipDelegatedMethodsConsumer(consumer)
+        @Suppress("NAME_SHADOWING") val consumer = skipDelegatedMethodsConsumer(consumer)
         val element = queryParameters.element
         val scope = queryParameters.scope
 

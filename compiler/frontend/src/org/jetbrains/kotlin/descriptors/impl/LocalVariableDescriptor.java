@@ -111,7 +111,7 @@ public class LocalVariableDescriptor extends VariableDescriptorWithInitializerIm
     // This override is not deprecated because local variables can only come from sources,
     // and we can be sure that they won't be recompiled independently
     @Override
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("Deprecation")
     public boolean isDelegated() {
         return isDelegated;
     }

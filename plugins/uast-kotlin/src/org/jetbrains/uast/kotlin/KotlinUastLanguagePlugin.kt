@@ -168,7 +168,10 @@ internal object KotlinConverter {
                                    givenParent: UElement?,
                                    requiredType: Class<out UElement>?): UElement? {
         fun <P : PsiElement> build(ctor: (P, UElement?) -> UElement): () -> UElement? {
-            return { ctor(element as P, givenParent) }
+            return {
+                @Suppress("UNCHECKED_CAST")
+                ctor(element as P, givenParent)
+            }
         }
 
         return with (requiredType) { when (element) {
@@ -268,7 +271,10 @@ internal object KotlinConverter {
                                    givenParent: UElement?,
                                    requiredType: Class<out UElement>? = null): UExpression? {
         fun <P : PsiElement> build(ctor: (P, UElement?) -> UExpression): () -> UExpression? {
-            return { ctor(expression as P, givenParent) }
+            return {
+                @Suppress("UNCHECKED_CAST")
+                ctor(expression as P, givenParent)
+            }
         }
 
         return with (requiredType) { when (expression) {
@@ -407,13 +413,20 @@ internal object KotlinConverter {
         givenParent: UElement?,
         requiredType: Class<out UElement>?
     ): UElement? {
-        fun <P : PsiElement> build(ctor: (P, UElement?) -> UElement): () -> UElement? = { ctor(element as P, givenParent) }
+        fun <P : PsiElement> build(ctor: (P, UElement?) -> UElement): () -> UElement? = {
+            @Suppress("UNCHECKED_CAST")
+            ctor(element as P, givenParent)
+        }
 
-        fun <P : PsiElement, K : KtElement> buildKt(ktElement: K, ctor: (P, K, UElement?) -> UElement): () -> UElement? =
-            { ctor(element as P, ktElement, givenParent) }
+        fun <P : PsiElement, K : KtElement> buildKt(ktElement: K, ctor: (P, K, UElement?) -> UElement): () -> UElement? = {
+            @Suppress("UNCHECKED_CAST")
+            ctor(element as P, ktElement, givenParent)
+        }
 
-        fun <P : PsiElement, K : KtElement> buildKtOpt(ktElement: K?, ctor: (P, K?, UElement?) -> UElement): () -> UElement? =
-            { ctor(element as P, ktElement, givenParent) }
+        fun <P : PsiElement, K : KtElement> buildKtOpt(ktElement: K?, ctor: (P, K?, UElement?) -> UElement): () -> UElement? = {
+            @Suppress("UNCHECKED_CAST")
+            ctor(element as P, ktElement, givenParent)
+        }
 
         val original = element.originalElement
         return with(requiredType) {
@@ -551,6 +564,7 @@ internal object KotlinConverter {
         val file = createAnalyzableFile("dummy.kt", text, context)
         val declarations = file.declarations
         assert(declarations.size == 1) { "${declarations.size} declarations in $text" }
+        @Suppress("UNCHECKED_CAST")
         return declarations.first() as TDeclaration
     }
 }

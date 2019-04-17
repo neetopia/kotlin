@@ -184,6 +184,7 @@ class LocalClassDescriptorHolder(
     }
 }
 
+@Suppress("DEPRECATION")
 class LocalLazyDeclarationResolver(
     globalContext: GlobalContext,
     trace: BindingTrace,

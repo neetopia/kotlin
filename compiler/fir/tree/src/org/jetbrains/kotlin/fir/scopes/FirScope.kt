@@ -40,7 +40,7 @@ inline fun FirScope.processClassifiersByNameWithAction(
     position: FirPosition,
     crossinline processor: (ConeClassifierSymbol) -> ProcessorAction
 ): ProcessorAction {
-    val result = processClassifiersByName(name, position) {
+    @Suppress("DEPRECATION") val result = processClassifiersByName(name, position) {
         processor(it).next()
     }
     return if (result) NEXT else STOP

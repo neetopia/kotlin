@@ -115,6 +115,7 @@ object ProjectRootsUtil {
             if (ProjectRootManager.getInstance(project).fileIndex.isInContent(file) || ScratchUtil.isScratch(file)) {
                 return true
             }
+            @Suppress("DEPRECATION")
             return file.findScriptDefinition(project)?.scriptExpectedLocations?.contains(ScriptExpectedLocation.Everywhere) == true
         }
 

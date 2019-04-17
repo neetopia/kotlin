@@ -3,6 +3,8 @@
  * that can be found in the license/LICENSE.txt file.
  */
 
+@file:Suppress("DEPRECATION")
+
 package org.jetbrains.kotlin.scripting.definitions
 
 import com.intellij.openapi.fileTypes.LanguageFileType

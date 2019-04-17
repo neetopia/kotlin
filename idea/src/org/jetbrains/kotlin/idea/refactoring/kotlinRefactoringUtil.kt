@@ -84,7 +84,6 @@ import org.jetbrains.kotlin.idea.refactoring.rename.canonicalRender
 import org.jetbrains.kotlin.idea.util.*
 import org.jetbrains.kotlin.idea.util.string.collapseSpaces
 import org.jetbrains.kotlin.j2k.ConverterSettings
-import org.jetbrains.kotlin.j2k.JavaToKotlinConverter
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.FqNameUnsafe
@@ -533,8 +532,8 @@ fun createJavaMethod(template: PsiMethod, targetClass: PsiClass): PsiMethod {
         method.modifierList.setModifierProperty(PsiModifier.FINAL, false)
     }
 
-    copyTypeParameters(template, method) { method, typeParameterList ->
-        method.addAfter(typeParameterList, method.modifierList)
+    copyTypeParameters(template, method) { psiMethod, typeParameterList ->
+        psiMethod.addAfter(typeParameterList, psiMethod.modifierList)
     }
 
     val targetParamList = method.parameterList
@@ -600,8 +599,8 @@ fun createJavaClass(klass: KtClass, targetClass: PsiClass?, forcePlainClass: Boo
         javaClass.modifierList!!.setModifierProperty(PsiModifier.ABSTRACT, false)
     }
 
-    copyTypeParameters(template, javaClass) { klass, typeParameterList ->
-        klass.addAfter(typeParameterList, klass.nameIdentifier)
+    copyTypeParameters(template, javaClass) { clazz, typeParameterList ->
+        clazz.addAfter(typeParameterList, clazz.nameIdentifier)
     }
 
     // Turning interface to class

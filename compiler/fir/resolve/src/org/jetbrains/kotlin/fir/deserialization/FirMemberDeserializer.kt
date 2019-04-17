@@ -121,11 +121,11 @@ class FirMemberDeserializer(private val c: FirDeserializationContext) {
     fun loadFunction(proto: ProtoBuf.Function): FirNamedFunction {
         val flags = if (proto.hasFlags()) proto.flags else loadOldFlags(proto.oldFlags)
 
-        val receiverAnnotations =
+        @Suppress("UNUSED_VARIABLE") val receiverAnnotations =
             // TODO: support annotations
             Annotations.EMPTY
 
-        val versionRequirementTable =
+        @Suppress("UNUSED_VARIABLE") val versionRequirementTable =
             // TODO: Support case for KOTLIN_SUSPEND_BUILT_IN_FUNCTION_FQ_NAME
             c.versionRequirementTable
 
@@ -203,7 +203,7 @@ class FirMemberDeserializer(private val c: FirDeserializationContext) {
     private fun valueParameters(
         valueParameters: List<ProtoBuf.ValueParameter>
     ): List<FirValueParameter> {
-        return valueParameters.mapIndexed { i, proto ->
+        return valueParameters.map { proto ->
             val flags = if (proto.hasFlags()) proto.flags else 0
             FirValueParameterImpl(
                 c.session, null, c.nameResolver.getName(proto.name),

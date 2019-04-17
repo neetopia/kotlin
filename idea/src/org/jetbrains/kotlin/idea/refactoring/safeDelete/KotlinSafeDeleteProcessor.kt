@@ -167,6 +167,7 @@ class KotlinSafeDeleteProcessor : JavaSafeDeleteProcessor() {
                             when {
                                 usageElement.isTrueJavaMethod() -> usageInfo
                                 usageElement.toLightMethods().all { method -> method.findSuperMethods().isEmpty() } -> {
+                                    @Suppress("USELESS_CAST")
                                     KotlinSafeDeleteOverrideAnnotation(usageElement, usageInfo.referencedElement) as UsageInfo
                                 }
                                 else -> null

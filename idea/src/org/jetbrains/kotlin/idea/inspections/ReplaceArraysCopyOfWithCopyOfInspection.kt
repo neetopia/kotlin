@@ -40,7 +40,7 @@ class ReplaceArraysCopyOfWithCopyOfQuickfix : LocalQuickFix {
         val callExpression = (element.parent as? KtCallExpression) ?: return
         val qualifiedExpression = (callExpression.parent as? KtDotQualifiedExpression) ?: return
 
-        val args = callExpression.valueArguments.mapNotNull { it.getArgumentExpression() }.toTypedArray() ?: return
+        val args = callExpression.valueArguments.mapNotNull { it.getArgumentExpression() }.toTypedArray()
         if (args.size != 2) return
 
         qualifiedExpression.replace(KtPsiFactory(element).createExpressionByPattern("$0.copyOf($1)", *args))

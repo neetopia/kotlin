@@ -96,7 +96,7 @@ class LocalVarRemapper(private val params: Parameters, private val additionalShi
     }
 
     fun visitVarInsn(opcode: Int, `var`: Int, mv: InstructionAdapter) {
-        var opcode = opcode
+        @Suppress("NAME_SHADOWING") var opcode = opcode
         val remapInfo = remap(`var`)
         val value = remapInfo.value
         if (value is StackValue.Local) {

@@ -31,7 +31,9 @@ import java.net.URLClassLoader
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.jar.Manifest
-import java.util.logging.*
+import java.util.logging.Level
+import java.util.logging.LogManager
+import java.util.logging.Logger
 import kotlin.concurrent.schedule
 
 val DAEMON_PERIODIC_CHECK_INTERVAL_MS = 1000L
@@ -140,26 +142,26 @@ object KotlinCompileDaemon {
             }
             // timer with a daemon thread, meaning it should not prevent JVM to exit normally
             val timer = Timer(true)
-            val compilerService = CompileServiceImpl(registry = registry,
-                                                     compiler = compilerSelector,
-                                                     compilerId = compilerId,
-                                                     daemonOptions = daemonOptions,
-                                                     daemonJVMOptions = daemonJVMOptions,
-                                                     port = port,
-                                                     timer = timer,
-                                                     onShutdown = {
-                                                         if (daemonOptions.forceShutdownTimeoutMilliseconds != COMPILE_DAEMON_TIMEOUT_INFINITE_MS) {
-                                                             // running a watcher thread that ensures that if the daemon is not exited normally (may be due to RMI leftovers), it's forced to exit
-                                                             timer.schedule(daemonOptions.forceShutdownTimeoutMilliseconds) {
-                                                                 cancel()
-                                                                 log.info("force JVM shutdown")
-                                                                 System.exit(0)
-                                                             }
-                                                         }
-                                                         else {
-                                                             timer.cancel()
-                                                         }
-                                                     })
+            val compilerService = CompileServiceImpl(
+                registry = registry,
+                compiler = compilerSelector,
+                compilerId = compilerId,
+                daemonOptions = daemonOptions,
+                daemonJVMOptions = daemonJVMOptions,
+                port = port,
+                timer = timer
+            ) {
+                if (daemonOptions.forceShutdownTimeoutMilliseconds != COMPILE_DAEMON_TIMEOUT_INFINITE_MS) {
+                    // running a watcher thread that ensures that if the daemon is not exited normally (may be due to RMI leftovers), it's forced to exit
+                    timer.schedule(daemonOptions.forceShutdownTimeoutMilliseconds) {
+                        cancel()
+                        log.info("force JVM shutdown")
+                        System.exit(0)
+                    }
+                } else {
+                    timer.cancel()
+                }
+            }
 
             println(COMPILE_DAEMON_IS_READY_MESSAGE)
             log.info("daemon is listening on port: $port")

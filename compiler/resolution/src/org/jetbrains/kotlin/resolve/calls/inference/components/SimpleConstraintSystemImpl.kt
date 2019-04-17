@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION")
+
 package org.jetbrains.kotlin.resolve.calls.inference.components
 
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns

@@ -103,7 +103,7 @@ class KtLightAnnotationForSourceEntry(
     }
 
     private fun getAttributeValue(name: String?, useDefault: Boolean): PsiAnnotationMemberValue? {
-        val name = name ?: "value"
+        @Suppress("NAME_SHADOWING") val name = name ?: "value"
         val callEntry = getCallEntry(name) ?: return null
 
         val valueArgument = callEntry.value.arguments.firstOrNull()
@@ -341,7 +341,7 @@ private fun KtElement.getResolvedCall(): ResolvedCall<out CallableDescriptor>? {
 }
 
 fun convertToLightAnnotationMemberValue(lightParent: PsiElement, argument: KtExpression): PsiAnnotationMemberValue {
-    val argument = unwrapCall(argument)
+    @Suppress("NAME_SHADOWING") val argument = unwrapCall(argument)
     when (argument) {
         is KtClassLiteralExpression -> {
             return KtLightPsiClassObjectAccessExpression(argument, lightParent)
@@ -395,7 +395,7 @@ private fun unwrapCall(callee: KtExpression): KtExpression = when (callee) {
 }
 
 private fun getAnnotationName(callee: KtExpression): String? {
-    val callee = unwrapCall(callee)
+    @Suppress("NAME_SHADOWING") val callee = unwrapCall(callee)
     val resultingDescriptor = callee.getResolvedCall()?.resultingDescriptor
     if (resultingDescriptor is ClassConstructorDescriptor) {
         val ktClass = resultingDescriptor.constructedClass.source.getPsi() as? KtClass

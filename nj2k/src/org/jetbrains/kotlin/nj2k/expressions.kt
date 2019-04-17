@@ -327,7 +327,7 @@ fun stringLiteral(content: String, symbolProvider: JKSymbolProvider): JKExpressi
         val newlineSeparator = if (i == lines.size - 1) "" else "\\n"
         JKKtLiteralExpressionImpl("\"$line$newlineSeparator\"", JKLiteralExpression.LiteralType.STRING)
     }.reduce { acc: JKExpression, literalExpression: JKKtLiteralExpression ->
-        kotlinBinaryExpression(acc, literalExpression, JKKtSingleValueOperatorToken(KtTokens.PLUS), symbolProvider)!!
+        kotlinBinaryExpression(acc, literalExpression, JKKtSingleValueOperatorToken(KtTokens.PLUS), symbolProvider)
     }
 }
 
@@ -576,8 +576,8 @@ fun JKExpression.asLiteralTextWithPrefix(): String? =
         else -> null
     }
 
-inline fun JKClass.primaryConstructor(): JKKtPrimaryConstructor? =
-    classBody.declarations.firstIsInstanceOrNull()
+@Suppress("NOTHING_TO_INLINE")
+inline fun JKClass.primaryConstructor(): JKKtPrimaryConstructor? = classBody.declarations.firstIsInstanceOrNull()
 
 fun List<JKExpression>.toArgumentList(): JKArgumentList =
     JKArgumentListImpl(map { JKArgumentImpl(it) })

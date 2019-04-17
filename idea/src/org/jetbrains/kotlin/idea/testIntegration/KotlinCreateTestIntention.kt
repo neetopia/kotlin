@@ -181,12 +181,14 @@ class KotlinCreateTestIntention : SelfTargetingRangeIntention<KtNamedDeclaration
                                         .forEach { it.j2k()?.let { declaration -> existingClass.addDeclaration(declaration) } }
                                     generatedClass.delete()
                                 }
+                                @Suppress("IMPLICIT_CAST_TO_ANY")
                                 NavigationUtil.activateFileWithPsiElement(existingClass)
                             } else {
                                 with(PsiDocumentManager.getInstance(project)) {
                                     getDocument(generatedFile)?.let { doPostponedOperationsAndUnblockDocument(it) }
                                 }
 
+                                @Suppress("IMPLICIT_CAST_TO_ANY")
                                 JavaToKotlinAction.convertFiles(listOf(generatedFile), project, false).singleOrNull()
                             }
                         }

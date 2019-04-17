@@ -40,7 +40,7 @@ abstract class AbstractVersionRequirementTest : TestCaseWithTmpdir() {
                 is DeserializedMemberDescriptor -> descriptor.versionRequirements.single()
                 is DeserializedClassDescriptor -> descriptor.versionRequirements.single()
                 else -> throw AssertionError("Unknown descriptor: $descriptor")
-            } ?: throw AssertionError("No VersionRequirement for $descriptor")
+            }
 
             assertEquals("Incorrect version for $fqName", expectedVersionRequirement, requirement.version)
             assertEquals("Incorrect level for $fqName", expectedLevel, requirement.level)

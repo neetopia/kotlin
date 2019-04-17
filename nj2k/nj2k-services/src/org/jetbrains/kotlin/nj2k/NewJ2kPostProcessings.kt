@@ -133,7 +133,7 @@ object NewJ2KPostProcessingRegistrar {
             RemoveRedundantVisibilityModifierProcessing(),
             RemoveRedundantModalityModifierProcessing(),
             RemoveRedundantConstructorKeywordProcessing(),
-            registerDiagnosticBasedProcessing(Errors.REDUNDANT_OPEN_IN_INTERFACE) { element: KtDeclaration, diagnostic ->
+            registerDiagnosticBasedProcessing(Errors.REDUNDANT_OPEN_IN_INTERFACE) { element: KtDeclaration, _ ->
                 element.removeModifier(KtTokens.OPEN_KEYWORD)
             },
             object : NewJ2kPostProcessing {
@@ -219,7 +219,7 @@ object NewJ2KPostProcessingRegistrar {
             registerGeneralInspectionBasedProcessing(LiftReturnOrAssignmentInspection()),
             registerGeneralInspectionBasedProcessing(MayBeConstantInspection()),
             registerIntentionBasedProcessing(RemoveEmptyPrimaryConstructorIntention()),
-            registerDiagnosticBasedProcessing(Errors.PLATFORM_CLASS_MAPPED_TO_KOTLIN) { element: KtDotQualifiedExpression, diagnostic ->
+            registerDiagnosticBasedProcessing(Errors.PLATFORM_CLASS_MAPPED_TO_KOTLIN) { element: KtDotQualifiedExpression, _ ->
                 val parent = element.parent as? KtImportDirective ?: return@registerDiagnosticBasedProcessing
                 parent.delete()
             },
@@ -243,7 +243,8 @@ object NewJ2KPostProcessingRegistrar {
             },
 
             registerDiagnosticBasedProcessing(Errors.TYPE_MISMATCH) { element: PsiElement, diagnostic ->
-                val diagnosticWithParameters = diagnostic as? DiagnosticWithParameters2<KtExpression, KotlinType, KotlinType>
+                @Suppress("UNCHECKED_CAST") val diagnosticWithParameters =
+                    diagnostic as? DiagnosticWithParameters2<KtExpression, KotlinType, KotlinType>
                     ?: return@registerDiagnosticBasedProcessing
                 val expectedType = diagnosticWithParameters.a
                 val realType = diagnosticWithParameters.b
@@ -398,8 +399,8 @@ object NewJ2KPostProcessingRegistrar {
 
                     @Suppress("NOT_YET_SUPPORTED_IN_INLINE")
                     fun applyIntention() {
-                        val action = this.action
-                        when (action) {
+                        @Suppress("UNCHECKED_CAST")
+                        when (val action = this.action) {
                             is SelfTargetingIntention<*> -> applySelfTargetingIntention(action as SelfTargetingIntention<PsiElement>)
                             is QuickFixActionBase<*> -> applyQuickFixActionBase(action)
                         }

@@ -546,7 +546,7 @@ class PSICallResolver(
 
         require(oldCall is CallTransformer.CallForImplicitInvoke) { "Call should be CallForImplicitInvoke, but it is: $oldCall" }
 
-        val dispatchReceiver = oldCall.dispatchReceiver!! // dispatch receiver from CallForImplicitInvoke is always not null
+        val dispatchReceiver = oldCall.dispatchReceiver // dispatch receiver from CallForImplicitInvoke is always not null
         return resolveReceiver(context, dispatchReceiver, isSafeCall = false, isForImplicitInvoke = true)
     }
 

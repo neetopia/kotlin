@@ -172,7 +172,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
         )
         val result = resolver.runTowerResolver(consumer)
         val successCandidates = result.successCandidates()
-        val resultExpression = qualifiedAccess.transformCalleeReference(this, successCandidates) as T
+        @Suppress("UNCHECKED_CAST") val resultExpression = qualifiedAccess.transformCalleeReference(this, successCandidates) as T
         if (resultExpression is FirExpression) storeTypeFromCallee(resultExpression)
         return resultExpression
     }
@@ -215,7 +215,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
     override fun transformFunctionCall(functionCall: FirFunctionCall, data: Any?): CompositeTransformResult<FirStatement> {
 
-        val functionCall = functionCall.transformChildren(this, null) as FirFunctionCall
+        @Suppress("NAME_SHADOWING") val functionCall = functionCall.transformChildren(this, null) as FirFunctionCall
 
         if (functionCall.calleeReference !is FirSimpleNamedReference) return functionCall.compose()
 
@@ -290,16 +290,15 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
     override fun transformNamedReference(namedReference: FirNamedReference, data: Any?): CompositeTransformResult<FirNamedReference> {
         if (namedReference is FirErrorNamedReference || namedReference is FirResolvedCallableReference) return namedReference.compose()
-        val referents = data as? List<ConeCallableSymbol> ?: return namedReference.compose()
+        @Suppress("UNCHECKED_CAST") val referents = data as? List<ConeCallableSymbol> ?: return namedReference.compose()
         return createResolvedNamedReference(namedReference, referents).compose()
     }
 
 
     override fun transformBlock(block: FirBlock, data: Any?): CompositeTransformResult<FirStatement> {
-        val block = super.transformBlock(block, data).single as FirBlock
-        val statement = block.statements.lastOrNull()
+        @Suppress("NAME_SHADOWING") val block = super.transformBlock(block, data).single as FirBlock
 
-        val resultExpression = when (statement) {
+        val resultExpression = when (val statement = block.statements.lastOrNull()) {
             is FirReturnExpression -> statement.result
             is FirExpression -> statement
             else -> null
@@ -390,7 +389,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
     }
 
     override fun transformVariable(variable: FirVariable, data: Any?): CompositeTransformResult<FirDeclaration> {
-        val variable = super.transformVariable(variable, variable.returnTypeRef).single as FirVariable
+        @Suppress("NAME_SHADOWING") val variable = super.transformVariable(variable, variable.returnTypeRef).single as FirVariable
         val initializer = variable.initializer
         if (variable.returnTypeRef is FirImplicitTypeRef) {
             when {

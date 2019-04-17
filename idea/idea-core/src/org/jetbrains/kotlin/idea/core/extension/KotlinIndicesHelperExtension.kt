@@ -35,6 +35,7 @@ interface KotlinIndicesHelperExtension {
         nameFilter: (String) -> Boolean,
         lookupLocation: LookupLocation
     ) {
+        @Suppress("DEPRECATION")
         appendExtensionCallables(consumer, moduleDescriptor, receiverTypes, nameFilter)
     }
 

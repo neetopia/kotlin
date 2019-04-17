@@ -54,6 +54,7 @@ interface ScriptTemplatesProvider {
     val environment: Map<String, Any?>?
 
     companion object {
+        @Suppress("DEPRECATION")
         val EP_NAME: ExtensionPointName<ScriptTemplatesProvider> =
                 ExtensionPointName.create<ScriptTemplatesProvider>("org.jetbrains.kotlin.scriptTemplatesProvider")
     }

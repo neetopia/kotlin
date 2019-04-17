@@ -169,6 +169,7 @@ abstract class IrModuleDeserializer(
         val kind = when (proto.kind) {
             KotlinIr.IrSyntheticBodyKind.ENUM_VALUES -> IrSyntheticBodyKind.ENUM_VALUES
             KotlinIr.IrSyntheticBodyKind.ENUM_VALUEOF -> IrSyntheticBodyKind.ENUM_VALUEOF
+            else -> error("Illegal state")
         }
         return IrSyntheticBodyImpl(start, end, kind)
     }
@@ -673,7 +674,7 @@ abstract class IrModuleDeserializer(
             -> IrConstImpl.float(start, end, type, proto.float)
             DOUBLE
             -> IrConstImpl.double(start, end, type, proto.double)
-            VALUE_NOT_SET
+            null, VALUE_NOT_SET
             -> error("Const deserialization error: ${proto.valueCase} ")
         }
 
@@ -741,7 +742,7 @@ abstract class IrModuleDeserializer(
             -> deserializeDynamicMemberExpression(proto.dynamicMember, start, end, type)
             DYNAMIC_OPERATOR
             -> deserializeDynamicOperatorExpression(proto.dynamicOperator, start, end, type)
-            OPERATION_NOT_SET
+            null, OPERATION_NOT_SET
             -> error("Expression deserialization not implemented: ${proto.operationCase}")
         }
 
@@ -766,11 +767,21 @@ abstract class IrModuleDeserializer(
         val name = deserializeName(proto.name)
         val variance = deserializeIrTypeVariance(proto.variance)
 
-        val parameter = symbolTable.declareGlobalTypeParameter(UNDEFINED_OFFSET, UNDEFINED_OFFSET, irrelevantOrigin,
-            symbol.descriptor, { symbol ->
-                IrTypeParameterImpl(start, end, origin, symbol, name, proto.index, proto.isReified, variance)
-            }
-        )
+        val parameter = symbolTable.declareGlobalTypeParameter(
+            UNDEFINED_OFFSET, UNDEFINED_OFFSET, irrelevantOrigin,
+            symbol.descriptor
+        ) { parameterSymbol ->
+            IrTypeParameterImpl(
+                start,
+                end,
+                origin,
+                parameterSymbol,
+                name,
+                proto.index,
+                proto.isReified,
+                variance
+            )
+        }
 
         val superTypes = proto.superTypeList.map { deserializeIrType(it) }
         parameter.superTypes.addAll(superTypes)
@@ -1187,7 +1198,7 @@ abstract class IrModuleDeserializer(
             -> deserializeIrEnumEntry(declarator.irEnumEntry, start, end, origin)
             IR_LOCAL_DELEGATED_PROPERTY
             -> deserializeIrLocalDelegatedProperty(declarator.irLocalDelegatedProperty, start, end, origin)
-            DECLARATOR_NOT_SET
+            null, DECLARATOR_NOT_SET
             -> error("Declaration deserialization not implemented: ${declarator.declaratorCase}")
         }
 

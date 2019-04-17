@@ -122,7 +122,6 @@ class TypeMappingConversion(val context: ConversionContext) : RecursiveApplicabl
         val newFqName = typeElement?.let { kotlinCollectionClassName(it) }
             ?: kotlinStandardType()
             ?: fqName
-            ?: return this
         return context.symbolProvider.provideByFqName(newFqName)
     }
 
@@ -140,10 +139,7 @@ class TypeMappingConversion(val context: ConversionContext) : RecursiveApplicabl
         else toKotlinTypesMap[fqName]
     }
 
-    private fun JKClassSymbol.kotlinStandardType(): String? =
-        fqName?.let {
-            JavaToKotlinClassMap.mapJavaToKotlin(FqName(it))?.asString()
-        }
+    private fun JKClassSymbol.kotlinStandardType(): String? = JavaToKotlinClassMap.mapJavaToKotlin(FqName(fqName))?.asString()
 
     private fun JKJavaPrimitiveType.mapPrimitiveType(): JKClassType {
         val fqName = jvmPrimitiveType.primitiveType.typeFqName

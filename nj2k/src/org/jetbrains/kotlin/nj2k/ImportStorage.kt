@@ -25,8 +25,7 @@ class ImportStorage {
             return true
         }
 
-        inline fun isImportNeeded(fqName: String): Boolean =
-            isImportNeeded(FqName(fqName))
-
+        @Suppress("NOTHING_TO_INLINE")
+        inline fun isImportNeeded(fqName: String): Boolean = isImportNeeded(FqName(fqName))
     }
 }

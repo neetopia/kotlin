@@ -22,11 +22,13 @@ class CompositeTransformResult<out T : Any>(val a: Any) {
     val single: T
         get() {
             assert(isSingle)
+            @Suppress("UNCHECKED_CAST")
             return a as T
         }
 
     val list: List<T>
         get() {
+            @Suppress("UNCHECKED_CAST")
             return a as List<T>
         }
 }

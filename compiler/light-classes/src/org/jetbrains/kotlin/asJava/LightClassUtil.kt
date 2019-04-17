@@ -133,7 +133,7 @@ object LightClassUtil {
                     .filter { it.kotlinOrigin === declaration }
 
     private fun getWrappingClass(declaration: KtDeclaration): PsiClass? {
-        var declaration = declaration
+        @Suppress("NAME_SHADOWING") var declaration = declaration
         if (declaration is KtParameter) {
             val constructorClass = KtPsiUtil.getClassIfParameterIsProperty(declaration)
             if (constructorClass != null) {

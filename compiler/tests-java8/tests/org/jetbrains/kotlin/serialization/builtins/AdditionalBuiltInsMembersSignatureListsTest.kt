@@ -59,10 +59,10 @@ class AdditionalBuiltInsMembersSignatureListsTest : KotlinTestWithEnvironment() 
 
             val lateJdkSignatures = LATE_JDK_SIGNATURES[internalName] ?: emptySet()
 
-            jvmDescriptors.forEach {
+            jvmDescriptors.forEach inner@{
                 jvmDescriptor ->
 
-                if (jvmDescriptor in lateJdkSignatures) return@forEach
+                if (jvmDescriptor in lateJdkSignatures) return@inner
 
                 val stringName = jvmDescriptor.split("(")[0]
                 val functions =

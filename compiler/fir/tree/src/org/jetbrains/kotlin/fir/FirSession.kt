@@ -18,6 +18,7 @@ interface FirSession {
 
     val components: Map<KClass<*>, Any>
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : Any> getService(kclass: KClass<T>): T =
         components[kclass] as T
 }

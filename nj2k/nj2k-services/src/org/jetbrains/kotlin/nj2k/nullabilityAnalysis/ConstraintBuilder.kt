@@ -14,6 +14,7 @@ internal class ConstraintBuilder(val boundTypeStorage: BoundTypeStorage) {
 
     internal fun getConstraints(): List<Constraint> = constraints
 
+    @Suppress("NOTHING_TO_INLINE")
     inline fun KtExpression.addSubtypeNullabilityConstraint(typeVariable: TypeVariable, cameFrom: ConstraintCameFrom) {
         addSubtypeNullabilityConstraint(TypeVariableBoundType(typeVariable), cameFrom)
     }
@@ -25,6 +26,7 @@ internal class ConstraintBuilder(val boundTypeStorage: BoundTypeStorage) {
         constraints += EqualConstraint(boundType.bound, LiteralBound(nullability), cameFrom)
     }
 
+    @Suppress("NOTHING_TO_INLINE")
     inline fun TypeVariable.addEqualsNullabilityConstraint(other: BoundType, cameFrom: ConstraintCameFrom) {
         TypeVariableBoundType(this).isTheSameType(other, cameFrom)
     }
@@ -39,6 +41,7 @@ internal class ConstraintBuilder(val boundTypeStorage: BoundTypeStorage) {
             .subtypeOf(upperBoundType, cameFrom)
     }
 
+    @Suppress("NOTHING_TO_INLINE")
     inline fun TypeVariable.subtypeOf(other: BoundType, cameFrom: ConstraintCameFrom) {
         TypeVariableBoundType(this).subtypeOf(other, cameFrom)
     }

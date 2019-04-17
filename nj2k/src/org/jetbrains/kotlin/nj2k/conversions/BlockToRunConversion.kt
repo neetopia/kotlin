@@ -16,7 +16,7 @@ class BlockToRunConversion(private val context: ConversionContext) : RecursiveAp
         if (element.parent !is JKBlock) return recurse(element)
 
         val parentDeclaration = element.parentOfType<JKDeclaration>() ?: return recurse(element)
-        val psiContext = parentDeclaration.psi ?: return recurse(element)
+        parentDeclaration.psi ?: return recurse(element)
 
 
         element.invalidate()

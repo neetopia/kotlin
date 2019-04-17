@@ -33,6 +33,7 @@ fun FirElement.render(): String = buildString { this@render.accept(FirRenderer(t
 
 
 fun ConeKotlinType.render(): String {
+    @Suppress("DUPLICATE_LABEL_IN_WHEN")
     return when (this) {
         is ConeKotlinErrorType -> "error: $reason"
         is ConeClassErrorType -> "class error: $reason"

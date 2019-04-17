@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.fir.types.impl.ConeClassTypeImpl
 import org.jetbrains.kotlin.fir.types.impl.ConeTypeParameterTypeImpl
 
 fun ConeKotlinType.scope(useSiteSession: FirSession): FirScope? {
+    @Suppress("DUPLICATE_LABEL_IN_WHEN")
     return when (this) {
         is ConeKotlinErrorType -> null
         is ConeClassErrorType -> null

@@ -35,12 +35,12 @@ enum class KDocKnownTag(val isReferenceRequired: Boolean, val isSectionStart: Bo
 
     companion object {
         fun findByTagName(tagName: CharSequence): KDocKnownTag? {
-            var tagName = tagName
-            if (StringUtil.startsWith(tagName, "@")) {
-                tagName = tagName.subSequence(1, tagName.length)
+            var name = tagName
+            if (StringUtil.startsWith(name, "@")) {
+                name = name.subSequence(1, name.length)
             }
             try {
-                return valueOf(tagName.toString().toUpperCase())
+                return valueOf(name.toString().toUpperCase())
             } catch (ignored: IllegalArgumentException) {
             }
 
