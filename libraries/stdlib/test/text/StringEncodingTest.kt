@@ -189,7 +189,7 @@ class StringEncodingTest {
         testDecoding(false, "��", bytes(0xC1, 0xAA)) // 1-byte char written in two bytes
 
         testDecoding(false, "�z", bytes(0xEF, 0xAF, 0x7A)) // 3-byte char, third byte starts with 0 bit
-        testDecoding(false, "���", bytes(0xE0, 0x9F, 0xAF)) // 2-byte char written in two bytes
+        testDecoding(false, "���", bytes(0xE0, 0x9F, 0xAF)) // 2-byte char written in three bytes
         testDecoding(false, "�z", bytes(0xE0, 0xAF, 0x7A)) // 3-byte char, third byte starts with 0 bit
         testDecoding(true, "\u1FFF", bytes(0xE1, 0xBF, 0xBF)) // 3-byte char
 
@@ -201,7 +201,7 @@ class StringEncodingTest {
                 surrogateCodePointDecoding + surrogateCodePointDecoding,
                 bytes(0xED, 0xAF, 0xBF, /**/ 0xED, 0xB3, 0x9A)
             ) // surrogate pair chars
-            testDecoding(false, "�z", bytes(0xEF, 0x7A)) // 3-byte char, second byte starts with 0 bit, third byte out of bounds
+            testDecoding(false, "�z", bytes(0xEF, 0x7A)) // 3-byte char, second byte starts with 0 bit, third byte missing
 
             testDecoding(false, "�����", bytes(0xF9, 0x94, 0x80, 0x80, 0x80)) // 5-byte code point larger than 0x10FFFF
             testDecoding(false, "������", bytes(0xFD, 0x94, 0x80, 0x80, 0x80, 0x80)) // 6-byte code point larger than 0x10FFFF
@@ -216,7 +216,7 @@ class StringEncodingTest {
             testDecoding(false, "����A", bytes(0xE1, 0x80, /**/ 0xE2, /**/ 0xF0, 0x91, 0x92, /**/ 0xF1, 0xBF, /**/ 0x41))
         }
 
-        testDecoding(false, "�", bytes(0xE0, 0xAF)) // 3-byte char, third byte out of bounds
+        testDecoding(false, "�", bytes(0xE0, 0xAF)) // 3-byte char, third byte missing
 
         testDecoding(true, "\uD83D\uDFDF", bytes(0xF0, 0x9F, 0x9F, 0x9F)) // 4-byte char
         testDecoding(false, "����", bytes(0xF0, 0x8F, 0x9F, 0x9F)) // 3-byte char written in four bytes
