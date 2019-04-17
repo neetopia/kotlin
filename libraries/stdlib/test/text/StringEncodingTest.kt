@@ -287,7 +287,7 @@ class StringEncodingTest {
             .toByteArray()
 
         val smokeTestData = "\ud83c\udf00"
-        val smokeTestDataCharArray: CharArray = smokeTestData.toList().toCharArray()
+        val smokeTestDataCharArray: CharArray = smokeTestData.toCharArray()
         val smokeTestDataAsBytes = "f0 9f 8c 80".readHex()
 
         val testData = "file content with unicode " +
@@ -296,7 +296,7 @@ class StringEncodingTest {
                 " \uc5ec\ubcf4\uc138\uc694 :" +
                 " \u4f60\u597d :" +
                 " \u00f1\u00e7"
-        val testDataCharArray: CharArray = testData.toList().toCharArray()
+        val testDataCharArray: CharArray = testData.toCharArray()
         val testDataAsBytes: ByteArray = ("66 69 6c 65 20 63 6f 6e 74 65 6e 74 20 77 69 74 " +
                 " 68 20 75 6e 69 63 6f 64 65 20 f0 9f 8c 80 20 3a 20 d0 b7 d0 b4 d0 be d1 " +
                 "80 d0 be d0 b2 d0 b0 d1 82 d1 8c d1 81 d1 8f 20 3a 20 ec 97 ac eb b3 b4 ec " +
@@ -321,8 +321,8 @@ class StringEncodingTest {
         assertArrayContentEquals(smokeTestDataCharArray, stringFrom(smokeTestDataAsBytes).toCharArray())
         assertArrayContentEquals(testDataCharArray, stringFrom(testDataAsBytes).toCharArray())
 
-        assertEquals("\uD858\uDE18\n", stringFrom(byteArrayOf(0xF0.toByte(), 0xA6.toByte(), 0x88.toByte(), 0x98.toByte(), 0x0a)))
-        assertEquals("\u0BF5\n", stringFrom(byteArrayOf(0xe0.toByte(), 0xaf.toByte(), 0xb5.toByte(), 0x0a)))
-        assertEquals("\u041a\n", stringFrom(byteArrayOf(0xd0.toByte(), 0x9a.toByte(), 0x0a)))
+        assertEquals("\uD858\uDE18\n", stringFrom(bytes(0xF0, 0xA6, 0x88, 0x98, 0x0a)))
+        assertEquals("\u0BF5\n", stringFrom(bytes(0xE0, 0xAF, 0xB5, 0x0A)))
+        assertEquals("\u041a\n", stringFrom(bytes(0xD0, 0x9A, 0x0A)))
     }
 }
