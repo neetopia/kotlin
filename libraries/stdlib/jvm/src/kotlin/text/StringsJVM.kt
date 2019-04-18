@@ -111,18 +111,21 @@ public actual inline fun String.toUpperCase(): String = (this as java.lang.Strin
 @kotlin.internal.InlineOnly
 public actual inline fun String.toLowerCase(): String = (this as java.lang.String).toLowerCase()
 
+@SinceKotlin("1.3")
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = this.size): String {
     kotlin.collections.AbstractList.checkBoundsIndexes(startIndex, endIndex, this.size)
     return String(this, startIndex, endIndex - startIndex)
 }
 
+@SinceKotlin("1.3")
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray {
     checkStringBounds(startIndex, endIndex, length)
     return toCharArray(CharArray(endIndex - startIndex), 0, startIndex, endIndex)
 }
 
+@SinceKotlin("1.3")
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun ByteArray.decodeToString(
     startIndex: Int = 0,
@@ -142,6 +145,7 @@ public actual fun ByteArray.decodeToString(
     return decoder.decode(ByteBuffer.wrap(this, startIndex, endIndex - startIndex)).toString()
 }
 
+@SinceKotlin("1.3")
 @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
 public actual fun String.encodeToByteArray(
     startIndex: Int = 0,

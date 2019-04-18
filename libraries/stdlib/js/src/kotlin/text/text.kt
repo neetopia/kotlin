@@ -80,6 +80,7 @@ public actual class StringBuilder(content: String = "") : Appendable, CharSequen
 public actual inline fun StringBuilder.clear(): StringBuilder = this.clear()
 
 
+@SinceKotlin("1.3")
 public actual open class CharacterCodingException actual constructor() : Exception() {
     private var msg: String? = null
 

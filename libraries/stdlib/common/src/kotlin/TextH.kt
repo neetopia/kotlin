@@ -82,6 +82,7 @@ expect enum class RegexOption {
     MULTILINE
 }
 
+@SinceKotlin("1.3")
 public expect open class CharacterCodingException() : Exception
 
 
@@ -122,6 +123,7 @@ public expect fun String(chars: CharArray, offset: Int, length: Int): String
  * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than size of this array.
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  */
+@SinceKotlin("1.3")
 public expect fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = this.size): String
 
 /**
@@ -133,6 +135,7 @@ public expect fun CharArray.concatToString(startIndex: Int = 0, endIndex: Int = 
  * @throws IndexOutOfBoundsException if [startIndex] is less than zero or [endIndex] is greater than length of this string.
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  */
+@SinceKotlin("1.3")
 public expect fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.length): CharArray
 
 /**
@@ -146,6 +149,7 @@ public expect fun String.toCharArray(startIndex: Int = 0, endIndex: Int = this.l
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  * @throws CharacterCodingException if the byte array contains malformed UTF-8 byte sequence and [throwOnInvalidSequence] is true.
  */
+@SinceKotlin("1.3")
 public expect fun ByteArray.decodeToString(
     startIndex: Int = 0,
     endIndex: Int = this.size,
@@ -163,6 +167,7 @@ public expect fun ByteArray.decodeToString(
  * @throws IllegalArgumentException if [startIndex] is less greater than [endIndex].
  * @throws CharacterCodingException if this string contains malformed char sequence and [throwOnInvalidSequence] is true.
  */
+@SinceKotlin("1.3")
 public expect fun String.encodeToByteArray(
     startIndex: Int = 0,
     endIndex: Int = this.length,
