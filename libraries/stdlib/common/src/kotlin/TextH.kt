@@ -101,7 +101,6 @@ expect fun Char.isLowSurrogate(): Boolean
  * Converts the characters in the specified array to a string.
  */
 @SinceKotlin("1.2")
-@Deprecated("Use stringFrom instead", ReplaceWith("stringFrom(chars)"))
 public expect fun String(chars: CharArray): String
 
 /**
@@ -111,7 +110,6 @@ public expect fun String(chars: CharArray): String
  * or `offset + length` is out of [chars] array bounds.
  */
 @SinceKotlin("1.2")
-@Deprecated("Use stringFrom instead", ReplaceWith("stringFrom(chars, offset, offset + length)"))
 public expect fun String(chars: CharArray, offset: Int, length: Int): String
 
 /**
