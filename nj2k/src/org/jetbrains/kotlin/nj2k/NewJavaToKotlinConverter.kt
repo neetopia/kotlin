@@ -51,7 +51,7 @@ class NewJavaToKotlinConverter(
         progress: ProgressIndicator
     ): FilesResult {
         val withProgressProcessor = WithProgressProcessor(progress, files)
-        val (results, externalCodeProcessing, context) = ApplicationManager.getApplication().runReadAction(Computable {
+        val (results, externalCodeProcessing) = ApplicationManager.getApplication().runReadAction(Computable {
             elementsToKotlin(files, withProgressProcessor)
         })
 
@@ -73,7 +73,7 @@ class NewJavaToKotlinConverter(
                 }
 
                 CommandProcessor.getInstance().runUndoTransparentAction {
-                    AfterConversionPass(project, postProcessor).run(kotlinFile, context, range = null)
+                    AfterConversionPass(project, postProcessor).run(kotlinFile, range = null)
                 }
 
                 kotlinFile.text
@@ -97,18 +97,17 @@ class NewJavaToKotlinConverter(
             element to treeBuilder.buildTree(element)
         }
 
-        val context = NewJ2kConverterContext(
+        val context = ConversionContext(
             symbolProvider,
             this,
             { it.containingFile in inputElements },
-            importStorage,
-            JKElementInfoStorage()
+            importStorage
         )
 
         ConversionsRunner.doApply(asts.mapNotNull { it.second }, context)
         val results = asts.map { (element, ast) ->
             if (ast == null) return@map null
-            val code = NewCodeBuilder(context).run { printCodeOut(ast) }
+            val code = NewCodeBuilder().run { printCodeOut(ast) }
             val parseContext = when (element) {
                 is PsiStatement, is PsiExpression -> ParseContext.CODE_BLOCK
                 else -> ParseContext.TOP_LEVEL
@@ -120,6 +119,6 @@ class NewJavaToKotlinConverter(
             )
         }
 
-        return Result(results, null, context)
+        return Result(results, null)
     }
 }

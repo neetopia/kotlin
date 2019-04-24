@@ -450,7 +450,6 @@ internal class CallableReferenceLowering(val context: JvmBackendContext) : FileL
                 visibility = JavaVisibilities.PACKAGE_VISIBILITY
                 isFinal = true
             }.also {
-                it.parent = functionReferenceClass
                 functionReferenceClass.declarations.add(it)
             }
 

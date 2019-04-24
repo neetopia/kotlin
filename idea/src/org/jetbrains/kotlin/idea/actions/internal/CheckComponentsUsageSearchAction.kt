@@ -30,6 +30,7 @@ import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.searches.ReferencesSearch
 import org.jetbrains.kotlin.idea.search.usagesSearch.ExpressionsOfTypeProcessor
+import org.jetbrains.kotlin.idea.util.application.progressIndicatorNullable
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
@@ -38,12 +39,12 @@ import javax.swing.SwingUtilities
 
 class CheckComponentsUsageSearchAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-        val project = CommonDataKeys.PROJECT.getData(e.dataContext) ?: return
-        val selectedKotlinFiles = selectedKotlinFiles(e).toList()
+        val selectedFiles = selectedKotlinFiles(e).toList()
+        val project = CommonDataKeys.PROJECT.getData(e.dataContext)!!
 
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
                 {
-                    runReadAction { process(selectedKotlinFiles, project) }
+                    runReadAction { process(selectedFiles, project) }
                 },
                 "Checking Data Classes",
                 true,
@@ -57,7 +58,7 @@ class CheckComponentsUsageSearchAction : AnAction() {
                 .filter { it.isData() }
                 .toList()
 
-        val progressIndicator = ProgressManager.getInstance().progressIndicator
+        val progressIndicator = ProgressManager.getInstance().progressIndicatorNullable
         for ((i, dataClass) in dataClasses.withIndex()) {
             progressIndicator?.text = "Checking data class ${i + 1} of ${dataClasses.size}..."
             progressIndicator?.text2 = dataClass.fqName?.asString() ?: ""
@@ -104,7 +105,7 @@ class CheckComponentsUsageSearchAction : AnAction() {
         }
         else {
             e.presentation.isVisible = true
-            e.presentation.isEnabled = true
+            e.presentation.isEnabled = selectedKotlinFiles(e).any()
         }
     }
 

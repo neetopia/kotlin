@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.checkers.javac;
@@ -19539,11 +19539,6 @@ public class DiagnosticsUsingJavacTestGenerated extends AbstractDiagnosticsUsing
             @TestMetadata("kt30826.kt")
             public void testKt30826() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/smartCasts/kt30826.kt");
-            }
-
-            @TestMetadata("kt30927.kt")
-            public void testKt30927() throws Exception {
-                runTest("compiler/testData/diagnostics/tests/smartCasts/kt30927.kt");
             }
 
             @TestMetadata("kt3224.kt")

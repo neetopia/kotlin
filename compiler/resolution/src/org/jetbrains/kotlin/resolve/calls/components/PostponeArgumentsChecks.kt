@@ -97,15 +97,7 @@ private fun extraLambdaInfo(
     val newTypeVariableUsed = returnType == typeVariable.defaultType
     if (newTypeVariableUsed) csBuilder.registerVariable(typeVariable)
 
-    return ResolvedLambdaAtom(
-        argument,
-        isSuspend,
-        receiverType,
-        parameters,
-        returnType,
-        typeVariable.takeIf { newTypeVariableUsed },
-        expectedType
-    )
+    return ResolvedLambdaAtom(argument, isSuspend, receiverType, parameters, returnType, typeVariable.takeIf { newTypeVariableUsed })
 }
 
 private fun extractLambdaInfoFromFunctionalType(expectedType: UnwrappedType?, argument: LambdaKotlinCallArgument): ResolvedLambdaAtom? {
@@ -122,8 +114,7 @@ private fun extractLambdaInfoFromFunctionalType(expectedType: UnwrappedType?, ar
         receiverType,
         parameters,
         returnType,
-        typeVariableForLambdaReturnType = null,
-        expectedType = expectedType
+        typeVariableForLambdaReturnType = null
     )
 }
 

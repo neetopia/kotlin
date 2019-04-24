@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.roots
@@ -50,11 +50,13 @@ class KotlinNonJvmSourceRootConverterProvider : ConverterProvider("kotlin-non-jv
             JavaResourceRootType.TEST_RESOURCE
         )
 
-        private val PLATFORM_TO_STDLIB_DETECTORS: Map<TargetPlatform, (Array<VirtualFile>) -> Boolean> = mapOf(
-            JvmPlatform to { roots: Array<VirtualFile> -> JavaRuntimeDetectionUtil.getRuntimeJar(roots.toList()) != null },
-            JsPlatform to { roots: Array<VirtualFile> -> JsLibraryStdDetectionUtil.getJsStdLibJar(roots.toList()) != null },
-            CommonPlatform to { roots: Array<VirtualFile> -> getLibraryJar(roots, PathUtil.KOTLIN_STDLIB_COMMON_JAR_PATTERN) != null }
-        )
+        private val TargetPlatform.stdlibDetector: ((Array<VirtualFile>) -> Boolean)?
+            get() = when (this) {
+                is JvmPlatform -> { roots -> JavaRuntimeDetectionUtil.getRuntimeJar(roots.toList()) != null }
+                is JsPlatform -> { roots -> JsLibraryStdDetectionUtil.getJsStdLibJar(roots.toList()) != null }
+                is CommonPlatform -> { roots -> getLibraryJar(roots, PathUtil.KOTLIN_STDLIB_COMMON_JAR_PATTERN) != null }
+                else -> null
+            }
     }
 
     sealed class LibInfo {
@@ -86,16 +88,14 @@ class KotlinNonJvmSourceRootConverterProvider : ConverterProvider("kotlin-non-jv
         abstract val explicitKind: PersistentLibraryKind<*>?
         abstract fun getRoots(): Array<VirtualFile>
 
-        val stdlibPlatform: TargetPlatform? by lazy {
-            val roots = getRoots()
-            for ((platform, detector) in PLATFORM_TO_STDLIB_DETECTORS) {
-                if (detector.invoke(roots)) {
-                    return@lazy platform
-                }
-            }
-
-            return@lazy null
+        val platform by lazy {
+            val explicitKind = explicitKind
+            val kind = if (explicitKind is KotlinLibraryKind) explicitKind else detectLibraryKind(getRoots())
+            kind?.platform ?: JvmPlatform
         }
+
+        val isStdlib: Boolean
+            get() = platform.stdlibDetector?.invoke(getRoots()) ?: false
     }
 
     class ConverterImpl(private val context: ConversionContext) : ProjectConverter() {
@@ -144,12 +144,15 @@ class KotlinNonJvmSourceRootConverterProvider : ConverterProvider("kotlin-non-jv
                         .asSequence()
                         .mapNotNull { createLibInfo(it, this) }
                         .forEach {
-                            val stdlibPlatform = it.stdlibPlatform
-                            if (stdlibPlatform != null) {
-                                if (stdlibPlatform == CommonPlatform) {
-                                    hasCommonStdlib = true
-                                } else {
-                                    return stdlibPlatform
+                            when (val platform = it.platform) {
+                                is CommonPlatform -> {
+                                    if (!hasCommonStdlib && it.isStdlib) {
+                                        hasCommonStdlib = true
+                                    }
+                                }
+
+                                else -> {
+                                    if (it.isStdlib) return platform
                                 }
                             }
                         }
@@ -170,7 +173,6 @@ class KotlinNonJvmSourceRootConverterProvider : ConverterProvider("kotlin-non-jv
                         .flatMap { it.getChildren(SourceFolderImpl.ELEMENT_NAME) }
                 }
 
-                @Suppress("UnstableApiUsage")
                 private fun ModuleSettings.isExternalModule(): Boolean {
                     return when {
                         rootElement.getAttributeValue(ExternalProjectSystemRegistry.EXTERNAL_SYSTEM_ID_KEY) != null -> true

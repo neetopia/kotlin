@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.gradle.tasks
@@ -567,20 +567,8 @@ open class Kotlin2JsCompile : AbstractKotlinCompile<K2JSCompilerArguments>(), Ko
         logger.debug("Calling compiler")
         destinationDir.mkdirs()
 
-        val libraryFilter: (File) -> Boolean
-
-        if ("-Xir" in args.freeArgs) {
-            logger.kotlinDebug("Using JS IR backend")
-            incremental = false
-
-            // TODO: Detect IR libraries
-            libraryFilter = { true }
-        } else {
-            libraryFilter = LibraryUtils::isKotlinJavascriptLibrary
-        }
-
         val dependencies = compileClasspath
-            .filter(libraryFilter)
+            .filter { LibraryUtils.isKotlinJavascriptLibrary(it) }
             .map { it.canonicalPath }
 
         args.libraries = (dependencies + listOfNotNull(friendDependency)).distinct().let {

@@ -1,4 +1,6 @@
 //file
+package test;
+
 class Base {
   @Override
   public int hashCode() {

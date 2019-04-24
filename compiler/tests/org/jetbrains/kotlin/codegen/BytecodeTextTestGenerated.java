@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.codegen;
@@ -3422,16 +3422,6 @@ public class BytecodeTextTestGenerated extends AbstractBytecodeTextTest {
             runTest("compiler/testData/codegen/bytecodeText/stringOperations/concat.kt");
         }
 
-        @TestMetadata("constConcat.kt")
-        public void testConstConcat() throws Exception {
-            runTest("compiler/testData/codegen/bytecodeText/stringOperations/constConcat.kt");
-        }
-
-        @TestMetadata("constValConcat.kt")
-        public void testConstValConcat() throws Exception {
-            runTest("compiler/testData/codegen/bytecodeText/stringOperations/constValConcat.kt");
-        }
-
         @TestMetadata("doNotAppendEmptyString.kt")
         public void testDoNotAppendEmptyString() throws Exception {
             runTest("compiler/testData/codegen/bytecodeText/stringOperations/doNotAppendEmptyString.kt");
@@ -3472,11 +3462,6 @@ public class BytecodeTextTestGenerated extends AbstractBytecodeTextTest {
             runTest("compiler/testData/codegen/bytecodeText/stringOperations/nullableStringPlus.kt");
         }
 
-        @TestMetadata("partiallyConstConcat.kt")
-        public void testPartiallyConstConcat() throws Exception {
-            runTest("compiler/testData/codegen/bytecodeText/stringOperations/partiallyConstConcat.kt");
-        }
-
         @TestMetadata("plusAssign.kt")
         public void testPlusAssign() throws Exception {
             runTest("compiler/testData/codegen/bytecodeText/stringOperations/plusAssign.kt");
@@ -3495,16 +3480,6 @@ public class BytecodeTextTestGenerated extends AbstractBytecodeTextTest {
         @TestMetadata("primitivesAsStringTemplates.kt")
         public void testPrimitivesAsStringTemplates() throws Exception {
             runTest("compiler/testData/codegen/bytecodeText/stringOperations/primitivesAsStringTemplates.kt");
-        }
-
-        @TestMetadata("singleConcat.kt")
-        public void testSingleConcat() throws Exception {
-            runTest("compiler/testData/codegen/bytecodeText/stringOperations/singleConcat.kt");
-        }
-
-        @TestMetadata("stringPlus.kt")
-        public void testStringPlus() throws Exception {
-            runTest("compiler/testData/codegen/bytecodeText/stringOperations/stringPlus.kt");
         }
     }
 

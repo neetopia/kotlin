@@ -109,8 +109,7 @@ class ConvertTextJavaCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransf
         val additionalImports = dataForConversion.tryResolveImports(targetFile)
         var convertedImportsText = additionalImports.convertCodeToKotlin(project).text
 
-        val convertedResult = dataForConversion.convertCodeToKotlin(project)
-        val convertedText = convertedResult.text
+        val convertedText = dataForConversion.convertCodeToKotlin(project).text
 
         val newBounds = runWriteAction {
 
@@ -130,12 +129,7 @@ class ConvertTextJavaCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransf
         }
 
         psiDocumentManager.commitAllDocuments()
-        AfterConversionPass(project, JavaToKotlinConverterFactory.createPostProcessor(formatCode = true))
-            .run(
-                targetFile,
-                convertedResult.converterContext,
-                newBounds
-            )
+        AfterConversionPass(project, JavaToKotlinConverterFactory.createPostProcessor(formatCode = true)).run(targetFile, newBounds)
 
         conversionPerformed = true
     }

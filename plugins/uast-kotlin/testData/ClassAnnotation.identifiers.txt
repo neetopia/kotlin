@@ -1,7 +1,7 @@
 Test -> UAnnotation (fqName = null)
 A -> UClass (name = A)
 MyAnnotation -> UClass (name = MyAnnotation)
-text -> UAnnotationMethod (name = text)
+text -> [!] UnknownKotlinExpression (VALUE_PARAMETER)
 String -> USimpleNameReferenceExpression (identifier = String)
 MyAnnotation -> UAnnotation (fqName = MyAnnotation)
 B -> UClass (name = B)

@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.ir.backend.js.utils
@@ -105,7 +105,7 @@ private val RESERVED_IDENTIFIERS = setOf(
 
     "Error", "Object", "Number",
 
-    "Math", "String", "Boolean", "Date", "Array", "RegExp", "JSON", "Map",
+    "Math", "String", "Boolean", "Date", "Array", "RegExp", "JSON",
 
     // global identifiers usually declared in know environments (node.js, browser, require.js, WebWorkers, etc)
     "require", "define", "module", "window", "self"

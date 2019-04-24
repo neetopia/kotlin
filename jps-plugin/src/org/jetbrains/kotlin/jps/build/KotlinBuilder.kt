@@ -45,7 +45,7 @@ import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.ICReporterBase
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
-import org.jetbrains.kotlin.jps.incremental.JpsLookupStorageManager
+import org.jetbrains.kotlin.jps.incremental.withLookupStorage
 import org.jetbrains.kotlin.jps.model.kotlinKind
 import org.jetbrains.kotlin.jps.targets.KotlinJvmModuleBuildTarget
 import org.jetbrains.kotlin.jps.targets.KotlinModuleBuildTarget
@@ -249,7 +249,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
         val changesCollector = ChangesCollector()
         removedClasses.forEach { changesCollector.collectSignature(FqName(it), areSubclassesAffected = true) }
-        val affectedByRemovedClasses = changesCollector.getDirtyFiles(incrementalCaches.values, kotlinContext.lookupStorageManager)
+        val affectedByRemovedClasses = changesCollector.getDirtyFiles(incrementalCaches.values, context.projectDescriptor.dataManager)
 
         fsOperations.markFilesForCurrentRound(affectedByRemovedClasses)
     }
@@ -471,12 +471,12 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
                 )
             }
 
-            updateLookupStorage(lookupTracker, kotlinContext.lookupStorageManager, kotlinDirtyFilesHolder)
+            updateLookupStorage(lookupTracker, dataManager, kotlinDirtyFilesHolder)
 
             if (!isChunkRebuilding) {
                 changesCollector.processChangesUsingLookups(
                     kotlinDirtyFilesHolder.allDirtyFiles,
-                    kotlinContext.lookupStorageManager,
+                    dataManager,
                     fsOperations,
                     incrementalCaches.values
                 )
@@ -643,13 +643,13 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
     private fun updateLookupStorage(
         lookupTracker: LookupTracker,
-        lookupStorageManager: JpsLookupStorageManager,
+        dataManager: BuildDataManager,
         dirtyFilesHolder: KotlinDirtySourceFilesHolder
     ) {
         if (lookupTracker !is LookupTrackerImpl)
             throw AssertionError("Lookup tracker is expected to be LookupTrackerImpl, got ${lookupTracker::class.java}")
 
-        lookupStorageManager.withLookupStorage { lookupStorage ->
+        dataManager.withLookupStorage { lookupStorage ->
             lookupStorage.removeLookupsFrom(dirtyFilesHolder.allDirtyFiles.asSequence() + dirtyFilesHolder.allRemovedFilesFiles.asSequence())
             lookupStorage.addAll(lookupTracker.lookups.entrySet(), lookupTracker.pathInterner.values)
         }
@@ -673,7 +673,7 @@ private class JpsICReporter : ICReporterBase() {
 
 private fun ChangesCollector.processChangesUsingLookups(
     compiledFiles: Set<File>,
-    lookupStorageManager: JpsLookupStorageManager,
+    dataManager: BuildDataManager,
     fsOperations: FSOperationsHelper,
     caches: Iterable<JpsIncrementalCache>
 ) {
@@ -682,7 +682,7 @@ private fun ChangesCollector.processChangesUsingLookups(
 
     reporter.reportVerbose { "Start processing changes" }
 
-    val dirtyFiles = getDirtyFiles(allCaches, lookupStorageManager)
+    val dirtyFiles = getDirtyFiles(allCaches, dataManager)
     fsOperations.markInChunkOrDependents(dirtyFiles.asIterable(), excludeFiles = compiledFiles)
 
     reporter.reportVerbose { "End of processing changes" }
@@ -690,11 +690,11 @@ private fun ChangesCollector.processChangesUsingLookups(
 
 private fun ChangesCollector.getDirtyFiles(
     caches: Iterable<IncrementalCacheCommon>,
-    lookupStorageManager: JpsLookupStorageManager
+    dataManager: BuildDataManager
 ): Set<File> {
     val reporter = JpsICReporter()
     val (dirtyLookupSymbols, dirtyClassFqNames) = getDirtyData(caches, reporter)
-    val dirtyFilesFromLookups = lookupStorageManager.withLookupStorage {
+    val dirtyFilesFromLookups = dataManager.withLookupStorage {
         mapLookupSymbolsToFiles(it, dirtyLookupSymbols, reporter)
     }
     return dirtyFilesFromLookups + mapClassesFqNamesToFiles(caches, dirtyClassFqNames, reporter)

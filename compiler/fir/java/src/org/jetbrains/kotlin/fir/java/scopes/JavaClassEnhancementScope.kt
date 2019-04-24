@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.fir.java.scopes
@@ -19,11 +19,9 @@ import org.jetbrains.kotlin.fir.java.enhancement.*
 import org.jetbrains.kotlin.fir.java.enhancement.EnhancementSignatureParts
 import org.jetbrains.kotlin.fir.java.toNotNullConeKotlinType
 import org.jetbrains.kotlin.fir.java.types.FirJavaTypeRef
-import org.jetbrains.kotlin.fir.render
 import org.jetbrains.kotlin.fir.scopes.FirScope
 import org.jetbrains.kotlin.fir.scopes.ProcessorAction
 import org.jetbrains.kotlin.fir.symbols.*
-import org.jetbrains.kotlin.fir.symbols.impl.FirAccessorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.*
@@ -76,43 +74,30 @@ class JavaClassEnhancementScope(
     private fun enhance(
         original: ConeVariableSymbol,
         name: Name
-    ): ConePropertySymbol {
-        when (val firElement = (original as FirBasedSymbol<*>).fir) {
-            is FirJavaField -> {
+    ): FirPropertySymbol {
+        val firField = (original as FirBasedSymbol<*>).fir as? FirJavaField ?: error("Can't make enhancement for $original")
 
-                val memberContext = context.copyWithNewDefaultTypeQualifiers(typeQualifierResolver, jsr305State, firElement.annotations)
-                val newReturnTypeRef = enhanceReturnType(firElement, emptyList(), memberContext, null)
+        val memberContext = context.copyWithNewDefaultTypeQualifiers(typeQualifierResolver, jsr305State, firField.annotations)
+        val newReturnTypeRef = enhanceReturnType(firField, emptyList(), memberContext, null)
 
-                val symbol = FirPropertySymbol(original.callableId)
-                with(firElement) {
-                    FirMemberPropertyImpl(
-                        this@JavaClassEnhancementScope.session, null, symbol, name,
-                        visibility, modality, isExpect, isActual, isOverride,
-                        isConst = false, isLateInit = false,
-                        receiverTypeRef = null,
-                        returnTypeRef = newReturnTypeRef,
-                        isVar = isVar, initializer = null,
-                        getter = FirDefaultPropertyGetter(this@JavaClassEnhancementScope.session, null, newReturnTypeRef, visibility),
-                        setter = FirDefaultPropertySetter(this@JavaClassEnhancementScope.session, null, newReturnTypeRef, visibility),
-                        delegate = null
-                    ).apply {
-                        annotations += firElement.annotations
-                        status.isStatic = firElement.isStatic
-                    }
-                }
-                return symbol
-            }
-            is FirJavaMethod -> {
-                original as FirAccessorSymbol
-                return enhanceMethod(
-                    firElement, original.accessorId, original.accessorId.callableName, isAccessor = true, propertyId = original.callableId
-                ) as FirAccessorSymbol
-            }
-            else -> {
-                if (original is ConePropertySymbol) return original
-                error("Can't make enhancement for $original: `${firElement.render()}`")
+        val symbol = FirPropertySymbol(original.callableId)
+        with(firField) {
+            FirMemberPropertyImpl(
+                this@JavaClassEnhancementScope.session, null, symbol, name,
+                visibility, modality, isExpect, isActual, isOverride,
+                isConst = false, isLateInit = false,
+                receiverTypeRef = null,
+                returnTypeRef = newReturnTypeRef,
+                isVar = isVar, initializer = null,
+                getter = FirDefaultPropertyGetter(this@JavaClassEnhancementScope.session, null, newReturnTypeRef, visibility),
+                setter = FirDefaultPropertySetter(this@JavaClassEnhancementScope.session, null, newReturnTypeRef, visibility),
+                delegate = null
+            ).apply {
+                annotations += firField.annotations
+                status.isStatic = firField.isStatic
             }
         }
+        return symbol
     }
 
     private fun enhance(
@@ -122,17 +107,7 @@ class JavaClassEnhancementScope(
         val firMethod = (original as FirFunctionSymbol).fir as? FirFunction
 
         if (firMethod !is FirJavaMethod && firMethod !is FirJavaConstructor || firMethod !is FirCallableMemberDeclaration) return original
-        return enhanceMethod(firMethod, original.callableId, name) as FirFunctionSymbol
-    }
 
-    private fun enhanceMethod(
-        firMethod: FirFunction,
-        methodId: CallableId,
-        name: Name,
-        isAccessor: Boolean = false,
-        propertyId: CallableId? = null
-    ): ConeCallableSymbol {
-        require(firMethod is FirCallableMemberDeclaration)
         val memberContext = context.copyWithNewDefaultTypeQualifiers(typeQualifierResolver, jsr305State, firMethod.annotations)
 
         val predefinedEnhancementInfo =
@@ -169,36 +144,25 @@ class JavaClassEnhancementScope(
             )
         }
 
-        val symbol = if (!isAccessor) FirFunctionSymbol(methodId) else FirAccessorSymbol(callableId = propertyId!!, accessorId = methodId)
-        val newValueParameters = firMethod.valueParameters.zip(newValueParameterInfo) { valueParameter, newInfo ->
-            val (newTypeRef, newDefaultValue) = newInfo
-            with(valueParameter) {
-                FirValueParameterImpl(
-                    this@JavaClassEnhancementScope.session, psi,
-                    this.name, newTypeRef,
-                    defaultValue ?: newDefaultValue, isCrossinline, isNoinline, isVararg
-                ).apply {
-                    annotations += valueParameter.annotations
-                }
-            }
-        }
-        val function = when (firMethod) {
-            is FirJavaConstructor -> FirConstructorImpl(
-                this@JavaClassEnhancementScope.session, null, symbol as FirFunctionSymbol,
-                newReceiverTypeRef, newReturnTypeRef
-            ).apply {
-                this.valueParameters += newValueParameters
-            }
-            else -> FirMemberFunctionImpl(
-                this@JavaClassEnhancementScope.session, null, symbol, name,
-                newReceiverTypeRef, newReturnTypeRef
-            ).apply {
-                this.valueParameters += newValueParameters
-            }
-        }
-        function.apply {
+        val symbol = FirFunctionSymbol(original.callableId)
+        FirMemberFunctionImpl(
+            this@JavaClassEnhancementScope.session, null, symbol, name,
+            newReceiverTypeRef, newReturnTypeRef
+        ).apply {
             status = firMethod.status as FirDeclarationStatusImpl
             annotations += firMethod.annotations
+            valueParameters += firMethod.valueParameters.zip(newValueParameterInfo) { valueParameter, newInfo ->
+                val (newTypeRef, newDefaultValue) = newInfo
+                with(valueParameter) {
+                    FirValueParameterImpl(
+                        this@JavaClassEnhancementScope.session, psi,
+                        this.name, newTypeRef,
+                        defaultValue ?: newDefaultValue, isCrossinline, isNoinline, isVararg
+                    ).apply {
+                        annotations += valueParameter.annotations
+                    }
+                }
+            }
         }
         return symbol
     }
@@ -286,7 +250,8 @@ class JavaClassEnhancementScope(
             typeInSignature = TypeInSignature.ValueParameter(hasReceiver, index)
         ).enhance(session, jsr305State, predefinedEnhancementInfo?.parametersInfo?.getOrNull(index))
         val firResolvedTypeRef = signatureParts.type
-        val defaultValueExpression = when (val defaultValue = ownerParameter.getDefaultValueFromAnnotation()) {
+        val defaultValue = ownerParameter.getDefaultValueFromAnnotation()
+        val defaultValueExpression = when (defaultValue) {
             NullDefaultValue -> FirConstExpressionImpl(session, null, IrConstKind.Null, null)
             is StringDefaultValue -> firResolvedTypeRef.type.lexicalCastFrom(session, defaultValue.value)
             null -> null

@@ -19,7 +19,16 @@ package org.jetbrains.kotlin.generators.tests
 import org.jetbrains.kotlin.AbstractDataFlowValueRenderingTest
 import org.jetbrains.kotlin.addImport.AbstractAddImportTest
 import org.jetbrains.kotlin.allopen.AbstractBytecodeListingTestForAllOpen
+import org.jetbrains.kotlin.android.*
+import org.jetbrains.kotlin.android.annotator.AbstractAndroidGutterIconTest
+import org.jetbrains.kotlin.android.configure.AbstractConfigureProjectTest
+import org.jetbrains.kotlin.android.folding.AbstractAndroidResourceFoldingTest
+import org.jetbrains.kotlin.android.intention.AbstractAndroidIntentionTest
+import org.jetbrains.kotlin.android.intention.AbstractAndroidResourceIntentionTest
+import org.jetbrains.kotlin.android.lint.AbstractKotlinLintTest
 import org.jetbrains.kotlin.android.parcel.AbstractParcelBytecodeListingTest
+import org.jetbrains.kotlin.android.quickfix.AbstractAndroidLintQuickfixTest
+import org.jetbrains.kotlin.android.quickfix.AbstractAndroidQuickFixMultiFileTest
 import org.jetbrains.kotlin.android.synthetic.test.AbstractAndroidBoxTest
 import org.jetbrains.kotlin.android.synthetic.test.AbstractAndroidBytecodeShapeTest
 import org.jetbrains.kotlin.android.synthetic.test.AbstractAndroidSyntheticPropertyDescriptorTest
@@ -141,13 +150,15 @@ import org.jetbrains.kotlin.jps.build.*
 import org.jetbrains.kotlin.jps.build.dependeciestxt.actualizeMppJpsIncTestCaseDirs
 import org.jetbrains.kotlin.jps.incremental.AbstractJsProtoComparisonTest
 import org.jetbrains.kotlin.jps.incremental.AbstractJvmProtoComparisonTest
-import org.jetbrains.kotlin.kapt.cli.test.AbstractArgumentParsingTest
-import org.jetbrains.kotlin.kapt.cli.test.AbstractKaptToolIntegrationTest
 import org.jetbrains.kotlin.jvm.abi.AbstractCompareJvmAbiTest
 import org.jetbrains.kotlin.jvm.abi.AbstractCompileAgainstJvmAbiTest
 import org.jetbrains.kotlin.jvm.abi.AbstractJvmAbiContentTest
+import org.jetbrains.kotlin.kapt.cli.test.AbstractArgumentParsingTest
+import org.jetbrains.kotlin.kapt.cli.test.AbstractKaptToolIntegrationTest
 import org.jetbrains.kotlin.kapt3.test.AbstractClassFileToSourceStubConverterTest
 import org.jetbrains.kotlin.kapt3.test.AbstractKotlinKaptContextTest
+import org.jetbrains.kotlin.nj2k.AbstractNewJavaToKotlinConverterSingleFileTest
+import org.jetbrains.kotlin.nj2k.AbstractNullabilityAnalysisTest
 import org.jetbrains.kotlin.noarg.AbstractBlackBoxCodegenTestForNoArg
 import org.jetbrains.kotlin.noarg.AbstractBytecodeListingTestForNoArg
 import org.jetbrains.kotlin.psi.patternMatching.AbstractPsiUnifierTest
@@ -643,6 +654,10 @@ fun main(args: Array<String>) {
             model("debugger/tinyApp/src/evaluate/multipleBreakpoints", testMethod = "doMultipleBreakpointsTest")
         }
 
+        testClass<AbstractAsyncStackTraceTest> {
+            model("debugger/tinyApp/src/asyncStackTrace")
+        }
+
         testClass<AbstractFileRankingTest> {
             model("debugger/fileRanking")
         }
@@ -952,8 +967,14 @@ fun main(args: Array<String>) {
         }
     }
 
+    testGroup("nj2k/tests", "nj2k/testData/") {
+        testClass<AbstractNullabilityAnalysisTest> {
+            model("nullabilityAnalysis")
+        }
+    }
+
     testGroup("jps-plugin/jps-tests/test", "jps-plugin/testData") {
-        testClass<AbstractIncrementalJvmJpsTest> {
+        testClass<AbstractIncrementalJpsTest> {
             model("incremental/multiModule/common", extension = null, excludeParentDirs = true)
             model("incremental/multiModule/jvm", extension = null, excludeParentDirs = true)
             model("incremental/multiModule/multiplatform/custom", extension = null, excludeParentDirs = true)
@@ -1121,7 +1142,7 @@ fun main(args: Array<String>) {
             model("script", extension = "kts")
         }
     }
-/*
+
     testGroup("plugins/android-extensions/android-extensions-idea/tests", "plugins/android-extensions/android-extensions-idea/testData") {
         testClass<AbstractAndroidCompletionTest> {
             model("android/completion", recursive = false, extension = null)
@@ -1194,5 +1215,4 @@ fun main(args: Array<String>) {
             model("android/gutterIcon")
         }
     }
-*/
 }

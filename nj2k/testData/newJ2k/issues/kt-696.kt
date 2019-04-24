@@ -1,3 +1,5 @@
+package test
+
 internal open class Base {
     override fun hashCode(): Int {
         return super.hashCode()

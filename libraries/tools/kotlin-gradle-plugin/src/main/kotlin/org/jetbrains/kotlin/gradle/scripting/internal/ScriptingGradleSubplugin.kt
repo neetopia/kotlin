@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 @file:Suppress("UnstableApiUsage")
@@ -27,6 +27,8 @@ import org.jetbrains.kotlin.gradle.utils.isGradleVersionAtLeast
 import org.jetbrains.kotlin.scripting.definitions.ScriptDefinitionsFromClasspathDiscoverySource
 import java.io.File
 
+private const val MISCONFIGURATION_MESSAGE_SUFFIX = "the plugin is probably applied by a mistake"
+
 private const val MIN_SUPPORTED_GRADLE_MAJOR_VERSION = 5
 private const val MIN_SUPPORTED_GRADLE_MINOR_VERSION = 0
 
@@ -34,8 +36,6 @@ private const val SCRIPTING_LOG_PREFIX = "kotlin scripting plugin:"
 
 class ScriptingGradleSubplugin : Plugin<Project> {
     companion object {
-        const val MISCONFIGURATION_MESSAGE_SUFFIX = "the plugin is probably applied by a mistake"
-
         fun isEnabled(project: Project) = project.plugins.findPlugin(ScriptingGradleSubplugin::class.java) != null
 
         fun configureForSourceSet(project: Project, sourceSetName: String) {
@@ -44,7 +44,6 @@ class ScriptingGradleSubplugin : Plugin<Project> {
                 isCanBeConsumed = false
                 description = "Script filename extensions discovery classpath configuration"
             }
-            project.logger.info("$SCRIPTING_LOG_PREFIX created the scripting discovery configuration: ${discoveryConfiguration.name}")
 
             configureDiscoveryTransformation(project, discoveryConfiguration, getDiscoveryResultsConfigurationName(sourceSetName))
         }
@@ -62,17 +61,14 @@ class ScriptingGradleSubplugin : Plugin<Project> {
 
                         try {
                             val discoveryClasspathConfigurationName = getDiscoveryClasspathConfigurationName(task.sourceSetName)
-                            val discoveryClasspathConfiguration = project.configurations.findByName(discoveryClasspathConfigurationName)
-                            when {
-                                discoveryClasspathConfiguration == null ->
-                                    project.logger.warn("$SCRIPTING_LOG_PREFIX $project.${task.name} - configuration not found: $discoveryClasspathConfigurationName, $MISCONFIGURATION_MESSAGE_SUFFIX")
-                                discoveryClasspathConfiguration.allDependencies.isEmpty() -> {
-                                    // skip further checks - user did not configured any discovery sources
-                                }
-                                !isGradleVersionAtLeast(MIN_SUPPORTED_GRADLE_MAJOR_VERSION, MIN_SUPPORTED_GRADLE_MINOR_VERSION) ->
-                                    project.logger.warn("$SCRIPTING_LOG_PREFIX incompatible Gradle version. Please use the plugin with Gradle version $MIN_SUPPORTED_GRADLE_MAJOR_VERSION.$MIN_SUPPORTED_GRADLE_MINOR_VERSION or newer.")
-                                else ->
+                            if (project.configurations.findByName(discoveryClasspathConfigurationName)?.allDependencies?.isEmpty() == false) {
+                                if (isGradleVersionAtLeast(MIN_SUPPORTED_GRADLE_MAJOR_VERSION, MIN_SUPPORTED_GRADLE_MINOR_VERSION)) {
                                     configureScriptsExtensions(project, javaPluginConvention, task.sourceSetName)
+                                } else {
+                                    project.logger.warn("$SCRIPTING_LOG_PREFIX incompatible Gradle version. Please use the plugin with Gradle version $MIN_SUPPORTED_GRADLE_MAJOR_VERSION.$MIN_SUPPORTED_GRADLE_MINOR_VERSION or newer.")
+                                }
+                            } else {
+                                project.logger.warn("$SCRIPTING_LOG_PREFIX $project.${task.name} - configuration not found: $discoveryClasspathConfigurationName, $MISCONFIGURATION_MESSAGE_SUFFIX")
                             }
                         } catch (e: IllegalStateException) {
                             project.logger.warn("$SCRIPTING_LOG_PREFIX applied in the non-supported environment (error received: ${e.message})")

@@ -1,7 +1,5 @@
 enum class EnumClass {
-    NORTH, SOUTH, WEST, EAST;
-
-    fun fun_1() {}
+    NORTH, SOUTH, WEST, EAST
 }
 
 enum class EnumClassSingle {

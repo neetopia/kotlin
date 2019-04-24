@@ -1,15 +1,6 @@
-import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer.COMPILE
-
 plugins {
-    maven
     kotlin("jvm")
     id("jps-compatible")
-}
-
-val mavenCompileScope by configurations.creating {
-    the<MavenPluginConvention>()
-        .conf2ScopeMappings
-        .addMapping(0, this, COMPILE)
 }
 
 description = "Kotlin/Native deserializer and library reader"
@@ -22,7 +13,7 @@ dependencies {
     compileOnly(project(":compiler:cli-common"))
 
     // This dependency is necessary to keep the right dependency record inside of POM file:
-    mavenCompileScope(projectRuntimeJar(":kotlin-compiler"))
+    compile(projectRuntimeJar(":kotlin-compiler"))
 
     compile(project(":kotlin-native:kotlin-native-utils"))
 }

@@ -79,13 +79,12 @@ class Java8Class {
         constructorWithoutParams.invoke();
 
         Function1<Integer, String> constructorWithParam = Test::testOverloads;
-        constructorWithParam.invoke(2) + 42;
+        constructorWithParam.invoke(2);
     }
 
     public void testGenericFunctions() {
         Function0<List<String>> emptyList = Collections::emptyList;
-        List<String> list = emptyList.invoke();
-        list.get(0);
+        emptyList.invoke();
     }
 
     public static int staticFun() { return 1; }

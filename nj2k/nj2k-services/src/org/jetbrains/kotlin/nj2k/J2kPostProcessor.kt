@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.idea.formatter.commitAndUnblockDocument
 import org.jetbrains.kotlin.idea.util.ImportInsertHelper
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
-import org.jetbrains.kotlin.j2k.ConverterContext
+import org.jetbrains.kotlin.j2k.ConverterSettings
 import org.jetbrains.kotlin.j2k.PostProcessor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.nj2k.nullabilityAnalysis.AnalysisScope
@@ -47,7 +47,10 @@ import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
 import org.jetbrains.kotlin.resolve.diagnostics.Diagnostics
 import java.util.*
 
-class NewJ2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
+class NewJ2kPostProcessor(
+    private val formatCode: Boolean,
+    private val settings: ConverterSettings?
+) : PostProcessor {
     override fun insertImport(file: KtFile, fqName: FqName) {
         ApplicationManager.getApplication().invokeAndWait {
             runWriteAction {
@@ -63,14 +66,10 @@ class NewJ2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
         PROCESS
     }
 
-    private suspend fun List<NewJ2kPostProcessing>.runProcessings(
-        file: KtFile,
-        converterContext: NewJ2kConverterContext,
-        rangeMarker: RangeMarker?
-    ): Boolean {
+    private suspend fun List<NewJ2kPostProcessing>.runProcessings(file: KtFile, rangeMarker: RangeMarker?): Boolean {
         var modificationStamp: Long? = file.modificationStamp
         val elementToActions = runReadAction {
-            collectAvailableActions(this, file, converterContext, rangeMarker)
+            collectAvailableActions(this, file, rangeMarker)
         }
         withContext(EDT) {
             for ((element, action, _, writeActionNeeded) in elementToActions) {
@@ -101,24 +100,23 @@ class NewJ2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
     }
 
 
-    private suspend fun Processing.runProcessings(file: KtFile, converterContext: NewJ2kConverterContext, rangeMarker: RangeMarker?) {
+    private suspend fun Processing.runProcessings(file: KtFile, rangeMarker: RangeMarker?) {
         when (this) {
-            is SingleOneTimeProcessing -> listOf(processing).runProcessings(file, converterContext, rangeMarker)
+            is SingleOneTimeProcessing -> listOf(processing).runProcessings(file, rangeMarker)
             is RepeatableProcessingGroup ->
                 do {
-                    val needContinue = processings.runProcessings(file, converterContext, rangeMarker)
+                    val needContinue = processings.runProcessings(file, rangeMarker)
                 } while (needContinue)
             is OneTimeProcessingGroup ->
-                processings.forEach { it.runProcessings(file, converterContext, rangeMarker) }
+                processings.forEach { it.runProcessings(file, rangeMarker) }
         }
     }
 
 
-    override fun doAdditionalProcessing(file: KtFile, converterContext: ConverterContext?, rangeMarker: RangeMarker?) {
+    override fun doAdditionalProcessing(file: KtFile, rangeMarker: RangeMarker?) {
         runBlocking(EDT.ModalityStateElement(ModalityState.defaultModalityState())) {
             withContext(EDT) {
                 NullabilityAnalysisFacade(
-                    converterContext as NewJ2kConverterContext,
                     getTypeElementNullability = ::nullabilityByUndefinedNullabilityComment,
                     prepareTypeElement = ::prepareTypeElementByMakingAllTypesNullableConsideringNullabilityComment,
                     debugPrint = false
@@ -133,7 +131,7 @@ class NewJ2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
                     }
                 }
             }
-            NewJ2KPostProcessingRegistrar.mainProcessings.runProcessings(file, converterContext as NewJ2kConverterContext, rangeMarker)
+            NewJ2KPostProcessingRegistrar.mainProcessings.runProcessings(file, rangeMarker)
             withContext(EDT) {
                 runWriteAction {
                     file.commitAndUnblockDocument()
@@ -161,7 +159,6 @@ class NewJ2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
     private fun collectAvailableActions(
         processings: Collection<NewJ2kPostProcessing>,
         file: KtFile,
-        context: NewJ2kConverterContext,
         rangeMarker: RangeMarker?
     ): List<ActionData> {
         val diagnostics = analyzeFileRange(file, rangeMarker)
@@ -177,7 +174,7 @@ class NewJ2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
 
                 if (rangeResult == RangeFilterResult.PROCESS) {
                     processings.forEach { processing ->
-                        val action = processing.createAction(element, diagnostics, context.converter.settings)
+                        val action = processing.createAction(element, diagnostics, settings)
                         if (action != null) {
                             availableActions.add(
                                 ActionData(

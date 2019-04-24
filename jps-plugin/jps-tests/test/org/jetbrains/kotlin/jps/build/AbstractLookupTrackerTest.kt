@@ -88,7 +88,6 @@ abstract class AbstractJvmLookupTrackerTest : AbstractLookupTrackerTest() {
         )
 
         val args = K2JVMCompilerArguments().apply {
-            disableDefaultScriptingPlugin = true
             buildFile = moduleFile.canonicalPath
             reportOutputFiles = true
         }

@@ -37,7 +37,7 @@ fun test() {
             baz {
                 y()
 
-                <!FUNCTION_EXPECTED, NI;DEBUG_INFO_UNRESOLVED_WITH_TARGET, UNRESOLVED_REFERENCE_WRONG_RECEIVER!>x<!>()
+                <!NI;DEBUG_INFO_UNRESOLVED_WITH_TARGET, NI;FUNCTION_EXPECTED, OI;FUNCTION_EXPECTED, UNRESOLVED_REFERENCE_WRONG_RECEIVER!>x<!>()
 
                 with(D()) {
                     x()

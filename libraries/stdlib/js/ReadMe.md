@@ -1,5 +1,9 @@
-This directory contains shared sources of Kotlin/JS Standard Library for current and IR backends.
+## Kotlin Standard Library for JS
 
-Note that `stdlib/js/src/generated` is not shared but used exclusively for current `js-v1` backend.
+This module produces a `kotlin-stdlib-js` jar which contains all the Kotlin standard kotlin library code compiled to JavaScript.
 
-Kotlin/JS Standard Library module is moved to `libraries/stdlib/js-v1`.
+The tests of this module can be run and debugged inside any browser by opening the **web/index.html** file in this directory to run the test cases using [Mocha](https://mochajs.org/).
+
+You should execute `installMocha` gradle task before running these tests to fetch the required Mocha dependency and `testClasses` task to compile test code.
+
+These tests are also run during CI build with [Node.js plugin](https://github.com/srs/gradle-node-plugin).

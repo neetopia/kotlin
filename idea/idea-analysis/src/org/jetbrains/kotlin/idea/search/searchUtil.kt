@@ -34,6 +34,7 @@ import com.intellij.util.CommonProcessors
 import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.idea.util.application.runReadAction
+import org.jetbrains.kotlin.idea.util.compat.psiSearchHelperInstance
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
@@ -102,7 +103,7 @@ fun SearchScope.excludeFileTypes(vararg fileTypes: FileType): SearchScope {
 fun ReferencesSearch.SearchParameters.effectiveSearchScope(element: PsiElement): SearchScope {
     if (element == elementToSearch) return effectiveSearchScope
     if (isIgnoreAccessScope) return scopeDeterminedByUser
-    val accessScope = PsiSearchHelper.getInstance(element.project).getUseScope(element)
+    val accessScope = psiSearchHelperInstance(element.project).getUseScope(element)
     return scopeDeterminedByUser.intersectWith(accessScope)
 }
 
@@ -125,7 +126,7 @@ fun PsiSearchHelper.isCheapEnoughToSearchConsideringOperators(
 
 fun findScriptsWithUsages(declaration: KtNamedDeclaration): List<VirtualFile> {
     val project = declaration.project
-    val scope = PsiSearchHelper.getInstance(project).getUseScope(declaration) as? GlobalSearchScope
+    val scope = psiSearchHelperInstance(project).getUseScope(declaration) as? GlobalSearchScope
         ?: return emptyList()
 
     val name = declaration.name.takeIf { it?.isNotBlank() == true } ?: return emptyList()

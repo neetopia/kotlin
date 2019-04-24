@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.framework
@@ -15,8 +15,8 @@ import org.jetbrains.kotlin.platform.impl.isCommon
 import org.jetbrains.kotlin.platform.impl.isJavaScript
 import org.jetbrains.kotlin.platform.impl.isJvm
 import org.jetbrains.kotlin.platform.impl.isKotlinNative
-import org.jetbrains.kotlin.idea.statistics.FUSEventGroups
-import org.jetbrains.kotlin.idea.statistics.KotlinFUSLogger
+import org.jetbrains.kotlin.idea.statistics.KotlinEventTrigger
+import org.jetbrains.kotlin.idea.statistics.KotlinStatisticsTrigger
 
 class TargetRetrieveActivity : StartupActivity {
 
@@ -32,14 +32,14 @@ class TargetRetrieveActivity : StartupActivity {
             }
             when {
                 buildSystem == BuildSystemType.JPS ->
-                    KotlinFUSLogger.log(
-                        FUSEventGroups.JPSTarget,
-                        platform
+                    KotlinStatisticsTrigger.trigger(
+                            KotlinEventTrigger.KotlinJPSTargetTrigger,
+                            platform
                     )
                 buildSystem.toString().toLowerCase().contains("maven") ->
-                    KotlinFUSLogger.log(
-                        FUSEventGroups.MavenTarget,
-                        platform
+                    KotlinStatisticsTrigger.trigger(
+                            KotlinEventTrigger.KotlinMavenTargetTrigger,
+                            platform
                     )
             }
         }

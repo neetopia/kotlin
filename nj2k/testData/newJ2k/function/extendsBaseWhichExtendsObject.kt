@@ -1,6 +1,8 @@
 // ERROR: Unresolved reference: clone
 // ERROR: Unresolved reference: finalize
-internal class Test : Base(), Cloneable {
+package test
+
+internal class Test : Base() {
     override fun hashCode(): Int {
         return super.hashCode()
     }
@@ -24,7 +26,7 @@ internal class Test : Base(), Cloneable {
     }
 }
 
-internal open class Base : Cloneable {
+internal open class Base {
     override fun hashCode(): Int {
         return super.hashCode()
     }
@@ -34,7 +36,7 @@ internal open class Base : Cloneable {
     }
 
     @Throws(CloneNotSupportedException::class)
-    override fun clone(): Any {
+    protected open fun clone(): Any {
         return super.clone()
     }
 

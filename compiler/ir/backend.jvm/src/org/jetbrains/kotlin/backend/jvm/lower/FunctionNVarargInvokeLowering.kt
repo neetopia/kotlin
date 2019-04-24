@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.backend.jvm.lower
@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.descriptors.WrappedSimpleFunctionDescriptor
 import org.jetbrains.kotlin.backend.common.descriptors.WrappedValueParameterDescriptor
-import org.jetbrains.kotlin.backend.common.ir.copyTo
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.backend.common.lower.irIfThen
 import org.jetbrains.kotlin.backend.common.phaser.makeIrFilePhase
@@ -72,8 +71,7 @@ private class FunctionNVarargInvokeLowering(var context: JvmBackendContext) : Cl
             isSuspend = false
         ).apply {
             descriptor.bind(this)
-            parent = irClass
-            dispatchReceiverParameter = irClass.thisReceiver?.copyTo(this)
+            dispatchReceiverParameter = irClass.thisReceiver
             val varargParameterDescriptor = WrappedValueParameterDescriptor()
             val varargParam = IrValueParameterImpl(
                 UNDEFINED_OFFSET, UNDEFINED_OFFSET,
@@ -88,7 +86,6 @@ private class FunctionNVarargInvokeLowering(var context: JvmBackendContext) : Cl
             ).apply {
                 varargParameterDescriptor.bind(this)
             }
-            varargParam.parent = this
             valueParameters.add(varargParam)
             val irBuilder = context.createIrBuilder(symbol, UNDEFINED_OFFSET, UNDEFINED_OFFSET)
             body = irBuilder.irBlockBody(UNDEFINED_OFFSET, UNDEFINED_OFFSET) {

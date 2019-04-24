@@ -7,20 +7,13 @@ internal open class Base {
         return if (s != null) s + 1 else null
     }
 
-    open fun zoo(o: Any?): String? {
+    open fun zoo(o: Any?): String {
         return ""
-    }
-
-    open fun nya(s: String): String {
-        return s
     }
 }
 
 internal interface I {
     fun zoo(o: Any?): String?
-    fun nya(s: String): String {
-        return ""
-    }
 }
 
 internal class C : Base(), I {
@@ -32,11 +25,7 @@ internal class C : Base(), I {
         return ""
     }
 
-    override fun zoo(o: Any?): String? {
-        return ""
-    }
-
-    override fun nya(s: String): String {
+    override fun zoo(o: Any?): String {
         return ""
     }
 }

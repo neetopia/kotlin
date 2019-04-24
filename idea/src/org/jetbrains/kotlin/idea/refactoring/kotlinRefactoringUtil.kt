@@ -1,6 +1,6 @@
 /*
- * Copyright 2000-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.refactoring
@@ -28,7 +28,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.JavaProjectRootsUtil
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.ui.popup.*
+import com.intellij.openapi.ui.popup.JBPopup
+import com.intellij.openapi.ui.popup.JBPopupAdapter
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.LightweightWindowEvent
 import com.intellij.openapi.util.Pass
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
@@ -81,6 +84,7 @@ import org.jetbrains.kotlin.idea.refactoring.rename.canonicalRender
 import org.jetbrains.kotlin.idea.util.*
 import org.jetbrains.kotlin.idea.util.string.collapseSpaces
 import org.jetbrains.kotlin.j2k.ConverterSettings
+import org.jetbrains.kotlin.j2k.JavaToKotlinConverter
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.FqNameUnsafe
@@ -269,7 +273,7 @@ fun <T, E : PsiElement> getPsiElementPopup(
         }
     }
 
-    return with(PopupChooserBuilder<E>(list)) {
+    return with(PopupChooserBuilderWrapper<E>(list)) {
         title?.let { setTitle(it) }
         renderer.installSpeedSearch(this, true)
         setItemChoosenCallback {
@@ -639,10 +643,7 @@ fun createJavaClass(klass: KtClass, targetClass: PsiClass?, forcePlainClass: Boo
     return javaClass
 }
 
-fun PsiElement.j2kText(): String? =
-    convertToKotlin()?.results?.single()?.text //TODO: insert imports
-
-fun PsiElement.convertToKotlin(): org.jetbrains.kotlin.j2k.Result? {
+fun PsiElement.j2kText(): String? {
     if (language != JavaLanguage.INSTANCE) return null
 
     val j2kConverter =
@@ -651,7 +652,7 @@ fun PsiElement.convertToKotlin(): org.jetbrains.kotlin.j2k.Result? {
             ConverterSettings.defaultSettings,
             IdeaJavaToKotlinServices
         )
-    return j2kConverter.elementsToKotlin(listOf(this))
+    return j2kConverter.elementsToKotlin(listOf(this)).results.single()?.text ?: return null //TODO: insert imports
 }
 
 fun PsiExpression.j2k(): KtExpression? {

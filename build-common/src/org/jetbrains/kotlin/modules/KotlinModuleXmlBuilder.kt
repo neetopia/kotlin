@@ -16,6 +16,8 @@
 
 package org.jetbrains.kotlin.modules
 
+import com.intellij.openapi.util.io.FileUtil.toSystemIndependentName
+import com.intellij.openapi.util.text.StringUtil.escapeXml
 import org.jetbrains.kotlin.build.JvmSourceRoot
 import org.jetbrains.kotlin.cli.common.modules.ModuleXmlParser.*
 import org.jetbrains.kotlin.config.IncrementalCompilation
@@ -135,13 +137,6 @@ class KotlinModuleXmlBuilder {
     }
 
     private fun getEscapedPath(sourceFile: File): String {
-        return escapeXml(sourceFile.invariantSeparatorsPath)
-    }
-
-    private companion object {
-        private val xmlEscapeReplacement = mapOf("<" to "&lt;", ">" to "&gt;", "&" to "&amp;", "'" to "&#39;", "\"" to "&quot;")
-        private val xmlEscapeRegex = Regex(xmlEscapeReplacement.keys.joinToString("|", "(?:", ")") { Regex.escape(it) })
-
-        private fun escapeXml(string: String) = string.replace(xmlEscapeRegex) { xmlEscapeReplacement.getValue(it.value) }
+        return escapeXml(toSystemIndependentName(sourceFile.path))
     }
 }

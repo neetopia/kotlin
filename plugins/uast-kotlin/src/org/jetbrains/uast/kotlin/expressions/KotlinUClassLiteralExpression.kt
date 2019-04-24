@@ -18,7 +18,6 @@ package org.jetbrains.uast.kotlin
 
 import org.jetbrains.kotlin.psi.KtClassLiteralExpression
 import org.jetbrains.kotlin.resolve.BindingContext.DOUBLE_COLON_LHS
-import org.jetbrains.uast.DEFAULT_EXPRESSION_TYPES_LIST
 import org.jetbrains.uast.UClassLiteralExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
@@ -36,6 +35,6 @@ class KotlinUClassLiteralExpression(
         get() {
             if (type != null) return null
             val receiverExpression = psi.receiverExpression ?: return null
-            return KotlinConverter.convertExpression(receiverExpression, this, DEFAULT_EXPRESSION_TYPES_LIST)
+            return KotlinConverter.convertExpression(receiverExpression, this)
         }
 }

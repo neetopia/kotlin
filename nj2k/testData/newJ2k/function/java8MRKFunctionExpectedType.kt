@@ -1,4 +1,7 @@
+// ERROR: Type inference failed: Not enough information to infer parameter T in fun <T> emptyList(): List<T> Please specify it explicitly.
 package test
+
+import java.util.Collections
 
 internal class Test {
     fun memberFun(): Int {
@@ -25,9 +28,10 @@ internal class Java8Class {
     private val field = Java8Class()
 
     fun testStaticFunction() {
-        val staticFunFromSameClass: Function0<*> = { staticFun() }
+        val staticFunFromSameClass = { staticFun() }
         staticFunFromSameClass.invoke()
-        val staticFunFromAnotherClass: Function0<*> = { Test.staticFun() }
+
+        val staticFunFromAnotherClass = { Test.staticFun() }
         staticFunFromAnotherClass.invoke()
     }
 
@@ -38,28 +42,32 @@ internal class Java8Class {
 
     fun testMemberFunctionThroughObject() {
         val obj = Java8Class()
-        val memberFunFromSameClass: Function0<*> = { obj.memberFun() }
+        val memberFunFromSameClass = { obj.memberFun() }
         memberFunFromSameClass.invoke()
 
         val anotherObj = Test()
-        val memFunFromAnotherClass: Function0<*> = { anotherObj.memberFun() }
+        val memFunFromAnotherClass = { anotherObj.memberFun() }
         memFunFromAnotherClass.invoke()
-        val memberFunThroughObj1: Function0<*> = { field.memberFun() }
+
+        val memberFunThroughObj1 = { field.memberFun() }
         memberFunThroughObj1.invoke()
-        val memberFunThroughObj2: Function0<*> = { Test.field.memberFun() }
+        val memberFunThroughObj2 = { Test.field.memberFun() }
         memberFunThroughObj2.invoke()
-        val memberFunThroughObj3: Function0<*> = { Test.staticFun().memberFun() }
+        val memberFunThroughObj3 = { Test.staticFun().memberFun() }
         memberFunThroughObj3.invoke()
     }
 
     fun testConstructor() {
-        val constructorSameClass: Function0<*> = { Java8Class() }
+        val constructorSameClass = { Java8Class() }
         constructorSameClass.invoke()
-        val qualifiedConstructorSameClass: Function0<*> = { Java8Class() }
+
+        val qualifiedConstructorSameClass = { test.Java8Class() }
         qualifiedConstructorSameClass.invoke()
-        val constructorAnotherClass: Function0<*> = { Test() }
+
+        val constructorAnotherClass = { Test() }
         constructorAnotherClass.invoke()
-        val qualifiedConstructorAnotherClass: Function0<*> = { Test() }
+
+        val qualifiedConstructorAnotherClass = { test.Test() }
         qualifiedConstructorAnotherClass.invoke()
     }
 
@@ -73,13 +81,12 @@ internal class Java8Class {
         constructorWithoutParams.invoke()
 
         val constructorWithParam = { i: Int -> Test.testOverloads(i) }
-        constructorWithParam.invoke(2) + 42
+        constructorWithParam.invoke(2)
     }
 
     fun testGenericFunctions() {
-        val emptyList: Function0<kotlin.collections.List<String>> = { emptyList() }
-        val list = emptyList.invoke()
-        list[0]
+        val emptyList = { emptyList() }
+        emptyList.invoke()
     }
 
     fun memberFun(): Int {

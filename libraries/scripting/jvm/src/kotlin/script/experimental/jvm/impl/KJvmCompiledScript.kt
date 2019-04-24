@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package kotlin.script.experimental.jvm.impl
@@ -104,10 +104,11 @@ fun KJvmCompiledScript<*>.getOrCreateActualClassloader(evaluationConfiguration: 
         val module = compiledModule
             ?: throw IllegalStateException("Illegal call sequence, actualClassloader should be set before calling function on the class without module")
         val baseClassLoader = evaluationConfiguration[ScriptEvaluationConfiguration.jvm.baseClassLoader]
+        val moduleClassLoader = module.createClassLoader(baseClassLoader)
         val classLoaderWithDeps =
-            if (evaluationConfiguration[ScriptEvaluationConfiguration.jvm.loadDependencies] == false) baseClassLoader
-            else makeClassLoaderFromDependencies(baseClassLoader)
-        return module.createClassLoader(classLoaderWithDeps)
+            if (evaluationConfiguration[ScriptEvaluationConfiguration.jvm.loadDependencies] == false) moduleClassLoader
+            else makeClassLoaderFromDependencies(moduleClassLoader)
+        return classLoaderWithDeps
     }
 
 fun getConfigurationWithClassloader(
@@ -129,7 +130,7 @@ fun getConfigurationWithClassloader(
         }
     }
 
-private fun CompiledScript<*>.makeClassLoaderFromDependencies(baseClassLoader: ClassLoader?): ClassLoader? {
+private fun CompiledScript<*>.makeClassLoaderFromDependencies(baseClassLoader: ClassLoader): ClassLoader {
     val processedScripts = mutableSetOf<CompiledScript<*>>()
     fun seq(res: Sequence<CompiledScript<*>>, script: CompiledScript<*>): Sequence<CompiledScript<*>> {
         if (processedScripts.contains(script)) return res

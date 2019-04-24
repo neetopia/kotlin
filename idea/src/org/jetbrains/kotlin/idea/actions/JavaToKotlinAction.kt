@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.idea.actions
 
 import com.intellij.codeInsight.navigation.NavigationUtil
-import com.intellij.ide.highlighter.ArchiveFileType
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.ide.scratch.ScratchFileService
 import com.intellij.ide.scratch.ScratchRootType
@@ -48,6 +47,7 @@ import org.jetbrains.kotlin.idea.j2k.IdeaJavaToKotlinServices
 import org.jetbrains.kotlin.idea.j2k.JavaToKotlinConverterFactory
 import org.jetbrains.kotlin.idea.refactoring.toPsiFile
 import org.jetbrains.kotlin.idea.util.application.executeWriteCommand
+import org.jetbrains.kotlin.idea.util.application.progressIndicatorNullable
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.idea.util.isRunningInCidrIde
 import org.jetbrains.kotlin.j2k.ConverterSettings
@@ -121,7 +121,7 @@ class JavaToKotlinAction : AnAction() {
                 converterResult = converter.filesToKotlin(
                     javaFiles,
                     JavaToKotlinConverterFactory.createPostProcessor(formatCode = true),
-                    progress = ProgressManager.getInstance().progressIndicator!!
+                    progress = ProgressManager.getInstance().progressIndicatorNullable!!
                 )
             }
 
@@ -142,7 +142,7 @@ class JavaToKotlinAction : AnAction() {
                             {
                                 runReadAction {
                                     externalCodeUpdate = converterResult!!.externalCodeProcessing!!.prepareWriteOperation(
-                                        ProgressManager.getInstance().progressIndicator!!
+                                        ProgressManager.getInstance().progressIndicatorNullable!!
                                     )
                                 }
                             },
@@ -220,13 +220,10 @@ class JavaToKotlinAction : AnAction() {
     }
 
     private fun isAnyJavaFileSelected(project: Project, files: Array<VirtualFile>): Boolean {
-        if (files.any { it.isSuitableDirectory() }) return true // Giving up on directories
+        if (files.any { it.isDirectory }) return true // Giving up on directories
         val manager = PsiManager.getInstance(project)
         return files.any { it.extension == JavaFileType.DEFAULT_EXTENSION && manager.findFile(it) is PsiJavaFile && it.isWritable }
     }
-
-    private fun VirtualFile.isSuitableDirectory(): Boolean =
-        isDirectory && fileType !is ArchiveFileType && isWritable
 
     private fun selectedJavaFiles(e: AnActionEvent): Sequence<PsiJavaFile> {
         val virtualFiles = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY) ?: return sequenceOf()

@@ -30,6 +30,7 @@ import com.intellij.psi.PsiModifier
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.caches.resolve.findModuleDescriptor
 import org.jetbrains.kotlin.idea.codeInsight.DescriptorToSourceUtilsIde
+import org.jetbrains.kotlin.idea.util.application.progressIndicatorNullable
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.load.java.isFromJava
 import org.jetbrains.kotlin.name.FqName
@@ -55,7 +56,7 @@ class SearchNotPropertyCandidatesAction : AnAction() {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
                 {
                     runReadAction {
-                        ProgressManager.getInstance().progressIndicator!!.isIndeterminate = true
+                        ProgressManager.getInstance().progressIndicatorNullable!!.isIndeterminate = true
                         processAllDescriptors(packageDesc, project)
                     }
                 },

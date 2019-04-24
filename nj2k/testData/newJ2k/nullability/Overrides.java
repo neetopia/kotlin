@@ -11,14 +11,10 @@ class Base {
     }
 
     public String zoo(Object o){ return ""; }
-
-    public String nya(String s) { return s; }
 }
 
 interface I {
     @Nullable String zoo(@Nullable Object o);
-
-    public String nya(String s) { return ""; }
 }
 
 class C extends Base implements I {
@@ -27,6 +23,4 @@ class C extends Base implements I {
     public String bar(String s) { return ""; }
 
     public String zoo(Object o) { return ""; }
-
-    public String nya(String s) { return ""; }
 }

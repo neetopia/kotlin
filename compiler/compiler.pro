@@ -16,7 +16,6 @@ messages/**)
 
 -dontnote **
 -dontwarn com.intellij.util.ui.IsRetina*
--dontwarn com.intellij.util.ui.UIUtilities
 -dontwarn com.intellij.util.RetinaImage*
 -dontwarn apple.awt.*
 -dontwarn dk.brics.automaton.*

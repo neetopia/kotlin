@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.inspections;
@@ -4525,11 +4525,6 @@ public class LocalInspectionTestGenerated extends AbstractLocalInspectionTest {
             runTest("idea/testData/inspectionsLocal/moveVariableDeclarationIntoWhen/notApplicableInBinaryExpression.kt");
         }
 
-        @TestMetadata("notApplicableMultyLine.kt")
-        public void testNotApplicableMultyLine() throws Exception {
-            runTest("idea/testData/inspectionsLocal/moveVariableDeclarationIntoWhen/notApplicableMultyLine.kt");
-        }
-
         @TestMetadata("notApplicableOtherName.kt")
         public void testNotApplicableOtherName() throws Exception {
             runTest("idea/testData/inspectionsLocal/moveVariableDeclarationIntoWhen/notApplicableOtherName.kt");
@@ -6280,11 +6275,6 @@ public class LocalInspectionTestGenerated extends AbstractLocalInspectionTest {
             runTest("idea/testData/inspectionsLocal/removeRedundantQualifierName/asReceiver.kt");
         }
 
-        @TestMetadata("asReceiverProperty.kt")
-        public void testAsReceiverProperty() throws Exception {
-            runTest("idea/testData/inspectionsLocal/removeRedundantQualifierName/asReceiverProperty.kt");
-        }
-
         @TestMetadata("companionCollision.kt")
         public void testCompanionCollision() throws Exception {
             runTest("idea/testData/inspectionsLocal/removeRedundantQualifierName/companionCollision.kt");
@@ -6408,11 +6398,6 @@ public class LocalInspectionTestGenerated extends AbstractLocalInspectionTest {
         @TestMetadata("notApplicableAsReceiver.kt")
         public void testNotApplicableAsReceiver() throws Exception {
             runTest("idea/testData/inspectionsLocal/removeRedundantQualifierName/notApplicableAsReceiver.kt");
-        }
-
-        @TestMetadata("notApplicableAsReceiverProperty.kt")
-        public void testNotApplicableAsReceiverProperty() throws Exception {
-            runTest("idea/testData/inspectionsLocal/removeRedundantQualifierName/notApplicableAsReceiverProperty.kt");
         }
 
         @TestMetadata("notApplicableCollisionTopLevelClass.kt")
@@ -9818,34 +9803,6 @@ public class LocalInspectionTestGenerated extends AbstractLocalInspectionTest {
                     KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/inspectionsLocal/useExpressionBody/convertToExpressionBody/keepComments"), Pattern.compile("^([\\w\\-_]+)\\.(kt|kts)$"), TargetBackend.ANY, true);
                 }
             }
-        }
-    }
-
-    @TestMetadata("idea/testData/inspectionsLocal/usePropertyAccessSyntax")
-    @TestDataPath("$PROJECT_ROOT")
-    @RunWith(JUnit3RunnerWithInners.class)
-    public static class UsePropertyAccessSyntax extends AbstractLocalInspectionTest {
-        private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
-        }
-
-        public void testAllFilesPresentInUsePropertyAccessSyntax() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/inspectionsLocal/usePropertyAccessSyntax"), Pattern.compile("^([\\w\\-_]+)\\.(kt|kts)$"), TargetBackend.ANY, true);
-        }
-
-        @TestMetadata("caretOnValueArgumentList.kt")
-        public void testCaretOnValueArgumentList() throws Exception {
-            runTest("idea/testData/inspectionsLocal/usePropertyAccessSyntax/caretOnValueArgumentList.kt");
-        }
-
-        @TestMetadata("get.kt")
-        public void testGet() throws Exception {
-            runTest("idea/testData/inspectionsLocal/usePropertyAccessSyntax/get.kt");
-        }
-
-        @TestMetadata("set.kt")
-        public void testSet() throws Exception {
-            runTest("idea/testData/inspectionsLocal/usePropertyAccessSyntax/set.kt");
         }
     }
 

@@ -83,8 +83,6 @@ abstract class IntentionBasedInspection<TElement : PsiElement> private construct
     open fun additionalFixes(element: TElement): List<LocalQuickFix>? = null
 
     open fun inspectionTarget(element: TElement): PsiElement? = null
-    
-    open fun inspectionProblemText(element: TElement): String? = null
 
     private fun PsiElement.toRange(baseElement: PsiElement): TextRange {
         val start = getStartOffsetIn(baseElement)
@@ -128,7 +126,7 @@ abstract class IntentionBasedInspection<TElement : PsiElement> private construct
                     if (!allFixes.isEmpty()) {
                         holder.registerProblemWithoutOfflineInformation(
                                 targetElement,
-                                inspectionProblemText(element) ?: problemText ?: allFixes.first().name,
+                                problemText ?: allFixes.first().name,
                                 isOnTheFly,
                                 problemHighlightType(targetElement),
                                 range,

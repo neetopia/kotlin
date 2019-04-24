@@ -1,16 +1,13 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.quickfix
 
 import com.intellij.codeInsight.daemon.quickFix.ActionHint
 import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.codeInsight.intention.IntentionActionDelegate
-import com.intellij.codeInsight.intention.impl.config.IntentionActionWrapper
 import com.intellij.codeInspection.SuppressableProblemGroup
-import com.intellij.codeInspection.ex.QuickFixWrapper
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
@@ -21,8 +18,6 @@ import com.intellij.testFramework.LightProjectDescriptor
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.util.ui.UIUtil
 import junit.framework.TestCase
-import org.jetbrains.kotlin.idea.caches.resolve.ResolveInWriteActionException
-import org.jetbrains.kotlin.idea.caches.resolve.forceResolveInWriteActionCheckInTests
 import org.jetbrains.kotlin.idea.facet.KotlinFacet
 import org.jetbrains.kotlin.idea.test.*
 import org.jetbrains.kotlin.psi.KtFile
@@ -31,28 +26,8 @@ import org.junit.Assert
 import org.junit.ComparisonFailure
 import java.io.File
 import java.io.IOException
-import kotlin.collections.HashSet
 
 abstract class AbstractQuickFixTest : KotlinLightCodeInsightFixtureTestCase(), QuickFixTest {
-    companion object {
-        private val quickFixesAllowedToResolveInWriteAction = AllowedToResolveUnderWriteActionData(
-            "idea/testData/quickfix/allowResolveInWriteAction.txt",
-            """
-                # Actions that are allowed to resolve in write action. Normally this list shouldn't be extended and eventually should 
-                # be dropped. Please consider rewriting a quick-fix and remove resolve from it before adding a new entry to this list.
-            """.trimIndent()
-        )
-
-        private fun unwrapIntention(action: Any): Any {
-            return when (action) {
-                is IntentionActionDelegate -> unwrapIntention(action.delegate)
-                is IntentionActionWrapper -> unwrapIntention(action.delegate)
-                is QuickFixWrapper -> unwrapIntention(action.fix)
-                else -> action
-            }
-        }
-    }
-
     @Throws(Exception::class)
     protected fun doTest(beforeFileName: String) {
         val beforeFileText = FileUtil.loadFile(File(beforeFileName))
@@ -169,25 +144,12 @@ abstract class AbstractQuickFixTest : KotlinLightCodeInsightFixtureTestCase(), Q
         val intention = findActionWithText(actionHint.expectedText)
         if (actionHint.shouldPresent()) {
             if (intention == null) {
-                fail(
-                    "Action with text '" + actionHint.expectedText + "' not found\nAvailable actions: " +
-                            myFixture.availableIntentions.joinToString(prefix = "[", postfix = "]") { it.text })
-                return
-            }
-
-            val writeActionResolveHandler: () -> Unit = {
-                val unwrappedIntention = unwrapIntention(intention)
-
-                val intentionClassName = unwrappedIntention.javaClass.name
-                if (!quickFixesAllowedToResolveInWriteAction.isWriteActionAllowed(intentionClassName)) {
-                    throw ResolveInWriteActionException()
-                }
+                fail("Action with text '" + actionHint.expectedText + "' not found\nAvailable actions: " +
+                     myFixture.availableIntentions.joinToString(prefix = "[", postfix = "]") { it.text })
             }
 
             val stubComparisonFailure: ComparisonFailure? = try {
-                forceResolveInWriteActionCheckInTests(writeActionResolveHandler) {
-                    myFixture.launchAction(intention)
-                }
+                myFixture.launchAction(intention!!)
                 null
             } catch (comparisonFailure: ComparisonFailure) {
                 comparisonFailure

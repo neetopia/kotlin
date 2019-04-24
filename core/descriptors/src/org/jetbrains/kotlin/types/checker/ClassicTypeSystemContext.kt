@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.types.checker
@@ -8,13 +8,11 @@ package org.jetbrains.kotlin.types.checker
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns.FQ_NAMES
 import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.resolve.calls.inference.CapturedType
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasExactAnnotation
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasNoInferAnnotation
 import org.jetbrains.kotlin.resolve.constants.IntegerLiteralTypeConstructor
-import org.jetbrains.kotlin.resolve.descriptorUtil.isExactAnnotation
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.model.*
 import org.jetbrains.kotlin.types.model.CaptureStatus
@@ -343,12 +341,6 @@ interface ClassicTypeSystemContext : TypeSystemInferenceExtensionContext {
     override fun KotlinTypeMarker.removeAnnotations(): KotlinTypeMarker {
         require(this is UnwrappedType, this::errorMessage)
         return this.replaceAnnotations(Annotations.EMPTY)
-    }
-
-    override fun KotlinTypeMarker.removeExactAnnotation(): KotlinTypeMarker {
-        require(this is UnwrappedType, this::errorMessage)
-        val annotationsWithoutExact = this.annotations.filterNot(AnnotationDescriptor::isExactAnnotation)
-        return this.replaceAnnotations(Annotations.create(annotationsWithoutExact))
     }
 
     override fun KotlinTypeMarker.hasExactAnnotation(): Boolean {

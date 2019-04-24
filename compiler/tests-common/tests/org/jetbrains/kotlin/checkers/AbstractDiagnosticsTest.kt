@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.checkers
@@ -195,7 +195,7 @@ abstract class AbstractDiagnosticsTest : BaseDiagnosticsTest() {
             exceptionFromDynamicCallDescriptorsValidation = e
         }
 
-        KotlinTestUtils.assertEqualsToFile(getExpectedDiagnosticsFile(testDataFile), actualText.cleanupInferenceDiagnostics()) { s ->
+        KotlinTestUtils.assertEqualsToFile(getExpectedDiagnosticsFile(testDataFile), actualText.toString()) { s ->
             s.replace("COROUTINES_PACKAGE", coroutinesPackage)
         }
 
@@ -210,8 +210,6 @@ abstract class AbstractDiagnosticsTest : BaseDiagnosticsTest() {
             testDataFile, files, groupedByModule, modules, moduleBindings, languageVersionSettingsByModule
         )
     }
-
-    private fun StringBuilder.cleanupInferenceDiagnostics(): String = replace(Regex("NI;([\\S]*), OI;\\1([,!])")) { it.groupValues[1] + it.groupValues[2] }
 
     protected open fun getExpectedDiagnosticsFile(testDataFile: File): File {
         return testDataFile
