@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k
@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.idea.test.KotlinWithJdkAndRuntimeLightProjectDescrip
 import org.jetbrains.kotlin.nj2k.nullabilityAnalysis.AnalysisScope
 import org.jetbrains.kotlin.nj2k.nullabilityAnalysis.Nullability
 import org.jetbrains.kotlin.nj2k.nullabilityAnalysis.NullabilityAnalysisFacade
-import org.jetbrains.kotlin.nj2k.nullabilityAnalysis.preapareTypeElementByMakingAllTypesNullable
+import org.jetbrains.kotlin.nj2k.nullabilityAnalysis.prepareTypeElementByMakingAllTypesNullable
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.test.KotlinTestUtils
 import java.io.File
@@ -23,8 +23,9 @@ abstract class AbstractNullabilityAnalysisTest : KotlinLightCodeInsightFixtureTe
         val text = FileUtil.loadFile(file, true)
         val ktFile = myFixture.configureByText("converterTestFile.kt", text) as KtFile
         NullabilityAnalysisFacade(
-            getTypeElementNullability = { Nullability.UNKNOWN },
-            prepareTypeElement = ::preapareTypeElementByMakingAllTypesNullable,
+            NewJ2kConverterContext.DUMMY,
+            getTypeElementNullability = { _, _ -> Nullability.UNKNOWN },
+            prepareTypeElement = ::prepareTypeElementByMakingAllTypesNullable,
             debugPrint = false
         )
             .fixNullability(AnalysisScope(ktFile))

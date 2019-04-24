@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.ir.backend.js
@@ -148,7 +148,7 @@ class JsIrBackendContext(
             .filter { it.name != "LONG" && it.name != "CHAR" } // skip due to they have own explicit companions
             .map { it.typeName }
 
-        return numbers + listOf(Name.identifier("String"))
+        return numbers + listOf(Name.identifier("String"), Name.identifier("Boolean"))
     }
 
     val dynamicType: IrDynamicType = IrDynamicTypeImpl(null, emptyList(), Variance.INVARIANT)

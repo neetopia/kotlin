@@ -1,6 +1,6 @@
 /*
- * Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2000-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.fir.builder
@@ -312,7 +312,11 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
 
         private fun KtCallElement.extractArgumentsTo(container: FirAbstractCall) {
             for (argument in this.valueArguments) {
-                container.arguments += argument.toFirExpression()
+                val argumentExpression = argument.toFirExpression()
+                container.arguments += when (argument) {
+                    is KtLambdaArgument -> FirLambdaArgumentExpressionImpl(session, argument, argumentExpression)
+                    else -> argumentExpression
+                }
             }
         }
 
@@ -1212,14 +1216,15 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                     calleeReference = FirSimpleNamedReference(
                         this@RawFirBuilder.session, expression.operationReference, conventionCallName
                     )
+                    explicitReceiver = argument.toFirExpression("No operand")
                 }
             } else {
                 val firOperation = operationToken.toFirOperation()
                 FirOperatorCallImpl(
                     session, expression, firOperation
-                )
-            }.apply {
-                arguments += argument.toFirExpression("No operand")
+                ).apply {
+                    arguments += argument.toFirExpression("No operand")
+                }
             }
         }
 
@@ -1244,9 +1249,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 }
                 this.calleeReference = calleeReference
                 firFunctionCalls += this
-                for (argument in expression.valueArguments) {
-                    arguments += argument.toFirExpression()
-                }
+                expression.extractArgumentsTo(this)
                 for (typeArgument in expression.typeArguments) {
                     typeArguments += typeArgument.convert<FirTypeProjection>()
                 }

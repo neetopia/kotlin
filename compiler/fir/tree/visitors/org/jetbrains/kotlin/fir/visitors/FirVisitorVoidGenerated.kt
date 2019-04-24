@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license 
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 package org.jetbrains.kotlin.fir.visitors
 
@@ -232,6 +232,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitOperatorCall(typeOperatorCall, null)
     }
 
+    open fun visitStringConcatenationCall(stringConcatenationCall: FirStringConcatenationCall) {
+        visitCall(stringConcatenationCall, null)
+    }
+
     open fun visitClassReferenceExpression(classReferenceExpression: FirClassReferenceExpression) {
         visitExpression(classReferenceExpression, null)
     }
@@ -260,10 +264,6 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitJump(returnExpression, null)
     }
 
-    open fun visitNamedArgumentExpression(namedArgumentExpression: FirNamedArgumentExpression) {
-        visitExpression(namedArgumentExpression, null)
-    }
-
     open fun visitThrowExpression(throwExpression: FirThrowExpression) {
         visitExpression(throwExpression, null)
     }
@@ -274,6 +274,18 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     open fun visitWhenExpression(whenExpression: FirWhenExpression) {
         visitExpression(whenExpression, null)
+    }
+
+    open fun visitWrappedArgumentExpression(wrappedArgumentExpression: FirWrappedArgumentExpression) {
+        visitExpression(wrappedArgumentExpression, null)
+    }
+
+    open fun visitLambdaArgumentExpression(lambdaArgumentExpression: FirLambdaArgumentExpression) {
+        visitWrappedArgumentExpression(lambdaArgumentExpression, null)
+    }
+
+    open fun visitNamedArgumentExpression(namedArgumentExpression: FirNamedArgumentExpression) {
+        visitWrappedArgumentExpression(namedArgumentExpression, null)
     }
 
     open fun visitLoop(loop: FirLoop) {
@@ -556,6 +568,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitLabeledElement(labeledElement)
     }
 
+    final override fun visitLambdaArgumentExpression(lambdaArgumentExpression: FirLambdaArgumentExpression, data: Nothing?) {
+        visitLambdaArgumentExpression(lambdaArgumentExpression)
+    }
+
     final override fun visitLoop(loop: FirLoop, data: Nothing?) {
         visitLoop(loop)
     }
@@ -656,6 +672,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitStatement(statement)
     }
 
+    final override fun visitStringConcatenationCall(stringConcatenationCall: FirStringConcatenationCall, data: Nothing?) {
+        visitStringConcatenationCall(stringConcatenationCall)
+    }
+
     final override fun visitSuperReference(superReference: FirSuperReference, data: Nothing?) {
         visitSuperReference(superReference)
     }
@@ -734,6 +754,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitWhileLoop(whileLoop: FirWhileLoop, data: Nothing?) {
         visitWhileLoop(whileLoop)
+    }
+
+    final override fun visitWrappedArgumentExpression(wrappedArgumentExpression: FirWrappedArgumentExpression, data: Nothing?) {
+        visitWrappedArgumentExpression(wrappedArgumentExpression)
     }
 
     final override fun visitElement(element: FirElement, data: Nothing?) {

@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.tree.impl
@@ -75,6 +75,28 @@ interface JKMethodSymbol : JKNamedSymbol {
     val parameterTypes: List<JKType>?
     val returnType: JKType?
 }
+
+val JKMethodSymbol.parameterNames: List<String>?
+    get() {
+        return when (this) {
+            is JKMultiverseFunctionSymbol -> target.valueParameters.map { it.name ?: return null }
+            is JKMultiverseMethodSymbol -> target.parameters.map { it.name ?: return null }
+            is JKUniverseMethodSymbol -> target.parameters.map { it.name.value }
+            is JKUnresolvedSymbol -> null
+            else -> null
+        }
+    }
+
+
+val JKMethodSymbol.isStatic: Boolean
+    get() = when (this) {
+        is JKMultiverseFunctionSymbol -> target.parent is KtObjectDeclaration
+        is JKMultiverseMethodSymbol -> target.hasModifierProperty(PsiModifier.STATIC)
+        is JKUniverseMethodSymbol -> target.parent?.parent?.safeAs<JKClass>()?.classKind == JKClass.ClassKind.COMPANION
+        is JKUnresolvedSymbol -> false
+        else -> false
+    }
+
 
 fun JKMethodSymbol.parameterTypesWithUnfoldedVarargs(): Sequence<JKType>? {
     val realParameterTypes = parameterTypes ?: return null

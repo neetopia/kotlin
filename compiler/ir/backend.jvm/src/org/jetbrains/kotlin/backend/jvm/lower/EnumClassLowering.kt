@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.backend.jvm.lower
@@ -153,7 +153,7 @@ private class EnumClassLowering(val context: JvmBackendContext) : ClassLoweringP
                     }
                 })
 
-                body = enumConstructor.body // will be transformed later
+                body = enumConstructor.body?.patchDeclarationParents(this)
 
                 loweredEnumConstructors[enumConstructor.symbol] = this
                 metadata = enumConstructor.metadata
@@ -219,7 +219,9 @@ private class EnumClassLowering(val context: JvmBackendContext) : ClassLoweringP
             context.declarationFactory.getFieldForEnumEntry(
                 enumEntry, (enumEntry.correspondingClass ?: enumEntry.parentAsClass).defaultType
             ).also {
-                it.initializer = IrExpressionBodyImpl(enumEntry.initializerExpression!!)
+                it.initializer = IrExpressionBodyImpl(
+                    enumEntry.initializerExpression!!.patchDeclarationParents(it)
+                )
                 it.annotations.addAll(enumEntry.annotations)
                 enumEntryFields.add(it)
                 enumEntriesByField[it] = enumEntry

@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.nullabilityAnalysis
@@ -12,6 +12,8 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.parentOfType
+import org.jetbrains.kotlin.nj2k.NewJ2kConverterContext
+import org.jetbrains.kotlin.nj2k.asLabel
 import org.jetbrains.kotlin.nj2k.postProcessing.resolve
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
@@ -20,7 +22,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 
 internal fun TypeVariable.changeNullability(toNullable: Boolean) {
-    typeElement.changeNullability(toNullable)
+    typeElement?.changeNullability(toNullable)
 }
 
 internal fun KtTypeElement.changeNullability(toNullable: Boolean) {
@@ -38,6 +40,7 @@ internal fun AnalysisContext.fixTypeVariablesNullability() {
     if (typeElementToTypeVariable.isEmpty()) return
 
     val deepComparator = Comparator<TypeVariable> { o1, o2 ->
+        if (o1.typeElement == null || o2.typeElement == null) return@Comparator -1
         if (o1.typeElement.isAncestor(o2.typeElement)) 1 else -1
     }
     for (typeVariableOwner in typeVariableOwners) {
@@ -73,22 +76,23 @@ internal fun KtTypeElement.classReference(): ClassReference {
 }
 
 class NullabilityAnalysisFacade(
-    private val getTypeElementNullability: (KtTypeElement) -> Nullability,
-    private val prepareTypeElement: (KtTypeElement) -> Unit,
+    private val conversionContext: NewJ2kConverterContext,
+    private val getTypeElementNullability: (KtTypeElement, NewJ2kConverterContext) -> Nullability,
+    private val prepareTypeElement: (KtTypeElement, NewJ2kConverterContext) -> Unit,
     private val debugPrint: Boolean
 ) {
     fun fixNullability(analysisScope: AnalysisScope) {
         CommandProcessor.getInstance().runUndoTransparentAction {
             runWriteAction {
-                analysisScope.prepareTypeElements(prepareTypeElement)
-                val context = ContextCreator(getTypeElementNullability).createContext(analysisScope)
+                analysisScope.prepareTypeElements(prepareTypeElement, conversionContext)
+                val context = ContextCreator(conversionContext, getTypeElementNullability).createContext(analysisScope)
                 if (debugPrint) {
                     with(Printer(context)) {
                         analysisScope.forEach { it.addTypeVariablesNames() }
                     }
                 }
 
-                val constraints = ConstraintsCollector(context, debugPrint).collectConstraints(analysisScope)
+                val constraints = ConstraintsCollector(context, conversionContext, debugPrint).collectConstraints(analysisScope)
                 Solver(context, debugPrint).solveConstraints(constraints)
                 context.fixTypeVariablesNullability()
                 analysisScope.clearUndefinedLabels()
@@ -97,12 +101,15 @@ class NullabilityAnalysisFacade(
     }
 }
 
-private fun AnalysisScope.prepareTypeElements(prepareTypeElement: (KtTypeElement) -> Unit) {
+private fun AnalysisScope.prepareTypeElements(
+    prepareTypeElement: (KtTypeElement, NewJ2kConverterContext) -> Unit,
+    conversionContext: NewJ2kConverterContext
+) {
     val typeElements = flatMap { it.collectDescendantsOfType<KtTypeReference>() }
     typeElements.forEach { typeReference ->
         val typeElement = typeReference.typeElement ?: return@forEach
         if (typeElement.parentOfType<KtSuperTypeCallEntry>() == null) {
-            prepareTypeElement(typeElement)
+            prepareTypeElement(typeElement, conversionContext)
         }
     }
 }
@@ -117,7 +124,7 @@ private fun AnalysisScope.clearUndefinedLabels() {
             }
 
             override fun visitComment(comment: PsiComment) {
-                if (comment.text == UNDEFINED_NULLABILITY_COMMENT) {
+                if (comment.text.asLabel() != null) {
                     comments += comment
                 }
             }

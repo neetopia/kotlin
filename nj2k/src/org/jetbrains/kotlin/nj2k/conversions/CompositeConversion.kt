@@ -1,35 +1,35 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.conversions
 
-import org.jetbrains.kotlin.nj2k.ConversionContext
+import org.jetbrains.kotlin.nj2k.NewJ2kConverterContext
 import org.jetbrains.kotlin.nj2k.tree.JKTreeElement
 
 class BatchPipelineConversion(val conversions: List<BatchBaseConversion>) : BatchBaseConversion {
-    override fun runConversion(treeRoots: List<JKTreeElement>, context: ConversionContext): Boolean {
+    override fun runConversion(treeRoots: List<JKTreeElement>, context: NewJ2kConverterContext): Boolean {
         return conversions.asSequence().map { it.runConversion(treeRoots, context) }.max() ?: false
     }
 }
 
 class SequentialPipelineConversion(val conversions: List<SequentialBaseConversion>) : SequentialBaseConversion {
-    override fun runConversion(treeRoot: JKTreeElement, context: ConversionContext): Boolean {
+    override fun runConversion(treeRoot: JKTreeElement, context: NewJ2kConverterContext): Boolean {
         return conversions.asSequence().map { it.runConversion(treeRoot, context) }.max() ?: false
     }
 }
 
 class BatchRepeatConversion(val conversion: BatchBaseConversion) : BatchBaseConversion {
 
-    override fun runConversion(treeRoots: List<JKTreeElement>, context: ConversionContext): Boolean {
+    override fun runConversion(treeRoots: List<JKTreeElement>, context: NewJ2kConverterContext): Boolean {
         return true in generateSequence { conversion.runConversion(treeRoots, context) }.takeWhile { it }
     }
 
 }
 
 class SequentialRepeatConversion(val conversion: SequentialBaseConversion) : SequentialBaseConversion {
-    override fun runConversion(treeRoot: JKTreeElement, context: ConversionContext): Boolean {
+    override fun runConversion(treeRoot: JKTreeElement, context: NewJ2kConverterContext): Boolean {
         return true in generateSequence { conversion.runConversion(treeRoot, context) }.takeWhile { it }
     }
 

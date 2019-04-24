@@ -22,7 +22,7 @@ sourceSets {
 }
 
 val unimplementedNativeBuiltIns =
-    (file("$rootDir/core/builtins/native/kotlin/").list().toSet() - file("$rootDir/libraries/stdlib/js/irRuntime/builtins/").list())
+    (file("$rootDir/core/builtins/native/kotlin/").list().toSet() - file("$rootDir/libraries/stdlib/js-ir/builtins/").list())
         .map { "core/builtins/native/kotlin/$it" }
 
 // Required to compile native builtins with the rest of runtime
@@ -35,76 +35,29 @@ val builtInsHeader = """@file:Suppress(
 )
 """
 
-val fullRuntimeSources by task<Copy> {
+val fullRuntimeSources by task<Sync> {
+
     val sources = listOf(
         "core/builtins/src/kotlin/",
         "libraries/stdlib/common/src/",
         "libraries/stdlib/src/kotlin/",
-        "libraries/stdlib/js/src/kotlin/",
-        "libraries/stdlib/js/src/generated/",
-        "libraries/stdlib/js/irRuntime/",
-        "libraries/stdlib/js/runtime/",
         "libraries/stdlib/unsigned/",
+        "libraries/stdlib/js/src/",
+        "libraries/stdlib/js/runtime/",
+        "libraries/stdlib/js-ir/builtins/",
+        "libraries/stdlib/js-ir/src/",
+        "libraries/stdlib/js-ir/runtime/",
 
         // TODO get rid - move to test module
         "js/js.translator/testData/_commonFiles/"
     ) + unimplementedNativeBuiltIns
 
     val excluded = listOf(
-        "libraries/stdlib/common/src/kotlin/JvmAnnotationsH.kt",
-        "libraries/stdlib/src/kotlin/annotations/Multiplatform.kt",
-        "libraries/stdlib/common/src/kotlin/NativeAnnotationsH.kt",
-
-        // TODO: Support Int.pow
-        "libraries/stdlib/js/src/kotlin/random/PlatformRandom.kt",
-
-        // Fails with: EXPERIMENTAL_IS_NOT_ENABLED
-        "libraries/stdlib/common/src/kotlin/annotations/Annotations.kt",
-
-        // Conflicts with libraries/stdlib/js/src/kotlin/annotations.kt
-        "libraries/stdlib/js/runtime/hacks.kt",
-
-        // TODO: Reuse in IR BE
-        "libraries/stdlib/js/runtime/Enum.kt",
+        // stdlib/js/src/generated is used exclusively for current `js-v1` backend.
+        "libraries/stdlib/js/src/generated/**",
 
         // JS-specific optimized version of emptyArray() already defined
-        "core/builtins/src/kotlin/ArrayIntrinsics.kt",
-
-        // Unnecessary for now
-        "libraries/stdlib/js/src/kotlin/dom/**",
-        "libraries/stdlib/js/src/kotlin/browser/**",
-
-        // TODO: fix compilation issues in arrayPlusCollection
-        // Replaced with irRuntime/kotlinHacks.kt
-        "libraries/stdlib/js/src/kotlin/kotlin.kt",
-
-        "libraries/stdlib/js/src/kotlin/currentBeMisc.kt",
-
-        // IR BE has its own generated sources
-        "libraries/stdlib/js/src/generated/**",
-        "libraries/stdlib/js/src/kotlin/collectionsExternal.kt",
-
-        // Full version is defined in stdlib
-        // This file is useful for smaller subset of runtime sources
-        "libraries/stdlib/js/irRuntime/smallRuntimeMissingDeclarations.kt",
-
-        // Mostly array-specific stuff
-        "libraries/stdlib/js/src/kotlin/builtins.kt",
-
-        // coroutines
-        // TODO: merge coroutines_13 with JS BE coroutines
-        "libraries/stdlib/js/src/kotlin/coroutines/intrinsics/IntrinsicsJs.kt",
-        "libraries/stdlib/js/src/kotlin/coroutines/CoroutineImpl.kt",
-
-        // Inlining of js fun doesn't update the variables inside
-        "libraries/stdlib/js/src/kotlin/jsTypeOf.kt",
-        "libraries/stdlib/js/src/kotlin/collections/utils.kt",
-
-        // TODO: Remove stub
-        "libraries/stdlib/js/src/kotlin/builtins.kt",
-
-        // Expect declarations get thrown away and libraries/kotlin.test/common/src/main/kotlin/kotlin/test/Assertions.kt doesn't compile
-        "libraries/stdlib/common/src/kotlin/NativeAnnotationsH.kt"
+        "core/builtins/src/kotlin/ArrayIntrinsics.kt"
     )
 
     sources.forEach { path ->
@@ -127,7 +80,7 @@ val fullRuntimeSources by task<Copy> {
     }
 }
 
-val reducedRuntimeSources by task<Copy> {
+val reducedRuntimeSources by task<Sync> {
     dependsOn(fullRuntimeSources)
 
     from(fullRuntimeSources.outputs.files.singleFile) {
@@ -151,8 +104,10 @@ val reducedRuntimeSources by task<Copy> {
                 "libraries/stdlib/common/src/kotlin/UMath.kt",
                 "libraries/stdlib/common/src/kotlin/collections/**",
                 "libraries/stdlib/common/src/kotlin/ioH.kt",
-                "libraries/stdlib/js/irRuntime/collectionsHacks.kt",
-                "libraries/stdlib/js/irRuntime/generated/**",
+                "libraries/stdlib/js-ir/runtime/collectionsHacks.kt",
+                "libraries/stdlib/js-ir/src/generated/**",
+                "libraries/stdlib/js/src/jquery/**",
+                "libraries/stdlib/js/src/org.w3c/**",
                 "libraries/stdlib/js/src/kotlin/char.kt",
                 "libraries/stdlib/js/src/kotlin/collections.kt",
                 "libraries/stdlib/js/src/kotlin/collections/**",
@@ -162,41 +117,39 @@ val reducedRuntimeSources by task<Copy> {
                 "libraries/stdlib/js/src/kotlin/debug.kt",
                 "libraries/stdlib/js/src/kotlin/grouping.kt",
                 "libraries/stdlib/js/src/kotlin/json.kt",
-                "libraries/stdlib/js/src/kotlin/numberConversions.kt",
                 "libraries/stdlib/js/src/kotlin/promise.kt",
-                "libraries/stdlib/js/src/kotlin/regex.kt",
                 "libraries/stdlib/js/src/kotlin/regexp.kt",
                 "libraries/stdlib/js/src/kotlin/sequence.kt",
-                "libraries/stdlib/js/src/kotlin/string.kt",
-                "libraries/stdlib/js/src/kotlin/stringsCode.kt",
-                "libraries/stdlib/js/src/kotlin/text.kt",
+                "libraries/stdlib/js/src/kotlin/text/**",
                 "libraries/stdlib/src/kotlin/collections/**",
                 "libraries/stdlib/src/kotlin/experimental/bitwiseOperations.kt",
                 "libraries/stdlib/src/kotlin/properties/Delegates.kt",
                 "libraries/stdlib/src/kotlin/random/URandom.kt",
                 "libraries/stdlib/src/kotlin/text/**",
                 "libraries/stdlib/src/kotlin/util/KotlinVersion.kt",
-                "libraries/stdlib/src/kotlin/util/Tuples.kt"
+                "libraries/stdlib/src/kotlin/util/Tuples.kt",
+                "libraries/stdlib/js/src/kotlin/dom/**",
+                "libraries/stdlib/js/src/kotlin/browser/**"
             )
         )
     }
 
-    from("$rootDir/libraries/stdlib/js/irRuntime/smallRuntimeMissingDeclarations.kt") {
-        into("libraries/stdlib/js/irRuntime/")
+    from("$rootDir/libraries/stdlib/js-ir/smallRuntime") {
+        into("libraries/stdlib/js-ir/runtime/")
     }
 
     into("$buildDir/reducedRuntime/src")
 }
 
 
-fun JavaExec.buildKLib(sources: List<String>, dependencies: List<String>, outPath: String) {
+fun JavaExec.buildKLib(sources: List<String>, dependencies: List<String>, outPath: String, commonSources: List<String>) {
     inputs.files(sources)
     outputs.dir(file(outPath).parent)
 
     classpath = sourceSets.test.get().runtimeClasspath
     main = "org.jetbrains.kotlin.ir.backend.js.GenerateIrRuntimeKt"
     workingDir = rootDir
-    args = sources.toList() + listOf("-o", outPath) + dependencies.flatMap { listOf("-d", it) }
+    args = sources.toList() + listOf("-o", outPath) + dependencies.flatMap { listOf("-d", it) } + commonSources.flatMap { listOf("-c", it) }
 
     passClasspathInJar()
 }
@@ -206,7 +159,9 @@ val generateFullRuntimeKLib by task<NoDebugJavaExec> {
 
     buildKLib(sources = listOf(fullRuntimeSources.outputs.files.singleFile.path),
               dependencies = emptyList(),
-              outPath = "$buildDir/fullRuntime/klib/JS_IR_RUNTIME.klm")
+              outPath = "$buildDir/fullRuntime/klib/JS_IR_RUNTIME.klm",
+              commonSources = listOf("common", "src", "unsigned").map { "$buildDir/fullRuntime/src/libraries/stdlib/$it" }
+    )
 }
 
 val generateReducedRuntimeKLib by task<NoDebugJavaExec> {
@@ -214,20 +169,23 @@ val generateReducedRuntimeKLib by task<NoDebugJavaExec> {
 
     buildKLib(sources = listOf(reducedRuntimeSources.outputs.files.singleFile.path),
               dependencies = emptyList(),
-              outPath = "$buildDir/reducedRuntime/klib/JS_IR_RUNTIME.klm")
+              outPath = "$buildDir/reducedRuntime/klib/JS_IR_RUNTIME.klm",
+              commonSources = listOf("common", "src", "unsigned").map { "$buildDir/reducedRuntime/src/libraries/stdlib/$it" }
+    )
 }
 
+val kotlinTestCommonSources = listOf(
+    "$rootDir/libraries/kotlin.test/annotations-common/src/main",
+    "$rootDir/libraries/kotlin.test/common/src/main"
+)
 val generateKotlinTestKLib by task<NoDebugJavaExec> {
     dependsOn(generateFullRuntimeKLib)
 
     buildKLib(
-        sources = listOf(
-            "$rootDir/libraries/kotlin.test/annotations-common/src/main",
-            "$rootDir/libraries/kotlin.test/common/src/main",
-            "$rootDir/libraries/kotlin.test/js/src/main"
-        ),
+        sources = listOf("$rootDir/libraries/kotlin.test/js/src/main") + kotlinTestCommonSources,
         dependencies = listOf("${generateFullRuntimeKLib.outputs.files.singleFile.path}/JS_IR_RUNTIME.klm"),
-        outPath = "$buildDir/kotlin.test/klib/kotlin.test.klm"
+        outPath = "$buildDir/kotlin.test/klib/kotlin.test.klm",
+        commonSources = kotlinTestCommonSources
     )
 }
 

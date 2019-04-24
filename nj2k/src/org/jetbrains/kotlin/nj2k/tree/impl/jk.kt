@@ -190,10 +190,11 @@ class JKParenthesizedExpressionImpl(expression: JKExpression) : JKParenthesizedE
     override var expression: JKExpression by child(expression)
 }
 
-class JKTypeCastExpressionImpl(override var expression: JKExpression, type: JKTypeElement) : JKTypeCastExpression, JKBranchElementBase(),
+class JKTypeCastExpressionImpl(expression: JKExpression, type: JKTypeElement) : JKTypeCastExpression, JKBranchElementBase(),
     PsiOwner by PsiOwnerImpl() {
     override fun <R, D> accept(visitor: JKVisitor<R, D>, data: D): R = visitor.visitTypeCastExpression(this, data)
 
+    override var expression by child(expression)
     override var type by child(type)
 }
 
@@ -391,11 +392,14 @@ class JKClassAccessExpressionImpl(override var identifier: JKClassSymbol) : JKCl
 class JKLambdaExpressionImpl(
     statement: JKStatement,
     parameters: List<JKParameter>,
+    functionalType: JKTypeElement = JKTypeElementImpl(JKNoTypeImpl),
     returnType: JKTypeElement = JKTypeElementImpl(JKContextType)//TODO use function type
 ) : JKLambdaExpression, JKBranchElementBase(), PsiOwner by PsiOwnerImpl() {
     override var statement by child(statement)
     override val returnType by child(returnType)
     override var parameters by children(parameters)
+    override var functionalType by child(functionalType)
+
     override fun <R, D> accept(visitor: JKVisitor<R, D>, data: D): R = visitor.visitLambdaExpression(this, data)
 }
 
@@ -634,4 +638,17 @@ class JKVisibilityModifierElementImpl(override var visibility: Visibility) : JKV
 
 class JKExtraModifierElementImpl(override var extraModifier: ExtraModifier) : JKExtraModifierElement() {
     override fun <R, D> accept(visitor: JKVisitor<R, D>, data: D): R = visitor.visitExtraModifierElement(this, data)
+}
+
+class JKMethodReferenceExpressionImpl(
+    qualifier: JKExpression,
+    override val identifier: JKNamedSymbol,
+    functionalType: JKTypeElement,
+    override val isConstructorCall: Boolean
+) : JKMethodReferenceExpression, JKBranchElementBase(), PsiOwner by PsiOwnerImpl() {
+    override val qualifier by child(qualifier)
+    override val functionalType by child(functionalType)
+
+
+    override fun <R, D> accept(visitor: JKVisitor<R, D>, data: D): R = visitor.visitMethodReferenceExpression(this, data)
 }

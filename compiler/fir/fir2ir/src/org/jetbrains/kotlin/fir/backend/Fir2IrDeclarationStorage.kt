@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.fir.backend
@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.fir.expressions.FirVariable
 import org.jetbrains.kotlin.fir.render
 import org.jetbrains.kotlin.fir.resolve.FirSymbolProvider
 import org.jetbrains.kotlin.fir.service
-import org.jetbrains.kotlin.fir.symbols.LibraryTypeParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.*
@@ -29,7 +28,6 @@ import org.jetbrains.kotlin.ir.util.SymbolTable
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
-import org.jetbrains.kotlin.types.Variance
 
 class Fir2IrDeclarationStorage(
     private val session: FirSession,
@@ -43,8 +41,6 @@ class Fir2IrDeclarationStorage(
     private val classCache = mutableMapOf<FirRegularClass, IrClass>()
 
     private val typeParameterCache = mutableMapOf<FirTypeParameter, IrTypeParameter>()
-
-    private val libraryTypeParameterCache = mutableMapOf<LibraryTypeParameterSymbol, IrTypeParameter>()
 
     private val functionCache = mutableMapOf<FirNamedFunction, IrSimpleFunction>()
 
@@ -411,24 +407,6 @@ class Fir2IrDeclarationStorage(
 
     fun getIrTypeParameterSymbol(firTypeParameterSymbol: FirTypeParameterSymbol): IrTypeParameterSymbol {
         val irTypeParameter = getIrTypeParameter(firTypeParameterSymbol.fir)
-        return irSymbolTable.referenceTypeParameter(irTypeParameter.descriptor)
-    }
-
-    fun getIrTypeParameterSymbol(typeParameterSymbol: LibraryTypeParameterSymbol): IrTypeParameterSymbol {
-        val irTypeParameter = libraryTypeParameterCache.getOrPut(typeParameterSymbol) {
-            val descriptor = WrappedTypeParameterDescriptor()
-            val origin = IrDeclarationOrigin.DEFINED
-            irSymbolTable.declareGlobalTypeParameter(-1, -1, origin, descriptor) { symbol ->
-                IrTypeParameterImpl(
-                    -1, -1, origin, symbol,
-                    typeParameterSymbol.name, -1,
-                    false,
-                    Variance.INVARIANT
-                ).apply {
-                    descriptor.bind(this)
-                }
-            }
-        }
         return irSymbolTable.referenceTypeParameter(irTypeParameter.descriptor)
     }
 

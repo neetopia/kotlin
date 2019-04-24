@@ -1,13 +1,13 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.conversions
 
 import com.intellij.psi.JavaTokenType
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.nj2k.ConversionContext
+import org.jetbrains.kotlin.nj2k.NewJ2kConverterContext
 import org.jetbrains.kotlin.nj2k.kotlinBinaryExpression
 import org.jetbrains.kotlin.nj2k.kotlinPostfixExpression
 import org.jetbrains.kotlin.nj2k.kotlinPrefixExpression
@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.nj2k.tree.*
 import org.jetbrains.kotlin.nj2k.tree.impl.*
 
 
-class OperatorExpressionConversion(private val context: ConversionContext) : RecursiveApplicableConversionBase() {
+class OperatorExpressionConversion(private val context: NewJ2kConverterContext) : RecursiveApplicableConversionBase() {
     override fun applyToElement(element: JKTreeElement): JKTreeElement {
         if (element !is JKOperatorExpression) return recurse(element)
         val operator = element.operator as? JKJavaOperatorImpl ?: return recurse(element)

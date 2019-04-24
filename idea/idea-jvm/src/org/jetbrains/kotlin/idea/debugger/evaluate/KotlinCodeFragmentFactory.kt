@@ -44,11 +44,11 @@ import org.jetbrains.kotlin.idea.codeInsight.CodeInsightUtils
 import org.jetbrains.kotlin.idea.debugger.KotlinEditorTextProvider
 import org.jetbrains.kotlin.idea.debugger.evaluate.compilation.DebugLabelPropertyDescriptorProvider
 import org.jetbrains.kotlin.idea.j2k.JavaToKotlinConverterFactory
+import org.jetbrains.kotlin.idea.refactoring.convertToKotlin
 import org.jetbrains.kotlin.idea.refactoring.j2k
 import org.jetbrains.kotlin.idea.refactoring.j2kText
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
 import org.jetbrains.kotlin.idea.util.application.executeWriteCommand
-import org.jetbrains.kotlin.idea.util.application.progressIndicatorNullable
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.idea.versions.getKotlinJvmRuntimeMarkerClass
 import org.jetbrains.kotlin.j2k.AfterConversionPass
@@ -81,7 +81,7 @@ class KotlinCodeFragmentFactory : CodeFragmentFactory() {
                 semaphore.down()
                 val nameRef = AtomicReference<KotlinType>()
                 val worker = object : KotlinRuntimeTypeEvaluator(
-                    null, expression, debuggerContext, ProgressManager.getInstance().progressIndicatorNullable!!
+                    null, expression, debuggerContext, ProgressManager.getInstance().progressIndicator!!
                 ) {
                     override fun typeCalculationFinished(type: KotlinType?) {
                         nameRef.set(type)
@@ -242,7 +242,8 @@ class KotlinCodeFragmentFactory : CodeFragmentFactory() {
                 var convertedFragment: KtExpressionCodeFragment? = null
                 project.executeWriteCommand("Convert java expression to kotlin in Evaluate Expression") {
                     try {
-                        val newText = javaExpression.j2kText()
+                        val (elementResults, _, conversionContext) = javaExpression.convertToKotlin() ?: return@executeWriteCommand
+                        val newText = elementResults.singleOrNull()?.text
                         val newImports = importList?.j2kText()
                         if (newText != null) {
                             convertedFragment = KtExpressionCodeFragment(
@@ -253,7 +254,12 @@ class KotlinCodeFragmentFactory : CodeFragmentFactory() {
                                 kotlinCodeFragment.context
                             )
 
-                            AfterConversionPass(project, JavaToKotlinConverterFactory.createPostProcessor(formatCode = false)).run(convertedFragment!!, range = null)
+                            AfterConversionPass(project, JavaToKotlinConverterFactory.createPostProcessor(formatCode = false))
+                                .run(
+                                    convertedFragment!!,
+                                    conversionContext,
+                                    range = null
+                                )
                         }
                     } catch (e: Throwable) {
                         // ignored because text can be invalid

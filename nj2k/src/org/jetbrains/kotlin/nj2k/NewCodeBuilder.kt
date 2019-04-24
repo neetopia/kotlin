@@ -28,8 +28,8 @@ import org.jetbrains.kotlin.nj2k.tree.visitors.JKVisitorWithCommentsPrinting
 import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
-class NewCodeBuilder {
-
+class NewCodeBuilder(context: NewJ2kConverterContext) {
+    private val elementInfoStorage = context.elementsInfoStorage
     val builder = StringBuilder()
     val printer = Printer(builder)
 
@@ -399,6 +399,10 @@ class NewCodeBuilder {
             renderModifiersList(ktFunction)
             printer.printWithNoIndent(" fun ")
             ktFunction.typeParameterList.accept(this)
+
+            elementInfoStorage.getOrCreateInfoForElement(ktFunction)?.also {
+                printer.printWithNoIndent(it.render())
+            }
             ktFunction.name.accept(this)
             renderTokenElement(ktFunction.leftParen)
             renderList(ktFunction.parameters) {
@@ -652,8 +656,8 @@ class NewCodeBuilder {
 
         private fun renderType(type: JKType, owner: JKTreeElement?) {
             if (type is JKNoTypeImpl) return
-            if (type.nullability == Nullability.Default) {
-                printer.print("/*UNDEFINED*/")
+            elementInfoStorage.getOrCreateInfoForElement(type)?.also {
+                printer.print(it.render())
             }
             when (type) {
                 is JKClassType -> {
@@ -698,7 +702,7 @@ class NewCodeBuilder {
             }
             renderClassSymbol(javaNewExpression.classSymbol, javaNewExpression)
             javaNewExpression.typeArgumentList.accept(this)
-            if (!javaNewExpression.classSymbol.isInterface()) {
+            if (!javaNewExpression.classSymbol.isInterface() || javaNewExpression.arguments.arguments.isNotEmpty()) {
                 printer.par(ROUND) {
                     javaNewExpression.arguments.accept(this)
                 }
@@ -771,6 +775,18 @@ class NewCodeBuilder {
             printer.printWithNoIndent(packageAccessExpression.identifier.name.escaped())
         }
 
+        override fun visitMethodReferenceExpressionRaw(methodReferenceExpression: JKMethodReferenceExpression) {
+            methodReferenceExpression.qualifier.accept(this)
+            printer.printWithNoIndent("::")
+            val needFqName = methodReferenceExpression.qualifier is JKStubExpression
+            val displayName =
+                if (needFqName) methodReferenceExpression.identifier.getDisplayName()
+                else methodReferenceExpression.identifier.name
+
+            printer.printWithNoIndent(displayName.escapedAsQualifiedName())
+
+        }
+
         override fun visitDelegationConstructorCallRaw(delegationConstructorCall: JKDelegationConstructorCall) {
             delegationConstructorCall.expression.accept(this)
             printer.par {
@@ -835,24 +851,35 @@ class NewCodeBuilder {
         }
 
         override fun visitLambdaExpressionRaw(lambdaExpression: JKLambdaExpression) {
-            printer.par(CURVED) {
-                if (lambdaExpression.statement.statements.size > 1)
-                    printer.println()
-                lambdaExpression.parameters.firstOrNull()?.accept(this)
-                lambdaExpression.parameters.asSequence().drop(1).forEach { printer.printWithNoIndent(", "); it.accept(this) }
-                if (lambdaExpression.parameters.isNotEmpty()) {
-                    printer.printWithNoIndent(" -> ")
-                }
+            val printLambda = {
+                printer.par(CURVED) {
+                    if (lambdaExpression.statement.statements.size > 1)
+                        printer.println()
+                    lambdaExpression.parameters.firstOrNull()?.accept(this)
+                    lambdaExpression.parameters.asSequence().drop(1).forEach { printer.printWithNoIndent(", "); it.accept(this) }
+                    if (lambdaExpression.parameters.isNotEmpty()) {
+                        printer.printWithNoIndent(" -> ")
+                    }
 
-                val statement = lambdaExpression.statement
-                if (statement is JKBlockStatement) {
-                    renderList(statement.block.statements, { printer.println() }) { it.accept(this) }
-                } else {
-                    statement.accept(this)
+                    val statement = lambdaExpression.statement
+                    if (statement is JKBlockStatement) {
+                        renderList(statement.block.statements, { printer.println() }) { it.accept(this) }
+                    } else {
+                        statement.accept(this)
+                    }
+                    if (lambdaExpression.statement.statements.size > 1)
+                        printer.println()
                 }
-                if (lambdaExpression.statement.statements.size > 1)
-                    printer.println()
             }
+            if (lambdaExpression.functionalType.present()) {
+                renderType(lambdaExpression.functionalType.type, lambdaExpression)
+                printer.printWithNoIndent(" ")
+                printer.par(ROUND, printLambda)
+            } else {
+                printLambda()
+            }
+
+
         }
 
         override fun visitBlockStatementRaw(blockStatement: JKBlockStatement) {

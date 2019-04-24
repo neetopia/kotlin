@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.gradle
 import org.gradle.api.logging.LogLevel
 import org.jetbrains.kotlin.gradle.plugin.MULTIPLE_KOTLIN_PLUGINS_LOADED_WARNING
 import org.jetbrains.kotlin.gradle.plugin.MULTIPLE_KOTLIN_PLUGINS_SPECIFIC_PROJECTS_WARNING
+import org.jetbrains.kotlin.gradle.scripting.internal.ScriptingGradleSubplugin
 import org.jetbrains.kotlin.gradle.tasks.USING_JVM_INCREMENTAL_COMPILATION_MESSAGE
 import org.jetbrains.kotlin.gradle.util.*
 import org.junit.Test
@@ -963,4 +964,44 @@ class KotlinGradleIT : BaseGradleIT() {
                 assertContains("Required com.example.compilation 'bar'")
             }
         }
+
+    @Test
+    fun testLoadCompilerEmbeddableAfterOtherKotlinArtifacts() = with(Project("simpleProject")) {
+        setupWorkingDir()
+        val buildscriptClasspathPrefix = "buildscript-classpath = "
+        gradleBuildScript().appendText(
+            "\n" + """
+                println "$buildscriptClasspathPrefix" + Arrays.toString(buildscript.classLoader.getURLs())
+            """.trimIndent()
+        )
+
+        // get the classpath, then reorder it so that kotlin-compiler-embeddable is loaded after all other JARs
+        lateinit var classpath: List<String>
+
+        build {
+            val classpathLine = output.lines().single { buildscriptClasspathPrefix in it }
+            classpath = classpathLine.substringAfter(buildscriptClasspathPrefix).removeSurrounding("[", "]").split(", ")
+        }
+
+        gradleBuildScript().modify {
+            val reorderedClasspath = run {
+                val (kotlinCompilerEmbeddable, others) = classpath.partition { "kotlin-compiler-embeddable" in it }
+                others + kotlinCompilerEmbeddable
+            }
+            val newClasspathString = "classpath files(\n" + reorderedClasspath.joinToString(",\n") { "'$it'" } + "\n)"
+            it.checkedReplace("classpath \"org.jetbrains.kotlin:kotlin-gradle-plugin:${'$'}kotlin_version\"", newClasspathString)
+        }
+
+        build("compileKotlin") {
+            assertSuccessful()
+        }
+    }
+
+    @Test
+    fun testNoScriptingWarning() = with(Project("simpleProject")) {
+        // KT-31124
+        build {
+            assertNotContains(ScriptingGradleSubplugin.MISCONFIGURATION_MESSAGE_SUFFIX)
+        }
+    }
 }

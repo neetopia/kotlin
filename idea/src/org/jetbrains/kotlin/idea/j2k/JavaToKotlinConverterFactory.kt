@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.j2k
@@ -16,6 +16,6 @@ object JavaToKotlinConverterFactory {
     ): JavaToKotlinConverter =
         J2kConverterExtension.extension.createJavaToKotlinConverter(project, settings, services)
 
-    fun createPostProcessor(formatCode: Boolean, settings: ConverterSettings = ConverterSettings.defaultSettings): PostProcessor =
-        J2kConverterExtension.extension.createPostProcessor(formatCode, settings)
+    fun createPostProcessor(formatCode: Boolean): PostProcessor =
+        J2kConverterExtension.extension.createPostProcessor(formatCode)
 }

@@ -1,13 +1,13 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.conversions
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
-import org.jetbrains.kotlin.nj2k.ConversionContext
+import org.jetbrains.kotlin.nj2k.NewJ2kConverterContext
 import org.jetbrains.kotlin.nj2k.tree.JKTreeElement
 import org.jetbrains.kotlin.nj2k.tree.impl.psi
 import org.jetbrains.kotlin.name.ClassId
@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.resolve.ImportPath
 
 
-internal fun resolveFqName(classId: ClassId, contextElement: JKTreeElement, context: ConversionContext): PsiElement? {
+internal fun resolveFqName(classId: ClassId, contextElement: JKTreeElement, context: NewJ2kConverterContext): PsiElement? {
     val element = contextElement.psi ?: return null
     return resolveFqName(classId, element)
 }

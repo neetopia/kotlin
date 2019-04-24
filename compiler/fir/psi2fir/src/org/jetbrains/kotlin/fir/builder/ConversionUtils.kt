@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.fir.builder
@@ -304,14 +304,13 @@ internal fun Array<KtStringTemplateEntry>.toInterpolatingCall(
         }
         result = when {
             result == null -> nextArgument
-            callCreated && result is FirFunctionCallImpl -> result.apply {
+            callCreated && result is FirStringConcatenationCallImpl -> result.apply {
                 arguments += nextArgument
             }
             else -> {
                 callCreated = true
-                FirFunctionCallImpl(session, base).apply {
-                    calleeReference = FirSimpleNamedReference(session, base, OperatorNameConventions.PLUS)
-                    explicitReceiver = result
+                FirStringConcatenationCallImpl(session, base).apply {
+                    arguments += result!!
                     arguments += nextArgument
                 }
             }

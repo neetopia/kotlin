@@ -1,22 +1,20 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.conversions
 
-import org.jetbrains.kotlin.j2k.ast.Nullability
 import org.jetbrains.kotlin.nj2k.*
 import org.jetbrains.kotlin.nj2k.tree.*
 import org.jetbrains.kotlin.nj2k.tree.impl.*
 import org.jetbrains.kotlin.resolve.jvm.JvmPrimitiveType
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
-class ImplicitCastsConversion(private val context: ConversionContext) : RecursiveApplicableConversionBase() {
+class ImplicitCastsConversion(private val context: NewJ2kConverterContext) : RecursiveApplicableConversionBase() {
     override fun applyToElement(element: JKTreeElement): JKTreeElement {
         when (element) {
             is JKVariable -> convertVariable(element)
-            is JKForInStatement -> convertForInStatement(element)
             is JKMethodCallExpression -> convertMethodCallExpression(element)
             is JKBinaryExpression -> return recurse(convertBinaryExpression(element))
             is JKKtAssignmentStatement -> convertAssignmentStatement(element)
@@ -26,26 +24,6 @@ class ImplicitCastsConversion(private val context: ConversionContext) : Recursiv
 
 
     private fun convertBinaryExpression(binaryExpression: JKBinaryExpression): JKExpression {
-        fun JKBinaryExpression.addBangBang(): JKBinaryExpression {
-            fun JKType.isAcceptable() = asPrimitiveType() != null
-
-            if (operator.isEquals()) return this
-
-            val leftType = left.type(context.symbolProvider) ?: return this
-            val rightType = right.type(context.symbolProvider) ?: return this
-            return if (leftType.isAcceptable()
-                && rightType.isAcceptable()
-                && (leftType.isNullable() || rightType.isNullable())
-                && (operator.isArithmetic() || operator.isLessOrGreater())
-            ) {
-                JKBinaryExpressionImpl(
-                    ::left.detached().bangedBangedExpr(context.symbolProvider),
-                    ::right.detached().bangedBangedExpr(context.symbolProvider),
-                    operator
-                )
-            } else this
-        }
-
         fun JKBinaryExpression.convertBinaryOperationWithChar(): JKBinaryExpression {
             val leftType = left.type(context.symbolProvider)?.asPrimitiveType() ?: return this
             val rightType = right.type(context.symbolProvider)?.asPrimitiveType() ?: return this
@@ -78,20 +56,13 @@ class ImplicitCastsConversion(private val context: ConversionContext) : Recursiv
             }
         }
 
-        return binaryExpression.convertBinaryOperationWithChar().addBangBang()
+        return binaryExpression.convertBinaryOperationWithChar()
     }
 
     private fun convertVariable(variable: JKVariable) {
         if (variable.initializer is JKStubExpression) return
         variable.initializer.castTo(variable.type.type)?.also {
             variable.initializer = it
-        }
-    }
-
-    private fun convertForInStatement(forInStatement: JKForInStatement) {
-        val notNullType = forInStatement.iterationExpression.type(context.symbolProvider)?.updateNullability(Nullability.NotNull) ?: return
-        forInStatement.iterationExpression.addBangBang(notNullType)?.also {
-            forInStatement.iterationExpression = it
         }
     }
 
@@ -121,18 +92,6 @@ class ImplicitCastsConversion(private val context: ConversionContext) : Recursiv
         }
     }
 
-
-    private fun JKExpression.addBangBang(toType: JKType): JKExpression? {
-        if (this is JKJavaNewExpression) return null
-        val expressionType = type(context.symbolProvider) as? JKClassType ?: return null
-        if (toType !is JKClassType) return null
-        if (expressionType.classReference == toType.classReference
-            && expressionType.isNullable() && !toType.isNullable()
-        ) {
-            return this.copyTreeAndDetach().bangedBangedExpr(context.symbolProvider)
-        }
-        return null
-    }
 
     private fun JKExpression.castStringToRegex(toType: JKType): JKExpression? {
         if (toType.safeAs<JKClassType>()?.classReference?.fqName != "java.util.regex.Pattern") return null
@@ -196,6 +155,6 @@ class ImplicitCastsConversion(private val context: ConversionContext) : Recursiv
         if (expressionType == toType) return null
         castToAsPrimitiveTypes(toType, strict)?.also { return it }
         castStringToRegex(toType)?.also { return it }
-        return addBangBang(toType)
+        return null
     }
 }

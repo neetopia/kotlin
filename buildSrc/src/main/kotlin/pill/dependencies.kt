@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 @file:Suppress("PackageDirectoryMismatch")
@@ -52,7 +52,7 @@ fun Project.resolveDependencies(
                 return true
             }
 
-            if (forTests) {
+            if (forTests && artifact.classifier == "tests") {
                 addSourceSet(SourceSet.TEST_SOURCE_SET_NAME, "test") || addSourceSet(SourceSet.MAIN_SOURCE_SET_NAME, "src")
             } else {
                 addSourceSet(SourceSet.MAIN_SOURCE_SET_NAME, "src")
@@ -77,12 +77,15 @@ fun Project.resolveDependencies(
         }
     }
 
+    val existingFiles = mutableSetOf<File>()
+
     for (dependency in configuration.dependencies) {
         if (dependency !is SelfResolvingDependency) {
             continue
         }
 
-        val files = dependency.resolve().takeIf { it.isNotEmpty() } ?: continue
+        val files = dependency.resolve().filter { it !in existingFiles }.takeIf { it.isNotEmpty() } ?: continue
+        existingFiles.addAll(files)
         val library = PLibrary(dependency.name, classes = files.toList())
         deferred += PDependency.ModuleLibrary(library)
     }

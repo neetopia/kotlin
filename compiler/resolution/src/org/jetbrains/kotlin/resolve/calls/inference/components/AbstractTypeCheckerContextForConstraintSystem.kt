@@ -1,6 +1,6 @@
 /*
- * Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2000-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.resolve.calls.inference.components
@@ -45,8 +45,8 @@ abstract class AbstractTypeCheckerContextForConstraintSystem : AbstractTypeCheck
         val hasExact = subType.isTypeVariableWithExact() || superType.isTypeVariableWithExact()
 
         // we should strip annotation's because we have incorporation operation and they should be not affected
-        val mySubType = if (hasExact) subType.removeAnnotations() else subType
-        val mySuperType = if (hasExact) superType.removeAnnotations() else superType
+        val mySubType = if (hasExact) subType.removeExactAnnotation() else subType
+        val mySuperType = if (hasExact) superType.removeExactAnnotation() else superType
 
         val result = internalAddSubtypeConstraint(mySubType, mySuperType)
         if (!hasExact) return result

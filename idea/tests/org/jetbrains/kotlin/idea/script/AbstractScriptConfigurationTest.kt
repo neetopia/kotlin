@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.script
@@ -221,9 +221,7 @@ abstract class AbstractScriptConfigurationTest : KotlinCompletionTestCase() {
 
     private fun createTestModuleByName(name: String): Module {
         val newModuleDir = runWriteAction { VfsUtil.createDirectoryIfMissing(project.baseDir, name) }
-
-        // BUNCH: 181
-        @Suppress("IncompatibleAPI") val newModule = createModuleAt(name, project, JavaModuleType.getModuleType(), newModuleDir.path)
+        val newModule = createModuleAt(name, project, JavaModuleType.getModuleType(), newModuleDir.path)
 
         // Return type was changed, but it's not used. BUNCH: 183
         @Suppress("MissingRecentApi")

@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.nullabilityAnalysis
@@ -44,6 +44,11 @@ internal data class PropertyTarget(
 
 internal data class FunctionTarget(
     override val target: KtNamedFunction,
+    override val typeVariable: TypeVariable
+) : DeclarationTypeVariableOwner
+
+internal data class LambdaTarget(
+    override val target: KtFunctionLiteral,
     override val typeVariable: TypeVariable
 ) : DeclarationTypeVariableOwner
 
@@ -112,7 +117,7 @@ internal class LiteralBoundType(val isNull: Boolean) : BoundType {
 
 
 internal class TypeVariable(
-    val typeElement: KtTypeElement,
+    val typeElement: KtTypeElement?,
     val classReference: ClassReference,
     val typeParameters: List<TypeVariableTypeParameter>,
     var nullability: Nullability

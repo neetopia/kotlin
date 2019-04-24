@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.backend.jvm.lower
@@ -109,8 +109,9 @@ internal class PropertyReferenceLowering(val context: JvmBackendContext) : Class
         val parent = expression.propertyContainerChild?.parent
         val context = this@PropertyReferenceLowering.context
         return when {
-            // FileClassLowering creates a class to which all package-level declarations are moved. However, it does not
-            // fix the declarations' parents (yet), which is why we check for both a file class and a package fragment.
+            // FileClassLowering creates a class to which all package-level declarations are moved. However, there
+            // can still be external declarations at the package level, which is why we check for both a file class
+            // and a package fragment.
             parent is IrPackageFragment || (parent is IrClass && parent.origin == IrDeclarationOrigin.FILE_CLASS) ->
                 irCall(context.ir.symbols.getOrCreateKotlinPackage).apply {
                     putValueArgument(0, expression.parentJavaClassReference)

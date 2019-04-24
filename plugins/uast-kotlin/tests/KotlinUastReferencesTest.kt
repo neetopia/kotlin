@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.uast.test.kotlin
@@ -9,7 +9,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.util.Disposer
-import com.intellij.patterns.uast.literalExpression
+import com.intellij.patterns.uast.injectionHostUExpression
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.PsiReferenceContributorEP
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
@@ -35,7 +35,7 @@ class KotlinUastReferencesTest : KotlinLightCodeInsightFixtureTestCase() {
     fun `test original getter is visible when reference is under renaming`() {
 
         registerReferenceProviders(testRootDisposable) {
-            registerUastReferenceProvider(literalExpression(), uastLiteralReferenceProvider { _, psiLanguageInjectionHost ->
+            registerUastReferenceProvider(injectionHostUExpression(), uastInjectionHostReferenceProvider { _, psiLanguageInjectionHost ->
                 arrayOf(GetterReference("KotlinBean", psiLanguageInjectionHost))
             })
         }

@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.nj2k.nullabilityAnalysis
@@ -70,9 +70,13 @@ internal class Printer(private val analysisContext: AnalysisContext) {
 
 
 private class Namer(analysisContext: AnalysisContext) {
-    val names = analysisContext.typeElementToTypeVariable.values.mapIndexed { index, typeVariable ->
-        typeVariable to "T$index"
-    }.toMap()
+    val names = run {
+        val typeVariables = (analysisContext.typeElementToTypeVariable.values +
+                analysisContext.declarationToTypeVariable.values)
+        typeVariables.mapIndexed { index, typeVariable ->
+            typeVariable to "T$index"
+        }.toMap()
+    }
 
     fun name(typeVariable: TypeVariable): String =
         names.getValue(typeVariable)

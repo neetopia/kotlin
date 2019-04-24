@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.ir.backend.js.lower
@@ -20,10 +20,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classifierOrNull
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
-import org.jetbrains.kotlin.ir.util.constructors
-import org.jetbrains.kotlin.ir.util.defaultType
-import org.jetbrains.kotlin.ir.util.getInlineClassBackingField
-import org.jetbrains.kotlin.ir.util.getInlinedClass
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 
@@ -86,8 +83,8 @@ private class VarargTransformer(
         val needUnboxing: Boolean
         val arrayInlineClass = expression.type.getInlinedClass()
         if (arrayInlineClass != null) {
-            primitiveElementType = getInlineClassBackingField(elementType.getInlinedClass()!!).type
-            primitiveExpressionType = getInlineClassBackingField(arrayInlineClass).type
+            primitiveElementType = getInlineClassUnderlyingType(elementType.getInlinedClass()!!)
+            primitiveExpressionType = getInlineClassUnderlyingType(arrayInlineClass)
             needUnboxing = true
         } else {
             primitiveElementType = elementType

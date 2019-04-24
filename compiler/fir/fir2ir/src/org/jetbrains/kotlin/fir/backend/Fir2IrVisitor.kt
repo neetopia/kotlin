@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.fir.backend
@@ -79,6 +79,8 @@ internal class Fir2IrVisitor(
     private val unitType = FirImplicitUnitTypeRef(session, null).toIrType(session, declarationStorage)
 
     private val booleanType = FirImplicitBooleanTypeRef(session, null).toIrType(session, declarationStorage)
+
+    private val stringType = FirImplicitStringTypeRef(session, null).toIrType(session, declarationStorage)
 
     private fun ModuleDescriptor.findPackageFragmentForFile(file: FirFile): PackageFragmentDescriptor =
         getPackage(file.packageFqName).fragments.first()
@@ -617,9 +619,9 @@ internal class Fir2IrVisitor(
         }
     }
 
-    override fun visitNamedArgumentExpression(namedArgumentExpression: FirNamedArgumentExpression, data: Any?): IrElement {
+    override fun visitWrappedArgumentExpression(wrappedArgumentExpression: FirWrappedArgumentExpression, data: Any?): IrElement {
         // TODO: change this temporary hack to something correct
-        return namedArgumentExpression.expression.toIrExpression()
+        return wrappedArgumentExpression.expression.toIrExpression()
     }
 
     private fun FirQualifiedAccess.toIrExpression(typeRef: FirTypeRef): IrExpression {
@@ -1067,6 +1069,15 @@ internal class Fir2IrVisitor(
     override fun visitOperatorCall(operatorCall: FirOperatorCall, data: Any?): IrElement {
         return operatorCall.convertWithOffsets { startOffset, endOffset ->
             generateOperatorCall(startOffset, endOffset, operatorCall.operation, operatorCall.arguments)
+        }
+    }
+
+    override fun visitStringConcatenationCall(stringConcatenationCall: FirStringConcatenationCall, data: Any?): IrElement {
+        return stringConcatenationCall.convertWithOffsets { startOffset, endOffset ->
+            IrStringConcatenationImpl(
+                startOffset, endOffset, stringType,
+                stringConcatenationCall.arguments.map { it.toIrExpression() }
+            )
         }
     }
 

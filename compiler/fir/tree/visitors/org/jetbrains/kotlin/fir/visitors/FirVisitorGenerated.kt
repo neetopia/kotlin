@@ -1,6 +1,6 @@
 /*
- * Copyright 2010-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license 
- * that can be found in the license/LICENSE.txt file.
+ * Copyright 2010-2019 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 package org.jetbrains.kotlin.fir.visitors
 
@@ -232,6 +232,10 @@ abstract class FirVisitor<out R, in D> {
         return visitOperatorCall(typeOperatorCall, data)
     }
 
+    open fun visitStringConcatenationCall(stringConcatenationCall: FirStringConcatenationCall, data: D): R {
+        return visitCall(stringConcatenationCall, data)
+    }
+
     open fun visitClassReferenceExpression(classReferenceExpression: FirClassReferenceExpression, data: D): R {
         return visitExpression(classReferenceExpression, data)
     }
@@ -260,10 +264,6 @@ abstract class FirVisitor<out R, in D> {
         return visitJump(returnExpression, data)
     }
 
-    open fun visitNamedArgumentExpression(namedArgumentExpression: FirNamedArgumentExpression, data: D): R {
-        return visitExpression(namedArgumentExpression, data)
-    }
-
     open fun visitThrowExpression(throwExpression: FirThrowExpression, data: D): R {
         return visitExpression(throwExpression, data)
     }
@@ -274,6 +274,18 @@ abstract class FirVisitor<out R, in D> {
 
     open fun visitWhenExpression(whenExpression: FirWhenExpression, data: D): R {
         return visitExpression(whenExpression, data)
+    }
+
+    open fun visitWrappedArgumentExpression(wrappedArgumentExpression: FirWrappedArgumentExpression, data: D): R {
+        return visitExpression(wrappedArgumentExpression, data)
+    }
+
+    open fun visitLambdaArgumentExpression(lambdaArgumentExpression: FirLambdaArgumentExpression, data: D): R {
+        return visitWrappedArgumentExpression(lambdaArgumentExpression, data)
+    }
+
+    open fun visitNamedArgumentExpression(namedArgumentExpression: FirNamedArgumentExpression, data: D): R {
+        return visitWrappedArgumentExpression(namedArgumentExpression, data)
     }
 
     open fun visitLoop(loop: FirLoop, data: D): R {
