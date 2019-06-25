@@ -222,6 +222,7 @@ class LazyTopDownAnalyzer(
 
         overloadResolver.checkOverloads(c)
 
+        // Type inference
         bodyResolver.resolveBodies(c)
 
         resolveImportsInAllFiles(c)

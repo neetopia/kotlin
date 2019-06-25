@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.generators.tests.generator.testGroup
 import org.jetbrains.kotlin.generators.util.KT_OR_KTS
 import org.jetbrains.kotlin.generators.util.KT_OR_KTS_WITHOUT_DOTS_IN_NAME
 import org.jetbrains.kotlin.generators.util.KT_WITHOUT_DOTS_IN_NAME
+import org.jetbrains.kotlin.glide.AbstractBytecodeListingTestForGlide
 import org.jetbrains.kotlin.idea.AbstractExpressionSelectionTest
 import org.jetbrains.kotlin.idea.AbstractSmartSelectionTest
 import org.jetbrains.kotlin.idea.actions.AbstractGotoTestOrCodeActionTest
@@ -1133,6 +1134,12 @@ fun main(args: Array<String>) {
 
         testClass<AbstractKaptToolIntegrationTest> {
             model("integration", recursive = false, extension = null)
+        }
+    }
+
+    testGroup("plugins/glide/glide-cli/test", "plugins/glide/glide-cli/testData") {
+        testClass<AbstractBytecodeListingTestForGlide> {
+            model("bytecodeListing", extension = "kt")
         }
     }
 

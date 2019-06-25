@@ -60,6 +60,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.resolve.jvm.JavaDescriptorResolver
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import org.jetbrains.kotlin.resolve.jvm.extensions.BeforeAnalyzeExtension
 import org.jetbrains.kotlin.resolve.jvm.extensions.PackageFragmentProviderExtension
 import org.jetbrains.kotlin.resolve.lazy.KotlinCodeAnalyzer
 import org.jetbrains.kotlin.resolve.lazy.declarations.DeclarationProviderFactory
@@ -80,6 +81,7 @@ object TopDownAnalyzerFacadeForJVM {
         declarationProviderFactory: (StorageManager, Collection<KtFile>) -> DeclarationProviderFactory = ::FileBasedDeclarationProviderFactory,
         sourceModuleSearchScope: GlobalSearchScope = newModuleSearchScope(project, files)
     ): AnalysisResult {
+
         val container = createContainer(
             project, files, trace, configuration, packagePartProvider, declarationProviderFactory, CompilerEnvironment,
             sourceModuleSearchScope
@@ -108,9 +110,19 @@ object TopDownAnalyzerFacadeForJVM {
             }
         }
 
+        // BindingContext is built in this statement
         container.get<LazyTopDownAnalyzer>().analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
 
         invokeExtensionsOnAnalysisComplete()?.let { return it }
+
+        val beforeAnalyzeExtensions = BeforeAnalyzeExtension.getInstances(project)
+
+        val additionalKtFiles = ArrayList<KtFile>()
+
+        for (extension in beforeAnalyzeExtensions) {
+            extension.generateFiles(project, files, trace.bindingContext)?.let { additionalKtFiles.addAll(it) }
+        }
+//        (files as ArrayList<KtFile>).addAll(additionalKtFiles)
 
         return AnalysisResult.success(trace.bindingContext, module)
     }

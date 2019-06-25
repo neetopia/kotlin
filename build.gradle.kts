@@ -42,6 +42,7 @@ plugins {
     idea
     id("jps-compatible")
     id("org.jetbrains.gradle.plugin.idea-ext")
+    id("org.jetbrains.kotlin.plugin.allopen") version("1.3.41")
 }
 
 pill {

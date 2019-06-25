@@ -120,6 +120,7 @@ include ":kotlin-build-common",
         ":kotlin-android-extensions-runtime",
         ":plugins:android-extensions-ide",
         ":kotlin-allopen-compiler-plugin",
+        ":kotlin-glide-compiler-plugin",
         ":allopen-ide-plugin",
         ":kotlin-noarg-compiler-plugin",
         ":noarg-ide-plugin",
@@ -391,6 +392,7 @@ project(':pill:generate-all-tests').projectDir = "$rootDir/plugins/pill/generate
 project(':kotlin-imports-dumper-compiler-plugin').projectDir = "$rootDir/plugins/imports-dumper" as File
 project(':libraries:kotlin-prepush-hook').projectDir = "$rootDir/libraries/tools/kotlin-prepush-hook" as File
 project(':plugins:jvm-abi-gen').projectDir = "$rootDir/plugins/jvm-abi-gen" as File
+project(':kotlin-glide-compiler-plugin').projectDir = "$rootDir/plugins/glide/glide-cli" as File
 
 // plugin markers:
 project(':kotlin-gradle-plugin:plugin-marker').projectDir = file("$rootDir/libraries/tools/kotlin-gradle-plugin/plugin-marker")

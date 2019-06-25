@@ -154,6 +154,8 @@ object KotlinToJVMBytecodeCompiler {
         }
     }
 
+
+    // important entry point to compiler frontend
     internal fun compileModules(environment: KotlinCoreEnvironment, buildFile: File?, chunk: List<Module>): Boolean {
         ProgressIndicatorAndCompilationCanceledStatus.checkCanceled()
 

@@ -34,9 +34,9 @@ object JvmBackendFacade {
         phaseConfig: PhaseConfig
     ) {
         val psi2ir = Psi2IrTranslator(state.languageVersionSettings, facadeClassGenerator = ::facadeClassGenerator)
+        // symbol table for PSI2IR created here.
         val psi2irContext = psi2ir.createGeneratorContext(state.module, state.bindingContext, extensions = JvmGeneratorExtensions)
         val irModuleFragment = psi2ir.generateModuleFragment(psi2irContext, files)
-
         doGenerateFilesInternal(state, errorHandler, irModuleFragment, psi2irContext, phaseConfig)
     }
 

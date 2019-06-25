@@ -513,9 +513,9 @@ public abstract class CodegenTestCase extends KtUsefulTestCase {
             );
             classFileFactory = generationState.getFactory();
 
-            if (verifyWithDex() && DxChecker.RUN_DX_CHECKER) {
-                DxChecker.check(classFileFactory);
-            }
+            //if (verifyWithDex() && DxChecker.RUN_DX_CHECKER) {
+            //    DxChecker.check(classFileFactory);
+            //}
         }
         catch (TestsCompiletimeError e) {
             if (reportProblems) {
@@ -662,6 +662,8 @@ public abstract class CodegenTestCase extends KtUsefulTestCase {
         if (loadAndroidAnnotations) {
             classpath.add(ForTestCompileRuntime.androidAnnotationsForTests());
         }
+
+        classpath.add(new File("plugins/glide/glide-cli/lib/glide-4.9.0.jar"));
 
         CompilerConfiguration configuration = createConfiguration(
                 configurationKind, getJdkKind(files),
