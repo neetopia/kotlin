@@ -21,6 +21,7 @@ class RequestOptionsGenerator(
 ) {
     private val requestOptionsType = processingEnvironment.getElementUtils().getTypeElement("com.bumptech.glide.request.RequestOptions")
     private val GENERATED_REQUEST_OPTIONS_SIMPLE_NAME = "GlideOptions"
+    private val requestOptionsOverrideGenerator = RequestOptionsOverrideGenerator(processingEnvironment, processorUtil)
 
     companion object {
         val REQUEST_OPTIONS_PACKAGE_NAME = "com.bumptech.glide.request"
@@ -43,21 +44,29 @@ class RequestOptionsGenerator(
         val allFunctionsAndStaticVars = ArrayList<FunctionAndStaticVar>()
         allFunctionsAndStaticVars.addAll(staticOverrides)
 
+        val companionBuilder = TypeSpec.companionObjectBuilder()
+
         val classBuilder = TypeSpec.classBuilder(GENERATED_REQUEST_OPTIONS_SIMPLE_NAME)
             .addAnnotation(
                 AnnotationSpec.builder(SuppressWarnings::class)
                     .addMember("%S", "deprecation")
                     .build()
             ).addKdoc(generateClassKDoc(glideExtensionClassNames))
-            .addModifiers(KModifier.FINAL)
             .addModifiers(KModifier.PUBLIC)
-            .addSuperinterface(Cloneable::class)
+            .addSuperinterface(java.lang.Cloneable::class.java)
             .superclass(requestOptionsName)
 
         for (functionAndStaticVar in allFunctionsAndStaticVars) {
-            functionAndStaticVar.function?.let { classBuilder.addFunction(functionAndStaticVar.function) }
-            functionAndStaticVar.staticVar?.let { classBuilder.addProperty(functionAndStaticVar.staticVar) }
+            functionAndStaticVar.function?.let { companionBuilder.addFunction(functionAndStaticVar.function) }
+            functionAndStaticVar.staticVar?.let { companionBuilder.addProperty(functionAndStaticVar.staticVar) }
         }
+
+        val instanceOverrides = requestOptionsOverrideGenerator.generateInstanceFunctionOverridesForRequestOptions(glideOptionsName)
+        for (function in instanceOverrides) {
+            classBuilder.addFunction(function)
+        }
+
+        classBuilder.addType(companionBuilder.build())
 
         return classBuilder.build()
     }
@@ -102,8 +111,9 @@ class RequestOptionsGenerator(
             .builder(staticMethodName)
 //            .addModifiers(KModifier.PUBLIC, KModifier.COMPANION)
             .addModifiers(KModifier.PUBLIC)
+            .addAnnotation(JvmStatic::class)
             .addKdoc(processorUtil.generateSeeFunctionKDoc(staticMethod))
-            .returns(glideOptionsName)
+            .returns(glideOptionsName.copy(nullable = true))
 
         val createNewOptionAndCall = createNewOptionAndCall(
             memorize, funSpecBuilder, "%T().%N(", processorUtil.getParameters(staticMethod)
@@ -112,19 +122,21 @@ class RequestOptionsGenerator(
         var requiredStaticProperty: PropertySpec? = null
         if (memorize) {
             val staticVariableName = staticMethodName + nextFieldId++
-            requiredStaticProperty = PropertySpec.builder(staticVariableName, glideOptionsName)
+            requiredStaticProperty = PropertySpec.builder(staticVariableName, glideOptionsName.copy(nullable = true))
                 .addModifiers(KModifier.PRIVATE)
+                .mutable()
+                .initializer("null")
 //                .addModifiers(KModifier.COMPANION)
                 .build()
             funSpecBuilder
                 .beginControlFlow("if (%T.%N == null)", glideOptionsName, staticVariableName)
                 .addStatement(
-                    "%T.%N=\n$createNewOptionAndCall%N",
+                    "%T.%N =\n$createNewOptionAndCall.%N()",
                     glideOptionsName,
                     staticVariableName,
                     glideOptionsName,
                     equivalentInstanceMethodName,
-                    "autoClone()"
+                    "autoClone"
                 )
                 .endControlFlow()
                 .addStatement("return %T.%N", glideOptionsName, staticVariableName)

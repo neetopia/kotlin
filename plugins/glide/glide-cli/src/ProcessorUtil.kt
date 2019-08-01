@@ -7,18 +7,14 @@ package org.jetbrains.kotlin.glide
 
 import com.bumptech.glide.annotation.compiler.GlideAnnotationProcessor
 import com.squareup.kotlinpoet.*
-import com.sun.org.apache.xpath.internal.operations.Variable
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Type
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationTargetException
-import java.nio.file.Path
 import java.util.*
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.*
@@ -90,7 +86,7 @@ class ProcessorUtil(
     }
 
     fun findInstanceFunctionReturning(clazz: TypeElement, returnType: TypeElement): List<ExecutableElement> {
-       return clazz.enclosedElements.filter {
+        return clazz.enclosedElements.filter {
             it.isPublicMethod() && it.isInstanceMethod() && it.returnTypeMatches(returnType.asType())
         }.map { it as ExecutableElement }
     }
@@ -148,7 +144,7 @@ class ProcessorUtil(
     }
 
     private fun getExcludedModuleClassFromAnnotationAttribute(clazz: Element, attribute: Any): String {
-        if (attribute?.javaClass.simpleName == "UnresolvedClass") {
+        if (attribute.javaClass.simpleName == "UnresolvedClass") {
             throw IllegalArgumentException(
                 "Failed to parse @Excludes for: $clazz" +
                         ", one or more excluded Modules could not be found at compile time. Ensure that all" +
@@ -259,8 +255,10 @@ class ProcessorUtil(
         val modifiers = function.modifiers.filter { it != Modifier.ABSTRACT && it != defaultModifier }
         builder.jvmModifiers(modifiers)
         return builder
-            .addTypeVariables(function.typeParameters.map { it.asTypeVariableName() })
-            .returns(function.returnType.asTypeName().copy(nullable = true))
+            .addTypeVariables(function.typeParameters.map { it.asTypeVariableName().copy(nullable = false, bounds = emptyList()) })
+            .returns(
+                function.returnType.asTypeName().copy(nullable = !function.returnType.kind.isPrimitive &&
+                        !function.annotationMirrors.any { it.annotationType.asElement().simpleName.toString() == "NonNull" }))
             .addParameters(getParameters(function))
     }
 
@@ -301,7 +299,10 @@ class ProcessorUtil(
     }
 
     fun getParameter(parameter: VariableElement): ParameterSpec {
-        val type = parameter.asType().asTypeName()
+        var type = parameter.asType().asTypeName()
+        if (parameter.annotationMirrors.all { it.annotationType.asElement().simpleName.toString() != "NonNull" } && !parameter.asType().kind.isPrimitive) {
+            type = type.copy(nullable = true)
+        }
 
         return ParameterSpec.builder(computeParameterName(parameter, type), type)
             .jvmModifiers(parameter.modifiers)
@@ -322,6 +323,8 @@ class ProcessorUtil(
 
         rawClassName = applySmartParameterNameReplacements(rawClassName)
         val allCaps = rawClassName.toCharArray().all { it.isUpperCase() }
+        if (rawClassName == "")
+            return parameter.simpleName.toString()
         return if (allCaps) {
             rawClassName.toLowerCase()
         } else {
