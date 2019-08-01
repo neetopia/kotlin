@@ -79,11 +79,18 @@ class RequestBuilderGenerator(
             ).addModifiers(KModifier.PUBLIC)
             .addTypeVariable(transcodeTypeName)
             .superclass(requestBuilderOfTranscodeType)
-            .addSuperinterface(Cloneable::class)
+            .addSuperinterface(java.lang.Cloneable::class.java)
             .addFunctions(generateConstructors())
             .addFunction(generateDownloadOnlyRequestFunction())
+            .addFunctions(generateGeneratedRequestOptionsEquivalents(emptyList(), generatedOptions))
             .addFunctions(generateRequestBuilderOverrides())
             .build()
+    }
+
+    private fun generateGeneratedRequestOptionsEquivalents(
+        requestOptionsExtensionFunctions: List<FunSpec>, generatedOptions: TypeSpec?
+    ): List<FunSpec> {
+        return emptyList()
     }
 
     private fun generateRequestBuilderOverrides(): List<FunSpec> {
@@ -134,10 +141,10 @@ class RequestBuilderGenerator(
                     .addAnnotation(processorUtil.nonNull())
                     .build()
             ).addParameter(
-                ParameterSpec.builder("transcodeClass", requestBuilderOfWildcardOfObject)
+                ParameterSpec.builder("other", requestBuilderOfWildcardOfObject)
                     .addAnnotation(processorUtil.nonNull())
                     .build()
-            ).addStatement("super(%N, %N)", "transcodeClass", "other")
+            ).callSuperConstructor("transcodeClass", "other")
             .build()
         val context = ClassName.bestGuess("android.content.Context")
         val glide = ClassName.bestGuess("com.bumptech.glide.Glide")
@@ -159,8 +166,7 @@ class RequestBuilderGenerator(
                 ParameterSpec.builder("context", context)
                     .addAnnotation(processorUtil.nonNull())
                     .build()
-            ).addStatement(
-                "super(%N, %N ,%N, %N)", "glide", "requestManager", "transcodeClass", "context")
+            ).callSuperConstructor("glide", "requestManager", "transcodeClass", "context")
             .build()
         return listOf(firstConstructor, secondConstructor)
     }

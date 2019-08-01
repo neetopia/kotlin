@@ -84,7 +84,7 @@ class RequestManagerGenerator(
                 ParameterSpec.builder("context", CONTEXT_CLASS_NAME)
                     .addAnnotation(processorUtil.nonNull())
                     .build()
-            ).addStatement("super(glide, lifecycle, treeNode, context)")
+            ).callSuperConstructor("glide", "lifecycle", "treeNode", "context")
             .build()
     }
 
@@ -99,8 +99,12 @@ class RequestManagerGenerator(
             .addAnnotation(processorUtil.checkResult())
             .addTypeVariable(resourceType)
             .returns(requestBuilderOfResourceType)
-            .addParameter("resourceClass", classOfResourceType.copy(false, listOf(AnnotationSpec.builder(processorUtil.nonNull()).build())))
-            .addStatement("return %T<>(glide, this, resourceClass, context)", generatedRequestBuilderClassName)
+            .addParameter(ParameterSpec.builder("resourceClass", classOfResourceType.copy(false))
+                              .addAnnotation(
+                                  AnnotationSpec.builder(processorUtil.nonNull())
+                                      .build()
+                              ).build()
+            ).addStatement("return %T<ResourceType>(glide, this, resourceClass, context)", generatedRequestBuilderClassName)
             .build()
     }
 
@@ -124,7 +128,7 @@ class RequestManagerGenerator(
     private fun generateRequestManagerRequestBuilderFunctionOverrides(): List<FunSpec> {
         val rawRequestBuilder = processingEnvironment.typeUtils.erasure(requestBuilderType.asType())
         return processorUtil.findInstanceFunctionReturning(requestManagerType, rawRequestBuilder)
-            .filter { it.simpleName.toString() == "as" }
+            .filterNot { it.simpleName.toString() == "as" }
             .map { generateRequestManagerRequestBuilderFunctionOverride(it) }
     }
 
