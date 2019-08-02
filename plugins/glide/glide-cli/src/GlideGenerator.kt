@@ -25,7 +25,7 @@ class GlideGenerator(private val processingEnvironment: ProcessingEnvironment, p
     private val glideType = processingEnvironment.elementUtils.getTypeElement(GLIDE_QUALIFIED_NAME)
 
     fun generate(generatedPackageName: String, glideName: String, generatedRequestManager: TypeSpec): TypeSpec {
-        return TypeSpec.classBuilder(glideName)
+        val glideBuilder = TypeSpec.classBuilder(glideName)
             .addKdoc(
                 "The entry point for interacting with Glide for Applications\n" +
                         "\n" +
@@ -42,9 +42,16 @@ class GlideGenerator(private val processingEnvironment: ProcessingEnvironment, p
                 FunSpec.constructorBuilder()
                     .addModifiers(KModifier.PRIVATE)
                     .build()
-            ).addFunctions(
+            )
+
+        val companionObj = TypeSpec.companionObjectBuilder()
+            .addFunctions(
                 generateOverridesForGlideFunctions(generatedPackageName, generatedRequestManager)
             ).build()
+
+        return glideBuilder
+            .addType(companionObj)
+            .build()
     }
 
     private fun generateOverridesForGlideFunctions(generatedPackageName: String, generatedRequestManager: TypeSpec): List<FunSpec> {
@@ -67,6 +74,7 @@ class GlideGenerator(private val processingEnvironment: ProcessingEnvironment, p
         val parameter = parameters.single()
         val builder = FunSpec.builder(functiontoOverride.simpleName.toString())
             .addModifiers(KModifier.PUBLIC)
+            .addAnnotation(JvmStatic::class)
             .addKdoc(processorUtil.generateSeeFunctionKDoc(functiontoOverride))
             .addParameters(parameters)
             .returns(generatedRequestManagerClassName)
@@ -87,6 +95,7 @@ class GlideGenerator(private val processingEnvironment: ProcessingEnvironment, p
 
         val builder = FunSpec.builder(functionToOverride.simpleName.toString())
             .addModifiers(KModifier.PUBLIC)
+            .addAnnotation(JvmStatic::class)
             .addKdoc(processorUtil.generateSeeFunctionKDoc(functionToOverride))
             .addParameters(parameters)
         addReturnAnnotations(builder, functionToOverride)

@@ -108,11 +108,10 @@ class RequestBuilderGenerator(
         builder.addCode(
             CodeBlock.builder()
                 .add(
-                    "return (%T) super.%N(",
-                    generatedRequestBuilderOfType,
+                    "return super.%N(",
                     functionToOverride.simpleName)
                 .add(builder.build().parameters.map { it.name }.joinToString(separator = ", "))
-                .add(");\n")
+                .add(") as (%T)\n", generatedRequestBuilderOfType)
                 .build()
         )
         builder.addAnnotations(functionToOverride.annotationMirrors.map { AnnotationSpec.get(it) })
@@ -123,8 +122,7 @@ class RequestBuilderGenerator(
                     AnnotationSpec.builder(SuppressWarnings::class)
                         .addMember("%S", "varargs")
                         .build()
-                )
-                .build()
+                ).build()
         } else {
             builder.build()
         }
@@ -132,7 +130,7 @@ class RequestBuilderGenerator(
 
     private fun generateConstructors(): List<FunSpec> {
         val classOfTranscodeType = ClassName.bestGuess(Class::class.java.canonicalName).parameterizedBy(transcodeTypeName)
-        val wildcardOfObject = WildcardTypeName.producerOf(Unit::class)
+        val wildcardOfObject = WildcardTypeName.producerOf(Any::class.asClassName().copy(nullable = true))
         val requestBuilderOfWildcardOfObject = requestBuilderType.asClassName().parameterizedBy(wildcardOfObject)
 
         val firstConstructor = FunSpec.constructorBuilder()
@@ -180,10 +178,9 @@ class RequestBuilderGenerator(
             .returns(generatedRequestBuilderOfFile)
             .addModifiers(KModifier.PROTECTED)
             .addStatement(
-                "return %T<>(%T.class, %N).apply(%N)",
+                "return %T(%T::class.java, this).apply(%N)",
                 generatedRequestBuilderClassName,
                 File::class,
-                "this",
                 "DOWNLOAD_ONLY_OPTIONS"
             ).build()
     }
