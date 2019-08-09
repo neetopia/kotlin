@@ -23,7 +23,8 @@ import org.jetbrains.kotlin.allopen.AllOpenConfigurationKeys.PRESET
 import org.jetbrains.kotlin.compiler.plugin.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.extensions.DeclarationAttributeAltererExtension
+import org.jetbrains.kotlin.allopen.CliAllOpenDeclarationAttributeAltererExtension
+import org.jetbrains.kotlin.resolve.jvm.extensions.BeforeAnalyzeExtension
 
 object AllOpenConfigurationKeys {
     val ANNOTATION: CompilerConfigurationKey<List<String>> =
@@ -67,12 +68,8 @@ class AllOpenCommandLineProcessor : CommandLineProcessor {
 
 class AllOpenComponentRegistrar : ComponentRegistrar {
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
-        val annotations = configuration.get(ANNOTATION)?.toMutableList() ?: mutableListOf()
-        configuration.get(PRESET)?.forEach { preset ->
-            SUPPORTED_PRESETS[preset]?.let { annotations += it }
-        }
-        if (annotations.isEmpty()) return
+        val annotation = "com.bumptech.glide.annotation.GlideModule"
 
-        DeclarationAttributeAltererExtension.registerExtension(project, CliAllOpenDeclarationAttributeAltererExtension(annotations))
+        BeforeAnalyzeExtension.registerExtension(project, CliAllOpenDeclarationAttributeAltererExtension(annotation))
     }
 }

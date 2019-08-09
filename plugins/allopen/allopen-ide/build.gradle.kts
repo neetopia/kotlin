@@ -6,6 +6,11 @@ plugins {
     id("jps-compatible")
 }
 
+repositories {
+    google()
+    jcenter()
+}
+
 dependencies {
     compile(project(":kotlin-allopen-compiler-plugin"))
     compile(project(":compiler:util"))
@@ -14,6 +19,7 @@ dependencies {
     compile(project(":idea"))
     compile(project(":idea:idea-jvm"))
     compile(project(":idea:idea-jps-common"))
+    compile("com.squareup:kotlinpoet:1.3.0")
     compile(project(":plugins:annotation-based-compiler-plugins-ide-support"))
     compileOnly(intellijDep())
     excludeInAndroidStudio(rootProject) { compileOnly(intellijPluginDep("maven")) }

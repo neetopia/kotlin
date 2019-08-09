@@ -77,6 +77,7 @@ val distLibraryProjects = listOfNotNull(
     ":kotlin-main-kts",
     ":kotlin-preloader",
     ":kotlin-reflect",
+    ":kotlin-allopen-compiler-plugin",
     ":kotlin-runner",
     ":kotlin-script-runtime",
     ":kotlin-scripting-common",

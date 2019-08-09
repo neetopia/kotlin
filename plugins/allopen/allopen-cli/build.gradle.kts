@@ -1,31 +1,65 @@
 
-description = "Kotlin AllOpen Compiler Plugin"
+description = "Kotlin Glide Compiler Plugin"
 
 plugins {
     kotlin("jvm")
     id("jps-compatible")
+
+}
+
+repositories {
+    flatDir {
+        dirs("lib")
+    }
+    jcenter()
+    google()
 }
 
 dependencies {
-    compileOnly(project(":compiler:plugin-api"))
-    compileOnly(project(":compiler:frontend"))
+    testCompileOnly(intellijCoreDep()) { includeJars("intellij-core") }
+    testRuntime(intellijDep())
+    testCompileOnly(intellijDep()) { includeJars("idea", "idea_rt", "openapi") }
+
+    Platform[181].orHigher {
+        testCompileOnly(intellijDep()) { includeJars("platform-api", "platform-impl") }
+    }
+
+    compile(project(":core:util.runtime"))
+    compile(project(":compiler:util"))
+    compile(project(":compiler:cli"))
+    compile(project(":compiler:backend"))
+    compile(project(":compiler:frontend"))
+    compile(project(":compiler:frontend.java"))
+    compile(project(":compiler:plugin-api"))
+    compile("com.android.support:support-annotations:+")
+    compile("com.android.support:support-fragment:28.0.0")
+    compile("com.android.tools.build:gradle:3.4.2")
+    compile(commonDep("com.google.android", "android"))
+
+    compile("com.github.bumptech.glide:compiler:4.9.0")
+    compile("com.squareup:kotlinpoet:1.3.0")
+//    compile("com.github.bumptech.glide:glide:4.9.0")
+
+    compile(files("lib/glide-4.9.0.jar"))
+//    compileOnly(project(":kotlin-annotation-processing-cli"))
+//    compileOnly(project(":kotlin-annotation-processing-base"))
+//    compileOnly(project(":kotlin-annotation-processing-runtime"))
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
+    compileOnly(intellijDep()) { includeJars("asm-all", rootProject = rootProject) }
 
-    runtime(kotlinStdlib())
+//    embedded("com.android.support:support-annotations:+")
+//    embedded("com.android.support:support-fragment:28.0.0")
+//    embedded("com.android.tools.build:gradle:3.4.2")
+    embedded("com.github.bumptech.glide:compiler:4.9.0")
+//    embedded("com.github.bumptech.glide:glide:4.9.0")
+    embedded("com.squareup:kotlinpoet:1.3.0")
 
-    testRuntimeOnly(intellijDep()) {
-        includeJars("guava", rootProject = rootProject)
-    }
-
-    testRuntimeOnly(project(":kotlin-compiler"))
-    Platform[192].orHigher {
-        testRuntimeOnly(intellijDep()) { includeJars("platform-concurrency") }
-    }
-
-    testCompile(project(":compiler:backend"))
-    testCompile(project(":compiler:cli"))
+    embedded(files("lib/glide-4.9.0.jar"))
     testCompile(projectTests(":compiler:tests-common"))
+//    testCompile(project(":kotlin-annotation-processing-base"))
+//    testCompile(projectTests(":kotlin-annotation-processing-base"))
     testCompile(commonDep("junit:junit"))
+//    testCompile(project(":kotlin-annotation-processing-runtime"))
 }
 
 sourceSets {

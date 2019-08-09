@@ -4,6 +4,11 @@ apply plugin: 'jps-compatible'
 configureJvmProject(project)
 configurePublishing(project)
 
+repositories {
+    jcenter()
+    google()
+}
+
 pill {
     variant = 'FULL'
 }

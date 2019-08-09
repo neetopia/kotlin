@@ -1,0 +1,3 @@
+@java.lang.annotation.Retention
+@kotlin.Metadata
+public annotation class BindView
