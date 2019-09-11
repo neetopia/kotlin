@@ -33,25 +33,24 @@ import kotlin.properties.Delegates
 abstract class AbstractSteppingTest : CodegenTestCase() {
 
     private companion object {
-        private const val DEBUG_ADDRESS = "127.0.0.1"
-        private const val MAIN_CLASS = "org.jetbrains.kotlin.test.clientserver.TestProcessServer"
-        private const val TEST_CLASS = "TestKt"
-        private const val BOX_METHOD = "box"
-        private const val LINENUMBER_PREFIX = "// LINENUMBERS"
+        const val DEBUG_ADDRESS = "127.0.0.1"
+        const val MAIN_CLASS = "org.jetbrains.kotlin.test.clientserver.TestProcessServer"
+        const val TEST_CLASS = "TestKt"
+        const val BOX_METHOD = "box"
+        const val LINENUMBER_PREFIX = "// LINENUMBERS"
+        var proxyPort = 0
+        lateinit var process: Process
+        lateinit var virtualMachine: VirtualMachine
+
+        fun isProcessInitialized() = ::process.isInitialized
     }
 
-    private var proxyPort = 0
-
-    private var process: Process? = null
-
-    private var virtualMachine: VirtualMachine? = null
-
-    override fun setUp() {
+    private fun setUpTest() {
         val debugPort = startDebuggeeProcess()
         virtualMachine = attachDebugger(debugPort)
-        setUpVM(virtualMachine!!)
+        setUpVM(virtualMachine)
 
-        val reader = process!!.inputStream.bufferedReader()
+        val reader = process.inputStream.bufferedReader()
         reader.readLine()
         proxyPort = reader.readLine()
             .split("port ")
@@ -59,11 +58,9 @@ abstract class AbstractSteppingTest : CodegenTestCase() {
             .trim()
             .toInt()
         reader.close()
-
-        super.setUp()
     }
 
-    open fun setUpVM(virtualMachine: VirtualMachine) {
+    private fun setUpVM(virtualMachine: VirtualMachine) {
         val manager = virtualMachine.eventRequestManager()
 
         val methodEntryReq = manager.createMethodEntryRequest()
@@ -93,7 +90,7 @@ abstract class AbstractSteppingTest : CodegenTestCase() {
         )
 
         process = ProcessBuilder(*command).start()
-        return process!!.inputStream.bufferedReader().readLine()
+        return process.inputStream.bufferedReader().readLine()
             .split("address:")
             .last()
             .trim()
@@ -108,16 +105,24 @@ abstract class AbstractSteppingTest : CodegenTestCase() {
         })
     }
 
-    override fun tearDown() {
+    private fun findJavaExecutable(): File {
+        val javaBin = File(SystemProperties.getJavaHome(), "bin")
+        return File(javaBin, "java.exe").takeIf { it.exists() }
+            ?: File(javaBin, "java").also { assert(it.exists()) }
+    }
+
+    fun tearDownTest() {
         try {
-            process!!.destroy()
+            process.destroy()
         } finally {
 
         }
-        super.tearDown()
     }
 
     override fun doMultiFileTest(wholeFile: File, files: List<TestFile>) {
+        if (!isProcessInitialized()) {
+            setUpTest()
+        }
         createEnvironmentWithMockJdkAndIdeaAnnotations(
             ConfigurationKind.ALL, *listOfNotNull(
                 writeJavaFiles(
@@ -146,9 +151,9 @@ abstract class AbstractSteppingTest : CodegenTestCase() {
             classFileFactory.writeAllTo(classesDir)
 
             try {
-                doTest(lineNumbers, classesDir, virtualMachine!!, classBuilderFactory, classFileFactory, generationState)
+                doTest(lineNumbers, classesDir, virtualMachine, classBuilderFactory, classFileFactory, generationState)
             } finally {
-                //process.destroy()
+
             }
         } finally {
             tempDirForTest.deleteRecursively()
@@ -205,7 +210,7 @@ abstract class AbstractSteppingTest : CodegenTestCase() {
 
                     }
                     is MethodEntryEvent -> {
-                        if (!shouldRecordSteps && event.location().method().name() == BOX_METHOD) {
+                        if (!shouldRecordSteps && event.location().method().name() == BOX_METHOD && manager.stepRequests().isEmpty()) {
                             val stepReq = manager.createStepRequest(event.thread(), StepRequest.STEP_LINE, StepRequest.STEP_INTO)
                             stepReq.setSuspendPolicy(SUSPEND_NONE)
                             stepReq.addClassExclusionFilter("java.*")
@@ -242,12 +247,6 @@ abstract class AbstractSteppingTest : CodegenTestCase() {
                 "${(event as LocatableEvent).location().method()}:${event.location().lineNumber()}"
             }
         TestCase.assertEquals(expectedLineNumbers, actualLineNumbers.joinToString(" "))
-    }
-
-    private fun findJavaExecutable(): File {
-        val javaBin = File(SystemProperties.getJavaHome(), "bin")
-        return File(javaBin, "java.exe").takeIf { it.exists() }
-            ?: File(javaBin, "java").also { assert(it.exists()) }
     }
 
     internal val OutputFile.internalName
