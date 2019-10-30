@@ -54,7 +54,7 @@ class SpecialBridgeMethods(val context: CommonBackendContext) {
         makeDescription("kotlin.collections.Map", "containsKey", 1) to ::constFalse,
         makeDescription("kotlin.collections.Map", "containsValue", 1) to ::constFalse,
         makeDescription("kotlin.collections.MutableMap", "remove", 2) to ::constFalse,
-        makeDescription("kotlin.collections.Map", "getOrDefault", 1) to ::getSecondArg,
+        makeDescription("kotlin.collections.Map", "getOrDefault", 2) to ::getSecondArg,
         makeDescription("kotlin.collections.Map", "get", 1) to ::constNull,
         makeDescription("kotlin.collections.MutableMap", "remove", 1) to ::constNull,
         makeDescription("kotlin.collections.List", "indexOf", 1) to ::constMinusOne,

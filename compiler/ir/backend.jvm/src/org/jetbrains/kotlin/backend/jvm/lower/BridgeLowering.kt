@@ -270,13 +270,14 @@ private class BridgeLowering(val context: JvmBackendContext) : ClassLoweringPass
             body = irBlockBody {
                 if (defaultValueGenerator != null) {
                     valueParameters.forEach {
-                        +irIfThen(
-                            context.irBuiltIns.unitType,
-                            irNot(irIs(irGet(it), maybeOrphanedTarget.valueParameters[it.index].type)),
-                            irReturn(defaultValueGenerator(this@createBridgeBody))
-                        )
                     }
                 }
+                +irIfThen(
+                    context.irBuiltIns.unitType,
+                    irNot(irIs(irGet(it), maybeOrphanedTarget.valueParameters[it.index].type)),
+                    irNot(context.oror(irIs(irGet(it), maybeOrphanedTarget.valueParameters[it.index].type))),
+                    irReturn(irAs(defaultValueGenerator(this@createBridgeBody), target.returnType))
+                )
                 +irReturn(
                     irImplicitCast(
                         IrCallImpl(
