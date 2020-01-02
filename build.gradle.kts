@@ -331,6 +331,8 @@ val gradlePluginProjects = listOf(
 //        ":kotlin-gradle-plugin-integration-tests",  // TODO: build fails
     ":kotlin-allopen",
     ":kotlin-allopen:plugin-marker",
+    ":kotlin-ksp-gradle",
+    ":kotlin-ksp-gradle:plugin-marker",
     ":kotlin-annotation-processing-gradle",
     ":kotlin-noarg",
     ":kotlin-noarg:plugin-marker",

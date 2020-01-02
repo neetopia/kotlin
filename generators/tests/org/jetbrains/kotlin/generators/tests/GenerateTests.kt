@@ -156,6 +156,7 @@ import org.jetbrains.kotlin.kapt3.test.AbstractClassFileToSourceStubConverterTes
 import org.jetbrains.kotlin.kapt3.test.AbstractIrClassFileToSourceStubConverterTest
 import org.jetbrains.kotlin.kapt3.test.AbstractIrKotlinKaptContextTest
 import org.jetbrains.kotlin.kapt3.test.AbstractKotlinKaptContextTest
+import org.jetbrains.kotlin.ksp.test.AbstractKotlinKSPTest
 import org.jetbrains.kotlin.nj2k.AbstractNewJavaToKotlinConverterMultiFileTest
 import org.jetbrains.kotlin.nj2k.AbstractNewJavaToKotlinConverterSingleFileTest
 import org.jetbrains.kotlin.nj2k.AbstractNewJavaToKotlinCopyPasteConversionTest
@@ -1382,6 +1383,12 @@ fun main() {
 
         testClass<AbstractCompileAgainstJvmAbiTest> {
             model("compile", recursive = false, extension = null)
+        }
+    }
+
+    testGroup("plugins/ksp/test", "plugins/ksp/testData") {
+        testClass<AbstractKotlinKSPTest> {
+            model("api", recursive = false, extension = "kt")
         }
     }
 
