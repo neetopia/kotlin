@@ -7,8 +7,6 @@ package org.jetbrains.kotlin.ksp.processor
 
 import org.jetbrains.kotlin.ksp.processing.Resolver
 import org.jetbrains.kotlin.ksp.symbol.*
-import org.jetbrains.kotlin.ksp.symbol.impl.java.KSClassDeclarationJavaImpl
-import org.jetbrains.kotlin.ksp.symbol.impl.java.KSTypeReferenceJavaImpl
 import org.jetbrains.kotlin.ksp.visitor.KSTopDownVisitor
 
 class ResolveJavaTypeProcessor : AbstractTestProcessor() {
@@ -21,7 +19,10 @@ class ResolveJavaTypeProcessor : AbstractTestProcessor() {
 
     override fun process(resolver: Resolver) {
         val annotated = resolver.getSymbolsWithAnnotation("Test")
-        (annotated.single() as KSClassDeclaration).superTypes.map { it.resolve()?.declaration }.filterIsInstance<KSClassDeclarationJavaImpl>().map { it.accept(visitor, Unit) }
+        (annotated.single() as KSClassDeclaration).superTypes
+            .map { it.resolve()?.declaration }
+            .filter { it?.origin == Origin.JAVA }
+            .map { it?.accept(visitor, Unit) }
     }
 
     inner class ResolveJavaTypeVisitor : KSTopDownVisitor<Unit, Unit>() {
@@ -37,7 +38,7 @@ class ResolveJavaTypeProcessor : AbstractTestProcessor() {
         }
 
         override fun visitTypeReference(typeReference: KSTypeReference, data: Unit) {
-            if (typeReference is KSTypeReferenceJavaImpl) {
+            if (typeReference.origin == Origin.JAVA) {
                 results.add(typeReference.render())
             }
         }

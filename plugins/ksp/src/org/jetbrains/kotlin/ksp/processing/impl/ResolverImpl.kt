@@ -229,8 +229,8 @@ class ResolverImpl(
                 return KSTypeImpl.getCached(type.kotlinType)
             }
             is KSTypeReferenceJavaImpl -> {
-                if ((type.psi as? PsiClassReferenceType)?.resolve() is PsiTypeParameter) {
-                    val psi = (type.psi as PsiClassReferenceType).resolve() as PsiTypeParameter
+                val psi = (type.psi as? PsiClassReferenceType)?.resolve()
+                if (psi is PsiTypeParameter) {
                     val containingDeclaration = if (psi.owner is PsiClass) {
                         javaDescriptorResolver.resolveClass(JavaClassImpl(psi.owner as PsiClass))
                     } else {
