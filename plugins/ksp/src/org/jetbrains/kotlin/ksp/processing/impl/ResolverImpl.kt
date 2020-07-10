@@ -36,6 +36,8 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo
+import org.jetbrains.kotlin.resolve.constants.ConstantValue
+import org.jetbrains.kotlin.resolve.constants.evaluate.ConstantExpressionEvaluator
 import org.jetbrains.kotlin.resolve.jvm.JavaDescriptorResolver
 import org.jetbrains.kotlin.resolve.lazy.DeclarationScopeProvider
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
@@ -57,6 +59,7 @@ class ResolverImpl(
     companion object {
         lateinit var resolveSession: ResolveSession
         lateinit var bodyResolver: BodyResolver
+        lateinit var constantExpressionEvaluator: ConstantExpressionEvaluator
         lateinit var declarationScopeProvider: DeclarationScopeProvider
         lateinit var topDownAnalyzer: LazyTopDownAnalyzer
         lateinit var instance: ResolverImpl
@@ -72,6 +75,7 @@ class ResolverImpl(
         declarationScopeProvider = componentProvider.get()
         topDownAnalyzer = componentProvider.get()
         javaDescriptorResolver = componentProvider.get()
+        constantExpressionEvaluator = componentProvider.get()
 
         ksFiles = files.map { KSFileImpl.getCached(it) }
         val javaResolverComponents = componentProvider.get<JavaResolverComponents>()
@@ -172,6 +176,10 @@ class ResolverImpl(
 
     override fun getKSNameFromString(name: String): KSName {
         return KSNameImpl.getCached(name)
+    }
+
+    fun evaluateConstant(expression: KtExpression?, expectedType: KotlinType): ConstantValue<*>? {
+        return expression?.let { constantExpressionEvaluator.evaluateToConstantValue(it, bindingTrace, expectedType) }
     }
 
     fun resolveDeclaration(declaration: KtDeclaration): DeclarationDescriptor? {
