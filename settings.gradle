@@ -251,10 +251,6 @@ include ":kotlin-build-common",
         ":kotlin-gradle-subplugin-example",
         ":examples:annotation-processor-example",
         ":kotlin-script-util",
-        ":kotlin-symbol-processing",
-        ":kotlin-symbol-processing-api",
-        ":kotlin-ksp",
-        ":kotlin-ksp-gradle",
         ":kotlin-annotation-processing",
         ":kotlin-annotation-processing-cli",
         ":kotlin-annotation-processing-base",
@@ -305,7 +301,6 @@ include ":kotlin-build-common",
         // plugin markers:
         ':kotlin-gradle-plugin:plugin-marker',
         ':kotlin-allopen:plugin-marker',
-        ':kotlin-ksp-gradle:plugin-marker',
         ':kotlin-noarg:plugin-marker',
         ":test-instrumenter",
 
@@ -314,6 +309,12 @@ include ":kotlin-build-common",
         ":kotlin-serialization",
         ":kotlin-serialization-unshaded",
         ":kotlin-serialization:plugin-marker"
+
+include ":kotlin-symbol-processing",
+        ":kotlin-symbol-processing-api",
+        ":kotlin-ksp",
+        ":kotlin-ksp-gradle",
+        ":kotlin-ksp-gradle:plugin-marker"
 
 include ":prepare:ide-plugin-dependencies:android-extensions-compiler-plugin-for-ide",
         ":prepare:ide-plugin-dependencies:allopen-compiler-plugin-for-ide",
