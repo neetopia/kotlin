@@ -71,7 +71,7 @@ class KSPropertyDeclarationImpl private constructor(val ktProperty: KtProperty) 
     }
 
     override val qualifiedName: KSName? by lazy {
-        ktProperty.fqName?.asString()?.let { KSNameImpl.getCached(it) }
+        ktProperty.toPathIdentifierName()
     }
 
     override val simpleName: KSName by lazy {

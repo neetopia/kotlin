@@ -14,14 +14,18 @@ class KSNameImpl private constructor(val name: String) : KSName {
     }
 
     override fun asString(): String {
+        return name.replace("/", ".")
+    }
+
+    override fun asPathIdentifier(): String {
         return name
     }
 
     override fun getQualifier(): String {
-        return name.split(".").dropLast(1).joinToString(".")
+        return name.substringBeforeLast('/')
     }
 
     override fun getShortName(): String {
-        return name.split(".").last()
+        return name.split("/").last()
     }
 }

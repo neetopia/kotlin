@@ -15,6 +15,12 @@ interface KSName {
     fun asString(): String
 
     /**
+     * Path/Identifier representation of the name.
+     */
+    fun asPathIdentifier(): String
+
+
+    /**
      * Qualifier of the name.
      */
     fun getQualifier(): String

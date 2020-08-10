@@ -135,7 +135,8 @@ class ResolverImpl(
     }
 
     override fun getSymbolsWithAnnotation(annotationName: String): List<KSAnnotated> {
-        val ksName = KSNameImpl.getCached(annotationName)
+        val annotationClass = getClassDeclarationByName(getKSNameFromString(annotationName))
+        val ksName = annotationClass?.qualifiedName ?: return emptyList()
 
         val visitor = object : BaseVisitor() {
             val symbols = mutableSetOf<KSAnnotated>()

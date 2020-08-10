@@ -10,10 +10,7 @@ import org.jetbrains.kotlin.ksp.isOpen
 import org.jetbrains.kotlin.ksp.isVisibleFrom
 import org.jetbrains.kotlin.ksp.processing.impl.ResolverImpl
 import org.jetbrains.kotlin.ksp.symbol.*
-import org.jetbrains.kotlin.ksp.symbol.impl.KSObjectCache
-import org.jetbrains.kotlin.ksp.symbol.impl.findParentDeclaration
-import org.jetbrains.kotlin.ksp.symbol.impl.toKSModifiers
-import org.jetbrains.kotlin.ksp.symbol.impl.toLocation
+import org.jetbrains.kotlin.ksp.symbol.impl.*
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtStubbedPsiUtil
@@ -62,7 +59,7 @@ class KSPropertyDeclarationParameterImpl private constructor(val ktParameter: Kt
     }
 
     override val qualifiedName: KSName? by lazy {
-        KSNameImpl.getCached("${parentDeclaration.qualifiedName!!.asString()}.${simpleName.asString()}")
+        ktParameter.toPathIdentifierName()
     }
 
     override val simpleName: KSName by lazy {

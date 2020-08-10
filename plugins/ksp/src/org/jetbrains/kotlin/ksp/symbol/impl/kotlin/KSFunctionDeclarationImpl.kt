@@ -98,7 +98,7 @@ class KSFunctionDeclarationImpl private constructor(val ktFunction: KtFunction) 
     }
 
     override val qualifiedName: KSName? by lazy {
-        ktFunction.fqName?.asString()?.let { KSNameImpl.getCached(it) }
+        ktFunction.toPathIdentifierName()
     }
 
     override val returnType: KSTypeReference by lazy {

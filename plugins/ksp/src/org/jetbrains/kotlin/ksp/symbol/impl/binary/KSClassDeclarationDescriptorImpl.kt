@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.ksp.symbol.impl.kotlin.KSNameImpl
 import org.jetbrains.kotlin.ksp.symbol.impl.kotlin.KSTypeImpl
 import org.jetbrains.kotlin.ksp.symbol.impl.replaceTypeArguments
 import org.jetbrains.kotlin.ksp.symbol.impl.toKSModifiers
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.ksp.symbol.impl.toPathIdentifierName
 import org.jetbrains.kotlin.resolve.descriptorUtil.parents
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
@@ -74,7 +74,7 @@ class KSClassDeclarationDescriptorImpl private constructor(val descriptor: Class
     }
 
     override val qualifiedName: KSName by lazy {
-        KSNameImpl.getCached(descriptor.fqNameSafe.asString())
+        descriptor.toPathIdentifierName()
     }
 
     override val simpleName: KSName by lazy {

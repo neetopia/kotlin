@@ -66,7 +66,7 @@ class KSPropertyDeclarationDescriptorImpl private constructor(val descriptor: Pr
     }
 
     override val qualifiedName: KSName by lazy {
-        KSNameImpl.getCached(descriptor.fqNameSafe.asString())
+        descriptor.toPathIdentifierName()
     }
 
     override val setter: KSPropertySetter? by lazy {

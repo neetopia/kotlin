@@ -93,6 +93,11 @@ public class KotlinKSPTestGenerated extends AbstractKotlinKSPTest {
         runTest("plugins/ksp/testData/api/makeNullable.kt");
     }
 
+    @TestMetadata("nameForPathIdentifier.kt")
+    public void testNameForPathIdentifier() throws Exception {
+        runTest("plugins/ksp/testData/api/nameForPathIdentifier.kt");
+    }
+
     @TestMetadata("platformDeclaration.kt")
     public void testPlatformDeclaration() throws Exception {
         runTest("plugins/ksp/testData/api/platformDeclaration.kt");

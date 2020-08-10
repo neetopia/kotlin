@@ -77,11 +77,7 @@ class KSClassDeclarationImpl private constructor(val ktClassOrObject: KtClassOrO
     }
 
     override val qualifiedName: KSName by lazy {
-        if (ktClassOrObject.fqName == null) {
-            KSNameImpl.getCached("")
-        } else {
-            KSNameImpl.getCached(ktClassOrObject.fqName!!.asString())
-        }
+        ktClassOrObject.toPathIdentifierName()
     }
 
     override val simpleName: KSName by lazy {

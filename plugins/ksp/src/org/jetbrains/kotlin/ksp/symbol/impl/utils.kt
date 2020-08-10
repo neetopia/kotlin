@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.ksp.symbol.impl
 
 import com.intellij.lang.jvm.JvmModifier
 import com.intellij.psi.*
+import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ksp.processing.impl.ResolverImpl
 import org.jetbrains.kotlin.ksp.symbol.*
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.load.java.JavaVisibilities
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.StarProjectionImpl
@@ -146,6 +148,20 @@ fun FunctionDescriptor.toFunctionKSModifiers(): Set<Modifier> {
         modifiers.add(Modifier.OVERRIDE)
     }
     return modifiers
+}
+
+fun DeclarationDescriptor.toPathIdentifierName(): KSName {
+    val packageName = this.findPackage().fqName.asString()
+    val identifier = this.fqNameSafe.asString().substringAfter(packageName).trimStart('.')
+    val path = packageName.replace('.', '/')
+    return KSNameImpl.getCached("${if (path == "") path else "$path/"}$identifier")
+}
+
+fun KtNamedDeclaration.toPathIdentifierName(): KSName {
+    val packageName = this.containingKtFile.packageFqName.asString()
+    val identifier = this.fqName?.asString()?.substringAfter(packageName)?.trimStart('.') ?: return KSNameImpl.getCached("")
+    val path = packageName.replace('.', '/')
+    return KSNameImpl.getCached("${if (path == "") path else "$path/"}$identifier")
 }
 
 fun PsiElement.findParentDeclaration(): KSDeclaration? {

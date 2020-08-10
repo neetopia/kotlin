@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.ksp.symbol.impl.KSObjectCache
 import org.jetbrains.kotlin.ksp.symbol.impl.kotlin.KSNameImpl
 import org.jetbrains.kotlin.ksp.symbol.impl.toFunctionKSModifiers
 import org.jetbrains.kotlin.ksp.symbol.impl.toKSModifiers
+import org.jetbrains.kotlin.ksp.symbol.impl.toPathIdentifierName
 import org.jetbrains.kotlin.load.java.isFromJava
 import org.jetbrains.kotlin.resolve.OverridingUtil
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
@@ -60,7 +61,7 @@ class KSFunctionDeclarationDescriptorImpl private constructor(val descriptor: Fu
     }
 
     override val qualifiedName: KSName by lazy {
-        KSNameImpl.getCached(descriptor.fqNameSafe.asString())
+        descriptor.toPathIdentifierName()
     }
 
     override val simpleName: KSName by lazy {

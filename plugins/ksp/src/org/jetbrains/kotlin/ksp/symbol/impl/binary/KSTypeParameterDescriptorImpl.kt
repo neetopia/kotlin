@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.ksp.symbol.impl.KSObjectCache
 import org.jetbrains.kotlin.ksp.symbol.impl.kotlin.KSExpectActualNoImpl
 import org.jetbrains.kotlin.ksp.symbol.impl.kotlin.KSNameImpl
 import org.jetbrains.kotlin.ksp.symbol.impl.toKSVariance
+import org.jetbrains.kotlin.ksp.symbol.impl.toPathIdentifierName
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 
 class KSTypeParameterDescriptorImpl private constructor(val descriptor: TypeParameterDescriptor) : KSTypeParameter,
@@ -36,7 +37,7 @@ class KSTypeParameterDescriptorImpl private constructor(val descriptor: TypePara
     }
 
     override val qualifiedName: KSName? by lazy {
-        KSNameImpl.getCached(descriptor.fqNameSafe.asString())
+        descriptor.toPathIdentifierName()
     }
 
     override val typeParameters: List<KSTypeParameter> = emptyList()
