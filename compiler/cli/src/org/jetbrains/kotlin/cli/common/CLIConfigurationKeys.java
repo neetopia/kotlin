@@ -31,6 +31,10 @@ public class CLIConfigurationKeys {
 
     public static final CompilerConfigurationKey<MessageCollector> MESSAGE_COLLECTOR_KEY =
             CompilerConfigurationKey.create("message collector");
+
+    public static final CompilerConfigurationKey<MessageCollector> ORIGINAL_MESSAGE_COLLECTOR_KEY =
+            CompilerConfigurationKey.create("original message collector");
+
     public static final CompilerConfigurationKey<Boolean> ALLOW_KOTLIN_PACKAGE =
             CompilerConfigurationKey.create("allow kotlin package");
     public static final CompilerConfigurationKey<CommonCompilerPerformanceManager> PERF_MANAGER =
