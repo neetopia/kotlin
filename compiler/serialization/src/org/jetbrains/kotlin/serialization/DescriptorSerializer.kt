@@ -119,10 +119,7 @@ class DescriptorSerializer private constructor(
 
         val callableMembers =
             extension.customClassMembersProducer?.getCallableMembers(classDescriptor)
-                ?: sort(
-                    DescriptorUtils.getAllDescriptors(classDescriptor.defaultType.memberScope)
-                        .filterIsInstance<CallableMemberDescriptor>()
-                )
+                ?: DescriptorUtils.getAllDescriptors(classDescriptor.defaultType.memberScope).filterIsInstance<CallableMemberDescriptor>()
 
         for (descriptor in callableMembers) {
             if (descriptor.kind == CallableMemberDescriptor.Kind.FAKE_OVERRIDE) continue
@@ -133,7 +130,7 @@ class DescriptorSerializer private constructor(
             }
         }
 
-        val nestedClassifiers = sort(DescriptorUtils.getAllDescriptors(classDescriptor.unsubstitutedInnerClassesScope))
+        val nestedClassifiers = DescriptorUtils.getAllDescriptors(classDescriptor.unsubstitutedInnerClassesScope)
         for (descriptor in nestedClassifiers) {
             if (descriptor is TypeAliasDescriptor) {
                 typeAliasProto(descriptor)?.let { builder.addTypeAlias(it) }
@@ -720,7 +717,7 @@ class DescriptorSerializer private constructor(
     fun packagePartProto(packageFqName: FqName, members: Collection<DeclarationDescriptor>): ProtoBuf.Package.Builder {
         val builder = ProtoBuf.Package.newBuilder()
 
-        for (declaration in sort(members)) {
+        for (declaration in members) {
             when (declaration) {
                 is PropertyDescriptor -> propertyProto(declaration)?.let { builder.addProperty(it) }
                 is FunctionDescriptor -> functionProto(declaration)?.let { builder.addFunction(it) }

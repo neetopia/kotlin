@@ -139,7 +139,7 @@ open class MetadataSerializer(
         }
 
         private fun serializeClasses(classes: Collection<DeclarationDescriptor>, parentSerializer: DescriptorSerializer, project: Project?) {
-            for (descriptor in DescriptorSerializer.sort(classes)) {
+            for (descriptor in classes) {
                 if (descriptor !is ClassDescriptor || descriptor.kind == ClassKind.ENUM_ENTRY) continue
 
                 val serializer = DescriptorSerializer.create(descriptor, extension, parentSerializer, project)
